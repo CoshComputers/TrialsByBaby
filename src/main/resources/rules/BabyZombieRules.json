@@ -1,0 +1,57 @@
+[
+    {
+        "mob_type": "blaze_baby_zombie",
+        "conditions": {
+            "dimension": "nether",
+            "time": "night",
+            "player_proximity": {
+                "min_distance": 0,
+                "max_distance": 50
+            },
+            "pack_size": {
+                "min": 2,
+                "max": 10
+            }
+        }
+    },
+    {
+        "mob_type": "regular_baby_zombie",
+        "conditions": {
+            "dimension": "overworld",
+            "time": "night",
+            "player_proximity": {
+                "min_distance": 0,
+                "max_distance": 50
+            },
+            "pack_size": {
+                "min": 2,
+                "max": 10
+            }
+        }
+    },
+    {
+        "mob_type": "ender_baby_zombie",
+        "conditions": {
+            "dimension": "end",
+            "time": "night",
+            "player_proximity": {
+                "min_distance": 0,
+                "max_distance": 50
+            },
+            "pack_size": {
+                "min": 2,
+                "max": 10
+            }
+        },
+        "additional_conditions": [
+            {
+                "dimension": "overworld",
+                "rarity": 0.1
+            },
+            {
+                "dimension": "nether",
+                "rarity": 0.1
+            }
+        ]
+    }
+]
