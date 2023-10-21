@@ -3,7 +3,11 @@ package com.dsd.tbb.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TrialsConfig {
+    private static final List<String> commandList = new ArrayList<>();
     private boolean overrideMobs;
     private boolean spawnGiants;
     private boolean giveInitialGear;
@@ -11,7 +15,19 @@ public class TrialsConfig {
     private boolean usePlayerHeads;
     private boolean debugOn;
 
+
+    public TrialsConfig(){
+        commandList.add("overrideMobs");
+        commandList.add("spawnGiants");
+        commandList.add("giveInitialGear");
+        commandList.add("giveSpecialLoot");
+        commandList.add("usePlayerHeads");
+        commandList.add("debugOn");
+    }
     // Getters and Setters for each field
+    public static List<String> getCommandList() {
+        return commandList;
+    }
     public boolean isOverrideMobs() {
         return overrideMobs;
     }

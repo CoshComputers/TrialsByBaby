@@ -36,9 +36,9 @@ public class CustomLogger {
     }
 
     public void debug(String message) {
-        if(this.isDebugOn) {
+       // if(this.isDebugOn) {
             logger.debug(ANSI_BLUE + message);
-        }
+       // }
 
     }
     // Similarly for other log levels...

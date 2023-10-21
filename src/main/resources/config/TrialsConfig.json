@@ -1,8 +1,8 @@
 {
     "overrideMobs": true,
     "spawnGiants": true,
-    "giveInitialGear": false,
-    "giveSpecialLoot": false,
+    "giveInitialGear": true,
+    "giveSpecialLoot": true,
     "usePlayerHeads": true,
     "debugOn": true
 }
