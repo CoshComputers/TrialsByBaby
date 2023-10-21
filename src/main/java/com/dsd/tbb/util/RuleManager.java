@@ -24,8 +24,6 @@ public class RuleManager {
             synchronized (RuleManager.class){
                 if(INSTANCE == null){
                     INSTANCE = new RuleManager();
-                    rulesDir = FileAndDirectoryManager.getModDirectory().resolve("rules");
-                    prepareRules();
                 }
             }
 
@@ -34,16 +32,22 @@ public class RuleManager {
             return INSTANCE;
     }
 
-    private static void prepareRules(){
+    public static void prepareRules(){
         try {
-            FileAndDirectoryManager.createDirectory(rulesDir);  // Update method call
-            String[] ruleFiles = {"BabyZombieRules.json"};
-            for (String rulesFile : ruleFiles) {
-                Path configFilePath = rulesDir.resolve(rulesFile);
-                if (!FileAndDirectoryManager.fileExists(configFilePath)) {  // Update method call
-                    FileAndDirectoryManager.copyFileFromResources("rules", rulesFile, configFilePath);  // Update method call
+            rulesDir = FileAndDirectoryManager.getModDirectory().resolve("rules");
+            if(rulesDir != null){
+                FileAndDirectoryManager.createDirectory(rulesDir);  // Update method call
+                String[] ruleFiles = {"BabyZombieRules.json"};
+                for (String rulesFile : ruleFiles) {
+                    Path configFilePath = rulesDir.resolve(rulesFile);
+                    if (!FileAndDirectoryManager.fileExists(configFilePath)) {  // Update method call
+                        FileAndDirectoryManager.copyFileFromResources("rules", rulesFile, configFilePath);  // Update method call
+                    }
                 }
+            }else{
+                CustomLogger.getInstance().error("Something has gone wrong preparing Rules Files, using Defaults");
             }
+
         } catch (IOException e) {
             e.printStackTrace();  // Handle exceptions as appropriate for your use case
         }

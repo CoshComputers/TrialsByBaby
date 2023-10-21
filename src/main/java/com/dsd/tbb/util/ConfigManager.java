@@ -16,30 +16,34 @@ public class ConfigManager {
     private static Path configDir = null;
     private static TrialsConfig trialsConfig;
         private ConfigManager() {
-        this.trialsConfig = TrialsConfig.getInstance();
+            this.trialsConfig = TrialsConfig.getInstance();
     }
 
     public static ConfigManager getInstance() {
         if (INSTANCE == null) {
             synchronized (ConfigManager.class) {
-                configDir = FileAndDirectoryManager.getModDirectory().resolve("config");
-                prepareConfigs();
-                INSTANCE = new ConfigManager();
+               INSTANCE = new ConfigManager();
             }
         }
         return INSTANCE;
     }
 
-    private static void prepareConfigs() {
+    public static void prepareConfigs() {
         try {
-            FileAndDirectoryManager.createDirectory(configDir);  // Update method call
-            String[] configFiles = {"TrialsConfig.json", "GearConfig.json"};
-            for (String configFile : configFiles) {
-                Path configFilePath = configDir.resolve(configFile);
-                if (!FileAndDirectoryManager.fileExists(configFilePath)) {  // Update method call
-                    FileAndDirectoryManager.copyFileFromResources("config", configFile, configFilePath);  // Update method call
+            configDir = FileAndDirectoryManager.getModDirectory().resolve("config");
+            if(configDir != null){
+                FileAndDirectoryManager.createDirectory(configDir);  // Update method call
+                String[] configFiles = {"TrialsConfig.json"};
+                for (String configFile : configFiles) {
+                    Path configFilePath = configDir.resolve(configFile);
+                    if (!FileAndDirectoryManager.fileExists(configFilePath)) {  // Update method call
+                        FileAndDirectoryManager.copyFileFromResources("config", configFile, configFilePath);  // Update method call
+                    }
                 }
+            }else{
+                CustomLogger.getInstance().error("Something has gone wrong Preparing the Config Files. Using Default Values");
             }
+
         } catch (IOException e) {
             e.printStackTrace();  // Handle exceptions as appropriate for your use case
         }
