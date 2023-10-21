@@ -1,10 +1,12 @@
 package com.dsd.tbb.handlers;
 
 import com.dsd.tbb.commands.TrialsCommands;
+import com.dsd.tbb.config.BabyZombieRules;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.CustomLogger;
 import com.dsd.tbb.util.FileAndDirectoryManager;
+import com.dsd.tbb.util.RuleManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerLevel;
@@ -25,12 +27,21 @@ public class ServerEventHandler {
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         CustomLogger.getInstance().info(("****** INVOKED TRIALS SERVER ABOUT TO START METHOD *********"));
+        CustomLogger.getInstance().info("Initializing Mod Directories");
         Path serverDir = event.getServer().getWorldPath(LevelResource.ROOT);
         FileAndDirectoryManager.initialize(serverDir);
-        configManager = ConfigManager.getInstance();
 
         CustomLogger.getInstance().info(String.format("Mod Directory = %s",FileAndDirectoryManager.getModDirectory().toString()));
         CustomLogger.getInstance().info(String.format("Player Directory = %s",FileAndDirectoryManager.getPlayerDataDirectory().toString()));
+
+        CustomLogger.getInstance().info("Loading Configurations");
+        configManager = ConfigManager.getInstance();
+
+        CustomLogger.getInstance().info("Loading Rules");
+        RuleManager ruleMgr = RuleManager.getInstance();
+        for(BabyZombieRules.BabyZombieRule bbz : ruleMgr.getBabyZombieRules().getBabyZombieRules()){
+            CustomLogger.getInstance().debug(String.format("Set BabyZombie defaults : %s",bbz.toString()));
+        }
 
     }
     @SubscribeEvent

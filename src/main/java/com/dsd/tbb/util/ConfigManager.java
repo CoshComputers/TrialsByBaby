@@ -14,11 +14,9 @@ public class ConfigManager {
 
     private static ConfigManager INSTANCE = null;
     private static Path configDir = null;
-    private TrialsConfig trialsConfig;
-        private ConfigManager(Path configDir) {
-
-        this.trialsConfig = new TrialsConfig();
-        loadConfigs(configDir);
+    private static TrialsConfig trialsConfig;
+        private ConfigManager() {
+        this.trialsConfig = TrialsConfig.getInstance();
     }
 
     public static ConfigManager getInstance() {
@@ -26,7 +24,7 @@ public class ConfigManager {
             synchronized (ConfigManager.class) {
                 configDir = FileAndDirectoryManager.getModDirectory().resolve("config");
                 prepareConfigs();
-                INSTANCE = new ConfigManager(configDir);
+                INSTANCE = new ConfigManager();
             }
         }
         return INSTANCE;
@@ -47,7 +45,7 @@ public class ConfigManager {
         }
     }
 
-    private void loadConfigs(Path configDir) {
+    public static void loadConfigs() {
         Gson gson = new Gson();
         try {
             // Load TrialsConfig

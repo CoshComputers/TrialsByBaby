@@ -10,7 +10,7 @@ public class EnumTypes {
     public enum ZombieAppearance{
         BLAZE,
         ENDERMAN,
-        UNKNOWN;
+        REGULAR;
     }
    public enum ModConfigOption {
         OVERRIDE_MOBS("overrideMobs"),

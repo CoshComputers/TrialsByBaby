@@ -8,6 +8,8 @@ import java.util.List;
 
 public class TrialsConfig {
     private static final List<String> commandList = new ArrayList<>();
+    private static TrialsConfig INSTANCE = null;
+
     private boolean overrideMobs;
     private boolean spawnGiants;
     private boolean giveInitialGear;
@@ -16,13 +18,33 @@ public class TrialsConfig {
     private boolean debugOn;
 
 
-    public TrialsConfig(){
+    private TrialsConfig(){
         commandList.add("overrideMobs");
         commandList.add("spawnGiants");
         commandList.add("giveInitialGear");
         commandList.add("giveSpecialLoot");
         commandList.add("usePlayerHeads");
         commandList.add("debugOn");
+
+        setDefaults();
+    }
+
+    public static TrialsConfig getInstance(){
+        if (INSTANCE == null){
+            synchronized (TrialsConfig.class){
+                INSTANCE = new TrialsConfig();
+            }
+        }
+        return INSTANCE;
+    }
+
+    private void setDefaults() {
+        this.overrideMobs = true;
+        this.spawnGiants = true;
+        this.giveInitialGear = true;
+        this.giveSpecialLoot = true;
+        this.usePlayerHeads = true;
+        this.debugOn = true;
     }
     // Getters and Setters for each field
     public static List<String> getCommandList() {
