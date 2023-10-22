@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TrialsConfig {
     private static final List<String> commandList = new ArrayList<>();
-    private static TrialsConfig INSTANCE = null;
+    private static volatile TrialsConfig INSTANCE = null;
 
     private boolean overrideMobs;
     private boolean spawnGiants;
@@ -39,12 +39,12 @@ public class TrialsConfig {
     }
 
     private void setDefaults() {
-        this.overrideMobs = true;
-        this.spawnGiants = true;
-        this.giveInitialGear = true;
-        this.giveSpecialLoot = true;
-        this.usePlayerHeads = true;
-        this.debugOn = true;
+        this.overrideMobs = false;
+        this.spawnGiants = false;
+        this.giveInitialGear = false;
+        this.giveSpecialLoot = false;
+        this.usePlayerHeads = false;
+        this.debugOn = false;
     }
     // Getters and Setters for each field
     public static List<String> getCommandList() {

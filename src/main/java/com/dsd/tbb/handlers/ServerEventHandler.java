@@ -6,7 +6,7 @@ import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.CustomLogger;
 import com.dsd.tbb.util.FileAndDirectoryManager;
-import com.dsd.tbb.util.RuleManager;
+import com.dsd.tbb.rulehandling.RuleManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerLevel;
@@ -22,7 +22,7 @@ import java.nio.file.Path;
 @Mod.EventBusSubscriber(modid = TrialsByBaby.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEventHandler {
     private static ConfigManager configManager;
-
+    private static RuleManager ruleManager;
 
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
@@ -36,11 +36,15 @@ public class ServerEventHandler {
 
         CustomLogger.getInstance().info("Loading Configurations");
         configManager = ConfigManager.getInstance();
+        configManager.prepareConfigs();
+        configManager.loadConfigs();
 
         CustomLogger.getInstance().info("Loading Rules");
-        RuleManager ruleMgr = RuleManager.getInstance();
-        for(BabyZombieRules.BabyZombieRule bbz : ruleMgr.getBabyZombieRules().getBabyZombieRules()){
-            CustomLogger.getInstance().debug(String.format("Set BabyZombie defaults : %s",bbz.toString()));
+        ruleManager = RuleManager.getInstance();
+        ruleManager.prepareRules();
+        ruleManager.loadBabyZombieRules();
+        for(BabyZombieRules.BabyZombieRule bbz : ruleManager.getBabyZombieRules().getBabyZombieRules()){
+            CustomLogger.getInstance().debug(String.format("Loaded Baby Zombie Rules : %s",bbz.toString()));
         }
 
     }

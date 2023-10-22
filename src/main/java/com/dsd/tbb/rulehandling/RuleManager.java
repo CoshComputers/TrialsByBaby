@@ -1,6 +1,9 @@
-package com.dsd.tbb.util;
+package com.dsd.tbb.rulehandling;
 
 import com.dsd.tbb.config.BabyZombieRules;
+import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.EnumTypes;
+import com.dsd.tbb.util.FileAndDirectoryManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -16,6 +19,7 @@ public class RuleManager {
     private static Path rulesDir = null;
     private static BabyZombieRules babyZombieRules;
     private RuleManager(){
+
         this.babyZombieRules = BabyZombieRules.getInstance();
     }
 
@@ -26,22 +30,21 @@ public class RuleManager {
                     INSTANCE = new RuleManager();
                 }
             }
-
         }
-
             return INSTANCE;
     }
 
-    public static void prepareRules(){
+    public void prepareRules(){
         try {
             rulesDir = FileAndDirectoryManager.getModDirectory().resolve("rules");
             if(rulesDir != null){
                 FileAndDirectoryManager.createDirectory(rulesDir);  // Update method call
                 String[] ruleFiles = {"BabyZombieRules.json"};
                 for (String rulesFile : ruleFiles) {
-                    Path configFilePath = rulesDir.resolve(rulesFile);
-                    if (!FileAndDirectoryManager.fileExists(configFilePath)) {  // Update method call
-                        FileAndDirectoryManager.copyFileFromResources("rules", rulesFile, configFilePath);  // Update method call
+                    Path ruleFilePath = rulesDir.resolve(rulesFile);
+                    if (!FileAndDirectoryManager.fileExists(ruleFilePath)) {  // Update method call
+                        FileAndDirectoryManager.copyFileFromResources("rules", rulesFile, ruleFilePath);  // Update method call
+                        CustomLogger.getInstance().debug(String.format("Created Rules File [%s]", ruleFilePath));
                     }
                 }
             }else{
@@ -53,11 +56,16 @@ public class RuleManager {
         }
     }
 
-    public static void loadBabyZombieRules(){
+    public void loadBabyZombieRules(){
         Gson gson = new Gson();
         Path rulesFilePath = rulesDir.resolve("BabyZombieRules.json");
-        try (FileReader reader = new FileReader(rulesFilePath.toFile())) {
-            babyZombieRules = gson.fromJson(reader, BabyZombieRules.class);
+        try {
+            String[] ruleFiles = {"BabyZombieRules.json"};
+            for (String rulesFile : ruleFiles) {
+                Path ruleFilePath = rulesDir.resolve(rulesFile);
+                CustomLogger.getInstance().debug(String.format("About to read [%s] and Load",ruleFilePath));
+                babyZombieRules = gson.fromJson(new FileReader(ruleFilePath.toFile()), BabyZombieRules.class);
+            }
         } catch (JsonSyntaxException e) {
             // Handle JSON syntax exception
             CustomLogger.getInstance().error(String.format("JSON Syntax Error: Failed to parse BabyZombieRules.json due to malformed JSON. [%s]", e));

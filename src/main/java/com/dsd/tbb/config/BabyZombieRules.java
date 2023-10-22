@@ -11,9 +11,9 @@ import java.util.List;
 
 public class BabyZombieRules {
 
-    private static  BabyZombieRules INSTANCE = null;
+    private static volatile   BabyZombieRules INSTANCE = null;
     @SerializedName("babyZombieRules")
-    private static List<BabyZombieRule> babyZombieRules;
+    private List<BabyZombieRule> babyZombieRules;
 
 
     private BabyZombieRules(){
@@ -29,25 +29,25 @@ public class BabyZombieRules {
         return INSTANCE;
     }
 
-    public static void setDefaults() {
-        babyZombieRules = new ArrayList<>();
+    public void setDefaults() {
+        this.babyZombieRules = new ArrayList<>();
 
         // Default rule for Blaze Baby Zombie
         BabyZombieRule blazeRule = new BabyZombieRule();
         blazeRule.setMobType(EnumTypes.ZombieAppearance.BLAZE);
-        blazeRule.setConditions(new Conditions("nether", "night", new PlayerProximity(0, 50), new PackSize(2, 10)));
+        blazeRule.setConditions(new Conditions("nether", 14000,23000, new PlayerProximity(0, 50), new PackSize(2, 10)));
         babyZombieRules.add(blazeRule);
 
         // Default rule for Regular Baby Zombie
         BabyZombieRule regularRule = new BabyZombieRule();
         regularRule.setMobType(EnumTypes.ZombieAppearance.REGULAR);
-        regularRule.setConditions(new Conditions("overworld", "night", new PlayerProximity(0, 50), new PackSize(2, 10)));
+        regularRule.setConditions(new Conditions("overworld", 14000,23000, new PlayerProximity(0, 50), new PackSize(2, 10)));
         babyZombieRules.add(regularRule);
 
         // Default rule for Ender Baby Zombie
         BabyZombieRule enderRule = new BabyZombieRule();
         enderRule.setMobType(EnumTypes.ZombieAppearance.ENDERMAN);
-        enderRule.setConditions(new Conditions("end", "night", new PlayerProximity(0, 50), new PackSize(2, 10)));
+        enderRule.setConditions(new Conditions("end", 14000,23000, new PlayerProximity(0, 50), new PackSize(2, 10)));
 
         AdditionalCondition overworldCondition = new AdditionalCondition("overworld", 0.1);
         AdditionalCondition netherCondition = new AdditionalCondition("nether", 0.1);
@@ -104,15 +104,15 @@ public class BabyZombieRules {
 
     public static class Conditions {
         private String dimension;
-        private String time;
+        private TimeRange time;
         @SerializedName("player_proximity")
         private PlayerProximity playerProximity;
         @SerializedName("pack_size")
         private PackSize packSize;
 
-        public Conditions(String dimension, String time, PlayerProximity playerProximity, PackSize packSize) {
+        public Conditions(String dimension, int startTime, int endTime, PlayerProximity playerProximity, PackSize packSize) {
             this.dimension = dimension;
-            this.time = time;
+            this.time = new TimeRange(startTime,endTime);
             this.playerProximity = playerProximity;
             this.packSize = packSize;
         }
@@ -125,12 +125,12 @@ public class BabyZombieRules {
             this.dimension = dimension;
         }
 
-        public String getTime() {
+        public TimeRange getTime() {
             return time;
         }
 
-        public void setTime(String time) {
-            this.time = time;
+        public void setTime(int startTime, int endTime) {
+            this.time = new TimeRange(startTime,endTime);
         }
 
         public PlayerProximity getPlayerProximity() {
@@ -149,6 +149,32 @@ public class BabyZombieRules {
             this.packSize = packSize;
         }
 
+    }
+
+    public static class TimeRange {
+        private int start;
+        private int end;
+
+        public TimeRange(int startTime, int endTime){
+            this.start = startTime;
+            this.end = endTime;
+        }
+
+        public int getStart() {
+            return start;
+        }
+
+        public void setStart(int start) {
+            this.start = start;
+        }
+
+        public int getEnd() {
+            return end;
+        }
+
+        public void setEnd(int end) {
+            this.end = end;
+        }
     }
 
     public static class AdditionalCondition {

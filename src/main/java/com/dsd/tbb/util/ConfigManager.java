@@ -15,7 +15,7 @@ public class ConfigManager {
     private static ConfigManager INSTANCE = null;
     private static Path configDir = null;
     private static TrialsConfig trialsConfig;
-        private ConfigManager() {
+    private ConfigManager() {
             this.trialsConfig = TrialsConfig.getInstance();
     }
 
@@ -28,7 +28,7 @@ public class ConfigManager {
         return INSTANCE;
     }
 
-    public static void prepareConfigs() {
+    public void prepareConfigs() {
         try {
             configDir = FileAndDirectoryManager.getModDirectory().resolve("config");
             if(configDir != null){
@@ -49,14 +49,17 @@ public class ConfigManager {
         }
     }
 
-    public static void loadConfigs() {
+    public void loadConfigs() {
         Gson gson = new Gson();
         try {
             // Load TrialsConfig
-            CustomLogger.getInstance().debug("Loading Trials Config");
-            Path trialsConfigPath = configDir.resolve("TrialsConfig.json");
-            trialsConfig = gson.fromJson(new FileReader(trialsConfigPath.toFile()), TrialsConfig.class);
-            CustomLogger.getInstance().debug(String.format("***TrialsConfig Loaded: [%s]",trialsConfig.toString()));
+            String[] configFiles = {"TrialsConfig.json"};
+            for (String configFile : configFiles) {
+                Path configFilePath = configDir.resolve("TrialsConfig.json");
+                CustomLogger.getInstance().debug(String.format("About to read [%s] and load",configFilePath));
+                trialsConfig = gson.fromJson(new FileReader(configFilePath.toFile()), TrialsConfig.class);
+                CustomLogger.getInstance().debug(String.format("Config Loaded: [%s]", trialsConfig.toString()));
+            }
 
         } catch (IOException e) {
             e.printStackTrace();  // Handle exceptions as appropriate for your use case

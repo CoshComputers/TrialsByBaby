@@ -1,7 +1,9 @@
 package com.dsd.tbb.main;
 
 
+import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.rulehandling.RuleManager;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -42,11 +44,17 @@ public class TrialsByBaby
         //registerEntities();
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-
+        CustomLogger.getInstance().info("Trials By Baby has started");
+        ConfigManager.getInstance();
+        CustomLogger.getInstance().info(String.format("Configs Set to Defaults: %s",ConfigManager.getInstance().getTrialsConfig().toString()));
+        RuleManager.getInstance();
+        CustomLogger.getInstance().info("RuleManager initialized");
     }
 	/*
     public static void registerEntities() {

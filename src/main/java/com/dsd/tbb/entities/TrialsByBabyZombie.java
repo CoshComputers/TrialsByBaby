@@ -1,7 +1,7 @@
 package com.dsd.tbb.entities;
 
 import com.dsd.tbb.util.EnumTypes;
-import com.dsd.tbb.util.RuleManager;
+import com.dsd.tbb.rulehandling.RuleManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
