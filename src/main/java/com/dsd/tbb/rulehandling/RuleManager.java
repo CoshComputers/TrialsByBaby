@@ -18,6 +18,7 @@ public class RuleManager {
     private static RuleManager INSTANCE = null;
     private static Path rulesDir = null;
     private static BabyZombieRules babyZombieRules;
+    private final RuleCache ruleCache = RuleCache.getInstance();
     private RuleManager(){
 
         this.babyZombieRules = BabyZombieRules.getInstance();
@@ -65,6 +66,7 @@ public class RuleManager {
                 Path ruleFilePath = rulesDir.resolve(rulesFile);
                 CustomLogger.getInstance().debug(String.format("About to read [%s] and Load",ruleFilePath));
                 babyZombieRules = gson.fromJson(new FileReader(ruleFilePath.toFile()), BabyZombieRules.class);
+
             }
         } catch (JsonSyntaxException e) {
             // Handle JSON syntax exception
@@ -75,6 +77,10 @@ public class RuleManager {
         } catch (IOException e) {
             // Handle general I/O exception
             CustomLogger.getInstance().error(String.format("I/O Error: Failed to read BabyZombieRules.json due to an I/O error. [%s]", e));
+        }finally {
+            ruleCache.populateCache(babyZombieRules);
+            CustomLogger.getInstance().info("BabyZombie Rule Cache populated");
+            //CustomLogger.getInstance().debug(String.format("Cache Contents:\n%s",ruleCache));
         }
     }
 

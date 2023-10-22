@@ -3,10 +3,10 @@ package com.dsd.tbb.handlers;
 import com.dsd.tbb.commands.TrialsCommands;
 import com.dsd.tbb.config.BabyZombieRules;
 import com.dsd.tbb.main.TrialsByBaby;
+import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.CustomLogger;
 import com.dsd.tbb.util.FileAndDirectoryManager;
-import com.dsd.tbb.rulehandling.RuleManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerLevel;
@@ -18,6 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = TrialsByBaby.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEventHandler {
@@ -43,9 +44,7 @@ public class ServerEventHandler {
         ruleManager = RuleManager.getInstance();
         ruleManager.prepareRules();
         ruleManager.loadBabyZombieRules();
-        for(BabyZombieRules.BabyZombieRule bbz : ruleManager.getBabyZombieRules().getBabyZombieRules()){
-            CustomLogger.getInstance().debug(String.format("Loaded Baby Zombie Rules : %s",bbz.toString()));
-        }
+        //outputRules();
 
     }
     @SubscribeEvent
@@ -71,5 +70,24 @@ public class ServerEventHandler {
     }
 
 
+    private static void outputRules(){
+        // Get the BabyZombieRules instance from the RuleManager
+        BabyZombieRules babyZombieRules = ruleManager.getBabyZombieRules();
+
+// Get the map of DimensionRules from the BabyZombieRules instance
+        Map<String, BabyZombieRules.DimensionRules> dimensionRulesMap = babyZombieRules.getRules();
+
+// Iterate through the map of DimensionRules
+        for (Map.Entry<String, BabyZombieRules.DimensionRules> entry : dimensionRulesMap.entrySet()) {
+            // Get the key (dimension name) and value (DimensionRules object) from each entry in the map
+            StringBuilder sb = new StringBuilder();
+            String dimensionName = entry.getKey();
+
+            sb.append("Dimension ").append(dimensionName).append(" rules:\n");
+            BabyZombieRules.DimensionRules dimensionRules = entry.getValue();
+            sb.append(dimensionRules.toString()).append("\n");
+            CustomLogger.getInstance().debug(sb.toString());
+        }
+    }
 
 }

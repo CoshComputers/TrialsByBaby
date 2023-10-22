@@ -55,6 +55,7 @@ public class TrialsByBaby
         CustomLogger.getInstance().info(String.format("Configs Set to Defaults: %s",ConfigManager.getInstance().getTrialsConfig().toString()));
         RuleManager.getInstance();
         CustomLogger.getInstance().info("RuleManager initialized");
+        CustomLogger.getInstance().debug(RuleManager.getInstance().getBabyZombieRules().getRules().get("overworld").toString());
     }
 	/*
     public static void registerEntities() {

@@ -1,28 +1,27 @@
 package com.dsd.tbb.config;
 
-import com.dsd.tbb.util.EnumTypes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BabyZombieRules {
 
-    private static volatile   BabyZombieRules INSTANCE = null;
-    @SerializedName("babyZombieRules")
-    private List<BabyZombieRule> babyZombieRules;
+    private static volatile BabyZombieRules INSTANCE = null;
+    @SerializedName("rules")
+    private Map<String, DimensionRules> rules;
 
-
-    private BabyZombieRules(){
+    private BabyZombieRules() {
         setDefaults();
     }
 
-    public static BabyZombieRules getInstance(){
-        if (INSTANCE == null){
-            synchronized (BabyZombieRules.class){
+    public static BabyZombieRules getInstance() {
+        if (INSTANCE == null) {
+            synchronized (BabyZombieRules.class) {
                 INSTANCE = new BabyZombieRules();
             }
         }
@@ -30,134 +29,73 @@ public class BabyZombieRules {
     }
 
     public void setDefaults() {
-        this.babyZombieRules = new ArrayList<>();
+        this.rules = new HashMap<>();
 
-        // Default rule for Blaze Baby Zombie
-        BabyZombieRule blazeRule = new BabyZombieRule();
-        blazeRule.setMobType(EnumTypes.ZombieAppearance.BLAZE);
-        blazeRule.setConditions(new Conditions("nether", 14000,23000, new PlayerProximity(0, 50), new PackSize(2, 10)));
-        babyZombieRules.add(blazeRule);
+        // Overworld Rules
+        DimensionRules overworldRules = new DimensionRules();
+        TimeRange overworldTimeRange = new TimeRange(13000, 23500);
+        MobType overworldRegular = new MobType(1, 1, 1.0);
+        overworldTimeRange.getTypes().put("REGULAR", overworldRegular);
+        MobType overworldEnderman = new MobType(1, 1, 0.1);
+        overworldTimeRange.getTypes().put("ENDERMAN", overworldEnderman);
+        overworldRules.getTimeRanges().add(overworldTimeRange);
 
-        // Default rule for Regular Baby Zombie
-        BabyZombieRule regularRule = new BabyZombieRule();
-        regularRule.setMobType(EnumTypes.ZombieAppearance.REGULAR);
-        regularRule.setConditions(new Conditions("overworld", 14000,23000, new PlayerProximity(0, 50), new PackSize(2, 10)));
-        babyZombieRules.add(regularRule);
+        // Nether Rules
+        DimensionRules netherRules = new DimensionRules();
+        TimeRange netherTimeRange = new TimeRange(0, 24000);
+        MobType netherBlaze = new MobType(1, 1, 1.0);
+        netherTimeRange.getTypes().put("BLAZE", netherBlaze);
+        netherRules.getTimeRanges().add(netherTimeRange);
 
-        // Default rule for Ender Baby Zombie
-        BabyZombieRule enderRule = new BabyZombieRule();
-        enderRule.setMobType(EnumTypes.ZombieAppearance.ENDERMAN);
-        enderRule.setConditions(new Conditions("end", 14000,23000, new PlayerProximity(0, 50), new PackSize(2, 10)));
+        // End Rules
+        DimensionRules endRules = new DimensionRules();
+        TimeRange endTimeRange = new TimeRange(0, 24000);
+        MobType endEnderman = new MobType(1, 1, 1.0);
+        endTimeRange.getTypes().put("ENDERMAN", endEnderman);
+        endRules.getTimeRanges().add(endTimeRange);
 
-        AdditionalCondition overworldCondition = new AdditionalCondition("overworld", 0.1);
-        AdditionalCondition netherCondition = new AdditionalCondition("nether", 0.1);
-        enderRule.setAdditionalConditions(Arrays.asList(overworldCondition, netherCondition));
-
-        babyZombieRules.add(enderRule);
+        // Populate Rules Map
+        rules.put("overworld", overworldRules);
+        rules.put("nether", netherRules);
+        rules.put("end", endRules);
     }
 
-
-    public List<BabyZombieRule> getBabyZombieRules() {
-        return babyZombieRules;
+    public Map<String, DimensionRules> getRules() {
+        return rules;
     }
 
-    public void setBabyZombieRules(List<BabyZombieRule> babyZombieRules) {
-        this.babyZombieRules = babyZombieRules;
+    public void setRules(Map<String, DimensionRules> rules) {
+        this.rules = rules;
     }
 
-    public static class BabyZombieRule {
-        @SerializedName("mob_type")
-        private EnumTypes.ZombieAppearance mobType;
-        private Conditions conditions;
-        @SerializedName("additional_conditions")
-        private List<AdditionalCondition> additionalConditions;
+    public static class DimensionRules {
+        @SerializedName("timeRanges")
+        private List<TimeRange> timeRanges = new ArrayList<>();
+
+        public List<TimeRange> getTimeRanges() {
+            return timeRanges;
+        }
+
+        public void setTimeRanges(List<TimeRange> timeRanges) {
+            this.timeRanges = timeRanges;
+        }
 
         @Override
         public String toString() {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             return gson.toJson(this);
         }
-        public EnumTypes.ZombieAppearance getMobType() {
-            return mobType;
-        }
-
-        public void setMobType(EnumTypes.ZombieAppearance mobType) {
-            this.mobType = mobType;
-        }
-
-        public Conditions getConditions() {
-            return conditions;
-        }
-
-        public void setConditions(Conditions conditions) {
-            this.conditions = conditions;
-        }
-
-        public List<AdditionalCondition> getAdditionalConditions() {
-            return additionalConditions;
-        }
-
-        public void setAdditionalConditions(List<AdditionalCondition> additionalConditions) {
-            this.additionalConditions = additionalConditions;
-        }
-    }
-
-    public static class Conditions {
-        private String dimension;
-        private TimeRange time;
-        @SerializedName("player_proximity")
-        private PlayerProximity playerProximity;
-        @SerializedName("pack_size")
-        private PackSize packSize;
-
-        public Conditions(String dimension, int startTime, int endTime, PlayerProximity playerProximity, PackSize packSize) {
-            this.dimension = dimension;
-            this.time = new TimeRange(startTime,endTime);
-            this.playerProximity = playerProximity;
-            this.packSize = packSize;
-        }
-
-        public String getDimension() {
-            return dimension;
-        }
-
-        public void setDimension(String dimension) {
-            this.dimension = dimension;
-        }
-
-        public TimeRange getTime() {
-            return time;
-        }
-
-        public void setTime(int startTime, int endTime) {
-            this.time = new TimeRange(startTime,endTime);
-        }
-
-        public PlayerProximity getPlayerProximity() {
-            return playerProximity;
-        }
-
-        public void setPlayerProximity(PlayerProximity playerProximity) {
-            this.playerProximity = playerProximity;
-        }
-
-        public PackSize getPackSize() {
-            return packSize;
-        }
-
-        public void setPackSize(PackSize packSize) {
-            this.packSize = packSize;
-        }
-
     }
 
     public static class TimeRange {
         private int start;
         private int end;
+        @SerializedName("types")
+        private Map<String, MobType> types = new HashMap<>();
 
-        public TimeRange(int startTime, int endTime){
-            this.start = startTime;
-            this.end = endTime;
+        public TimeRange(int start, int end) {
+            this.start = start;
+            this.end = end;
         }
 
         public int getStart() {
@@ -175,25 +113,43 @@ public class BabyZombieRules {
         public void setEnd(int end) {
             this.end = end;
         }
+
+        public Map<String, MobType> getTypes() {
+            return types;
+        }
+
+        public void setTypes(Map<String, MobType> types) {
+            this.types = types;
+        }
     }
 
-    public static class AdditionalCondition {
-        private String dimension;
+    public static class MobType {
+        @SerializedName("minPackSize")
+        private int minPackSize;
+        @SerializedName("maxPackSize")
+        private int maxPackSize;
         private double rarity;
 
-        public AdditionalCondition(String dimension, double rarity) {
-            this.dimension = dimension;
+        public MobType(int minPackSize, int maxPackSize, double rarity) {
+            this.minPackSize = minPackSize;
+            this.maxPackSize = maxPackSize;
             this.rarity = rarity;
         }
 
-        // getters and setters...
-
-        public String getDimension() {
-            return dimension;
+        public int getMinPackSize() {
+            return minPackSize;
         }
 
-        public void setDimension(String dimension) {
-            this.dimension = dimension;
+        public void setMinPackSize(int minPackSize) {
+            this.minPackSize = minPackSize;
+        }
+
+        public int getMaxPackSize() {
+            return maxPackSize;
+        }
+
+        public void setMaxPackSize(int maxPackSize) {
+            this.maxPackSize = maxPackSize;
         }
 
         public double getRarity() {
@@ -204,65 +160,4 @@ public class BabyZombieRules {
             this.rarity = rarity;
         }
     }
-
-    public static class PlayerProximity {
-        @SerializedName("min_distance")
-        private int minDistance;
-        @SerializedName("max_distance")
-        private int maxDistance;
-
-        public PlayerProximity(int minDistance, int maxDistance) {
-            this.minDistance = minDistance;
-            this.maxDistance = maxDistance;
-        }
-
-        // getters and setters...
-
-        public int getMinDistance() {
-            return minDistance;
-        }
-
-        public void setMinDistance(int minDistance) {
-            this.minDistance = minDistance;
-        }
-
-        public int getMaxDistance() {
-            return maxDistance;
-        }
-
-        public void setMaxDistance(int maxDistance) {
-            this.maxDistance = maxDistance;
-        }
-    }
-
-    public static class PackSize {
-        private int min;
-        private int max;
-
-        public PackSize(int min, int max) {
-            this.min = min;
-            this.max = max;
-        }
-
-        // getters and setters...
-
-        public int getMin() {
-            return min;
-        }
-
-        public void setMin(int min) {
-            this.min = min;
-        }
-
-        public int getMax() {
-            return max;
-        }
-
-        public void setMax(int max) {
-            this.max = max;
-        }
-    }
-
-
-
 }
