@@ -98,8 +98,6 @@ public class RuleManager {
             // Implement any other logic for determining appearance
             // such as a random chance for different appearances in the Overworld
             EnumTypes.ZombieAppearance appearance = EnumTypes.ZombieAppearance.REGULAR;
-
-
             return appearance;
         }
     }

@@ -6,6 +6,10 @@ import java.util.stream.Collectors;
 
 public class EnumTypes {
 
+    public enum CustomMobTypes{
+        BABYZOMBIE,
+        GIANTZOMBIE;
+    }
 
     public enum ZombieAppearance{
         BLAZE,
@@ -14,6 +18,9 @@ public class EnumTypes {
     }
    public enum ModConfigOption {
         OVERRIDE_MOBS("overrideMobs"),
+        SPAWN_RETRIES("spawnpositionretry"),
+        SPAWN_MOB_CAP("mobcountthreshold"),
+       SPAWN_Y_SEARCH_RANGE("spawnYsearchrange"),
         SPAWN_GIANTS("spawnGiants"),
         GIVE_INITIAL_GEAR("giveInitialGear"),
         GIVE_SPECIAL_LOOT("giveSpecialLoot"),

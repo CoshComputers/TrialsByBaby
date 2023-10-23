@@ -6,6 +6,7 @@ import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.CustomMobTracker;
 import com.dsd.tbb.util.FileAndDirectoryManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
@@ -67,6 +68,11 @@ public class ServerEventHandler {
     public static void onServerStopping(ServerStoppingEvent event){
         CustomLogger.getInstance().info("********** INVOKED TRIALS SERVER STOPPING METHOD **************");
         ConfigManager.getInstance().saveTrialsConfig();
+
+        CustomLogger.getInstance().debug("MOB TRACKER OUTPUT: ");
+        String allMobsInfo = CustomMobTracker.getInstance().getAllMobsInfo();
+        // Log the information or do something with it
+        CustomLogger.getInstance().debug(allMobsInfo);
     }
 
 

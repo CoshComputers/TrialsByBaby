@@ -8,9 +8,13 @@ import java.util.List;
 
 public class TrialsConfig {
     private static final List<String> commandList = new ArrayList<>();
+    private static final List<String> setCommandList = new ArrayList<>();
     private static volatile TrialsConfig INSTANCE = null;
 
     private boolean overrideMobs;
+    private int spawnpositionretry;
+    private int mobcountthreshold;
+    private int spawnYsearchrange;
     private boolean spawnGiants;
     private boolean giveInitialGear;
     private boolean giveSpecialLoot;
@@ -26,6 +30,10 @@ public class TrialsConfig {
         commandList.add("usePlayerHeads");
         commandList.add("debugOn");
 
+        setCommandList.add("spawnpositionretry");
+        setCommandList.add("mobcountthreshold");
+        setCommandList.add("spawnYsearchrange");
+
         setDefaults();
     }
 
@@ -40,6 +48,9 @@ public class TrialsConfig {
 
     private void setDefaults() {
         this.overrideMobs = false;
+        this.spawnpositionretry = 5;
+        this.mobcountthreshold = 50;
+        this.spawnYsearchrange = 10;
         this.spawnGiants = false;
         this.giveInitialGear = false;
         this.giveSpecialLoot = false;
@@ -50,12 +61,37 @@ public class TrialsConfig {
     public static List<String> getCommandList() {
         return commandList;
     }
+    public static List<String> getSetCommandList() { return setCommandList; }
     public boolean isOverrideMobs() {
         return overrideMobs;
     }
 
     public void setOverrideMobs(boolean overrideMobs) {
         this.overrideMobs = overrideMobs;
+    }
+
+    public synchronized int getSpawnPositionRetry() {
+        return spawnpositionretry;
+    }
+
+    public synchronized void setSpawnPositionRetry(int spawnpositionretry) {
+        this.spawnpositionretry = spawnpositionretry;
+    }
+
+    public synchronized int getMobCountThreshold() {
+        return mobcountthreshold;
+    }
+
+    public synchronized void setMobCountThreshold(int mobcountthreshold) {
+        this.mobcountthreshold = mobcountthreshold;
+    }
+
+    public synchronized int getSpawnYsearchrange() {
+        return spawnYsearchrange;
+    }
+
+    public synchronized void setSpawnYsearchange(int spawnYsearchrange) {
+        this.spawnYsearchrange = spawnYsearchrange;
     }
 
     public boolean isSpawnGiants() {

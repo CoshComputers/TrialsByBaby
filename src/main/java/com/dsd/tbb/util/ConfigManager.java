@@ -125,4 +125,23 @@ public class ConfigManager {
         return "Toggled option " + option + " from " + !newValue + " to " + newValue;
     }
 
+    public String setIntConfigOption(EnumTypes.ModConfigOption option, int newValue){
+        TrialsConfig config = this.getTrialsConfig();
+
+        switch (option) {
+            case SPAWN_RETRIES:
+                config.setSpawnPositionRetry(newValue);
+                break;
+            case SPAWN_MOB_CAP:
+                config.setMobCountThreshold(newValue);
+                break;
+            case SPAWN_Y_SEARCH_RANGE:
+                config.setSpawnYsearchange(newValue);
+                break;
+            default:
+                return null;
+        }
+        return "Set option " + option + " to " + newValue;
+    }
+
 }
