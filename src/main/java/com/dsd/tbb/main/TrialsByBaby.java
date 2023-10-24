@@ -2,7 +2,7 @@ package com.dsd.tbb.main;
 
 
 import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.rulehandling.RuleManager;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -23,7 +23,7 @@ public class TrialsByBaby
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "trialsbybaby";
     // Directly reference a slf4j logger
-    private static final CustomLogger LOGGER = CustomLogger.getInstance();
+    private static final TBBLogger LOGGER = TBBLogger.getInstance();
     // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
@@ -50,12 +50,13 @@ public class TrialsByBaby
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        CustomLogger.getInstance().info("Trials By Baby has started");
+        TBBLogger.getInstance().info("commonSetup","Trials By Baby has started");
         ConfigManager.getInstance();
-        CustomLogger.getInstance().info(String.format("Configs Set to Defaults: %s",ConfigManager.getInstance().getTrialsConfig().toString()));
+        TBBLogger.getInstance().info("commonSetup","Configs Set to Defaults");
+        TBBLogger.getInstance().debug("commonSetup",ConfigManager.getInstance().getTrialsConfig().toString());
         RuleManager.getInstance();
-        CustomLogger.getInstance().info("RuleManager initialized");
-        CustomLogger.getInstance().debug(RuleManager.getInstance().getBabyZombieRules().getRules().get("overworld").toString());
+        TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
+        //TBBLogger.getInstance().debug(RuleManager.getInstance().getBabyZombieRules().getRules().get("overworld").toString());
     }
 	/*
     public static void registerEntities() {

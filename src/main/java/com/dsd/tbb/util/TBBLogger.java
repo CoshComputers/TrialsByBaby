@@ -5,12 +5,19 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 
-import java.time.LocalTime;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomLogger {
+public class TBBLogger {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
@@ -18,37 +25,35 @@ public class CustomLogger {
     public static final String ANSI_BLUE = "\u001B[94m";
     private List<TimerLogEntry> timerLogList = new ArrayList<>();
     private List<String> bulkLogList = new ArrayList<>();
-    private static final CustomLogger INSTANCE = new CustomLogger();
+    private static final TBBLogger INSTANCE = new TBBLogger();
     private final Logger logger;
-    private boolean isDebugOn;
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    private CustomLogger() {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS");
+
+
+    private TBBLogger() {
         this.logger = LogUtils.getLogger();
-        this.isDebugOn = false; //assuming no debug until config is loaded.
+
     }
 
-    public static CustomLogger getInstance() {
+    public static TBBLogger getInstance() {
         return INSTANCE;
     }
-    public void setDebugOn(boolean debugOn){
-        this.isDebugOn = debugOn;
-    }
 
-    public void debug(String message) {
-       // if(this.isDebugOn) {
-            logger.debug(ANSI_BLUE + message);
-       // }
+    public void debug(String method, String message) {
+       if(ConfigManager.getInstance().getTrialsConfig().isDebugOn()) {
+            logger.debug(ANSI_BLUE + "[" + method + "]" +message + ANSI_RESET);
+       }
 
     }
     // Similarly for other log levels...
-    public void info(String message) {
-        logger.info(ANSI_GREEN + message);
+    public void info(String method, String message) {
+        logger.info(ANSI_GREEN + "[" + method + "]" + message + ANSI_RESET);
     }
-    public void error(String message) {
-        logger.error(ANSI_RED + message);
+    public void error(String method, String message) {
+        logger.error(ANSI_RED + "[" + method + "]" +message + ANSI_RESET);
     }
-    public void warn(String message) { logger.warn(ANSI_YELLOW + message);}
+    public void warn(String method, String message) { logger.warn(ANSI_YELLOW + "[" + method + "]" +message + ANSI_RESET);}
 
     public void broadcastMessage(String message) {
 
@@ -61,7 +66,7 @@ public class CustomLogger {
 
     public void bulkLog(String methodName, String message){
         StringBuilder sb = new StringBuilder();
-        sb.append(ANSI_YELLOW).append("[").append(formatCurrentTime()).append("]");
+        sb.append("[").append(formatCurrentTime()).append("]");
         sb.append("[").append(methodName).append("]").append(message);
         this.bulkLogList.add(sb.toString());
     }
@@ -89,6 +94,29 @@ public class CustomLogger {
         }
         bulkLogList.clear();
     }
+
+    public void writeLogToFile() {
+        DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+
+        String fileName = fileNameFormatter.format(LocalDateTime.now()) + ".txt";
+        Path logFile = FileAndDirectoryManager.getLogDirectory().resolve(fileName);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(logFile.toUri()), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+            for(String entry : bulkLogList){
+
+                writer.write(entry);
+                writer.newLine();  // Write a new line character after each entry
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            TBBLogger.getInstance().error("outputLogToFile","Failed to Store Log in File, outputting to Console if Debug On");
+            if(ConfigManager.getInstance().getTrialsConfig().isDebugOn()) {
+                TBBLogger.getInstance().outputBulkToConsole();
+            }
+            // Handle the exception appropriately, e.g., log it, rethrow it, etc.
+        }
+    }
+
     public void outputtimerLogToConsole(){
         for (TimerLogEntry t: timerLogList) {
             logger.debug(t.generateLog());
@@ -96,7 +124,7 @@ public class CustomLogger {
         timerLogList.clear();
     }
     private static String formatCurrentTime() {
-        LocalTime currentTime = LocalTime.now();
+        LocalDateTime currentTime = LocalDateTime.now();
         return "[" + FORMATTER.format(currentTime) + "]";
     }
 

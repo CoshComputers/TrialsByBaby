@@ -62,11 +62,11 @@ public class TrialsConfig {
         return commandList;
     }
     public static List<String> getSetCommandList() { return setCommandList; }
-    public boolean isOverrideMobs() {
+    public synchronized boolean isOverrideMobs() {
         return overrideMobs;
     }
 
-    public void setOverrideMobs(boolean overrideMobs) {
+    public synchronized void setOverrideMobs(boolean overrideMobs) {
         this.overrideMobs = overrideMobs;
     }
 
@@ -94,43 +94,43 @@ public class TrialsConfig {
         this.spawnYsearchrange = spawnYsearchrange;
     }
 
-    public boolean isSpawnGiants() {
+    public synchronized boolean isSpawnGiants() {
         return spawnGiants;
     }
 
-    public void setSpawnGiants(boolean spawnGiants) {
+    public synchronized void setSpawnGiants(boolean spawnGiants) {
         this.spawnGiants = spawnGiants;
     }
 
-    public boolean isGiveInitialGear() {
+    public synchronized boolean isGiveInitialGear() {
         return giveInitialGear;
     }
 
-    public void setGiveInitialGear(boolean giveInitialGear) {
+    public synchronized void setGiveInitialGear(boolean giveInitialGear) {
         this.giveInitialGear = giveInitialGear;
     }
 
-    public boolean isGiveSpecialLoot() {
+    public synchronized boolean isGiveSpecialLoot() {
         return giveSpecialLoot;
     }
 
-    public void setGiveSpecialLoot(boolean giveSpecialLoot) {
+    public synchronized void setGiveSpecialLoot(boolean giveSpecialLoot) {
         this.giveSpecialLoot = giveSpecialLoot;
     }
 
-    public boolean isUsePlayerHeads() {
+    public synchronized boolean isUsePlayerHeads() {
         return usePlayerHeads;
     }
 
-    public void setUsePlayerHeads(boolean usePlayerHeads) {
+    public synchronized void setUsePlayerHeads(boolean usePlayerHeads) {
         this.usePlayerHeads = usePlayerHeads;
     }
 
-    public boolean isDebugOn() {
+    public synchronized boolean isDebugOn() {
         return debugOn;
     }
 
-    public void setDebugOn(boolean debugOn) {
+    public synchronized void setDebugOn(boolean debugOn) {
         this.debugOn = debugOn;
     }
 

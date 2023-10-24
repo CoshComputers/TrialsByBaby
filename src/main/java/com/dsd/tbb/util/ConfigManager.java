@@ -41,7 +41,7 @@ public class ConfigManager {
                     }
                 }
             }else{
-                CustomLogger.getInstance().error("Something has gone wrong Preparing the Config Files. Using Default Values");
+                TBBLogger.getInstance().error("prepareConfigs","Something has gone wrong Preparing the Config Files. Using Default Values");
             }
 
         } catch (IOException e) {
@@ -56,9 +56,9 @@ public class ConfigManager {
             String[] configFiles = {"TrialsConfig.json"};
             for (String configFile : configFiles) {
                 Path configFilePath = configDir.resolve("TrialsConfig.json");
-                CustomLogger.getInstance().debug(String.format("About to read [%s] and load",configFilePath));
+                TBBLogger.getInstance().debug("loadConfigs",String.format("About to read [%s] and load",configFilePath));
                 trialsConfig = gson.fromJson(new FileReader(configFilePath.toFile()), TrialsConfig.class);
-                CustomLogger.getInstance().debug(String.format("Config Loaded: [%s]", trialsConfig.toString()));
+                TBBLogger.getInstance().debug("loadConfigs",String.format("Config Loaded: [%s]", trialsConfig.toString()));
             }
 
         } catch (IOException e) {
@@ -80,7 +80,7 @@ public class ConfigManager {
             didSave = true;
         } catch (IOException e) {
             // Log the exception and notify command runner if necessary
-            CustomLogger.getInstance().error(String.format("Failed to save configuration - %s", e));
+            TBBLogger.getInstance().error("saveTrialsConfig",String.format("Failed to save configuration - %s", e));
             // The method to notify the command runner can be placed here
             // ModConfigCommand.notifyCommandRunner("The command was successful, but the config file has not been updated.");
         }

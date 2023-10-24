@@ -19,19 +19,19 @@ public class SpawningUtilities {
         int maxRetries = ConfigManager.getInstance().getTrialsConfig().getSpawnPositionRetry();
 
         while (safePositions.size() < numPositions && retries < maxRetries) {
-            BlockPos randomPos = getRandomPos(playerPos);
-
+            BlockPos.MutableBlockPos randomPos = getRandomPos(playerPos);
+            BlockPos safePos = isSpawnSafe(level, eHeight, randomPos);
             // Assume isSpawnSafe is a method to check if a position is safe for spawning
-            if (isSpawnSafe(level, eHeight, randomPos)) {
-                safePositions.add(randomPos);
+            if ( safePos != null) {
+                safePositions.add(safePos);
             } else {
                 retries++;
             }
         }
-
+        TBBLogger.getInstance().bulkLog("getSafeSpawnPositions",String.format("Safe Positions being returned with SIZE [%d]",safePositions.size()));
         return safePositions;
     }
-    public static BlockPos getRandomPos(BlockPos playerPos) {
+    public static BlockPos.MutableBlockPos getRandomPos(BlockPos playerPos) {
         // Generate a random angle (in radians)
         double angle = ModUtilities.nextDouble() * 2 * Math.PI;
 
@@ -47,30 +47,31 @@ public class SpawningUtilities {
         int spawnY = playerPos.getY() - (ConfigManager.getInstance().getTrialsConfig().getSpawnYsearchrange()/2);  // For now, spawn at player's y level
         int spawnZ = playerPos.getZ() + offsetZ;
 
-        return new BlockPos(spawnX, spawnY, spawnZ);
+        return new BlockPos.MutableBlockPos(spawnX, spawnY, spawnZ);
     }
 
-    private static boolean isSpawnSafe(Level level, int eHeight, BlockPos pos) {
+    private static BlockPos isSpawnSafe(Level level, int eHeight, BlockPos.MutableBlockPos pos) {
         int YRange = ConfigManager.getInstance().getTrialsConfig().getSpawnYsearchrange();
-        boolean isAirAbove = true;
-
+        boolean isAirAbove = false;
+        //BlockPos.MutableBlockPos potentialPos = new BlockPos.MutableBlockPos(pos.getX(),pos.getY(),pos.getZ());
         //Checking For Air blocks
         for (int YPos = pos.getY() - YRange; YPos <= pos.getY() + YRange; YPos += (eHeight + 1)) {
-            BlockPos potentialPos = new BlockPos(pos.getX(),YPos,pos.getZ());
-
+            pos.setY(YPos);
             for (int i = 0; i < eHeight; i++) {
-                if (!level.isEmptyBlock(potentialPos.above(i))) {
-                    isAirAbove = false;
+                if (!level.isEmptyBlock(pos.above(i))) {
+                    isAirAbove = true;
                     break;
                 }
             }
-
-            if (isAirAbove && level.getBlockState(potentialPos.below()).getMaterial().isSolid()) {
-                return true;  // Suitable position found
+           if (isAirAbove && level.getBlockState(pos.below()).getMaterial().isSolid()) {
+                TBBLogger.getInstance().bulkLog("isSpawnSafe",String.format("Found Safe Block at X[%d] Y[%d] Z[%d]",
+                        pos.getX(),pos.getY(), pos.getZ()));
+                return pos.immutable();  // Suitable position found
             }
         }
-
-        return false;  // No suitable position found within the search range
+        TBBLogger.getInstance().bulkLog("isSpawnSafe",String.format("No Safe Block - Finished checks at X[%d] Y[%d] Z[%d]",
+                pos.getX(),pos.getY(), pos.getZ()));
+        return null;  // No suitable position found within the search range
     }
 
 }

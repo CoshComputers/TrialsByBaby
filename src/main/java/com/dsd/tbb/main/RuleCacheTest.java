@@ -1,7 +1,7 @@
 package com.dsd.tbb.main;
 
 import com.dsd.tbb.rulehandling.RuleCache;
-import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.TBBLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +35,9 @@ public class RuleCacheTest {
         long elapsedT;
         int tTime;
         String tDimension;
-        CustomLogger.getInstance().debug("************************ RUNNING RULE CACHE TESTS***************************");
-        CustomLogger.getInstance().debug(String.format("Cache Contents:\n%s",ruleCache));
-        CustomLogger.getInstance().debug("-----------------------------------------------------------------------------\n");
+        TBBLogger.getInstance().bulkLog("testRuleCache","************************ RUNNING RULE CACHE TESTS***************************");
+        TBBLogger.getInstance().bulkLog("testRuleCache",String.format("Cache Contents:\n%s",ruleCache));
+        TBBLogger.getInstance().bulkLog("testRuleCahce","-----------------------------------------------------------------------------\n");
 
         for(int i = 0; i < 500; i++) {
             tDimension = getRandomDimension();
@@ -60,8 +60,8 @@ public class RuleCacheTest {
             }
 
         }
-        CustomLogger.getInstance().debug(sb.toString());
-        CustomLogger.getInstance().debug("-----------------------------------------------------------------------------\n");
+        TBBLogger.getInstance().bulkLog("testRuleCache",sb.toString());
+        TBBLogger.getInstance().bulkLog("testRuleCache","-----------------------------------------------------------------------------\n");
     }
 
 
@@ -86,7 +86,7 @@ public class RuleCacheTest {
             }
         }
 
-        CustomLogger.getInstance().debug(finalResult.toString());
+        TBBLogger.getInstance().bulkLog("multiThreadedTestCache",finalResult.toString());
     }
 
 

@@ -1,7 +1,7 @@
 package com.dsd.tbb.rulehandling;
 
 import com.dsd.tbb.config.BabyZombieRules;
-import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.FileAndDirectoryManager;
 import com.google.gson.Gson;
@@ -45,11 +45,11 @@ public class RuleManager {
                     Path ruleFilePath = rulesDir.resolve(rulesFile);
                     if (!FileAndDirectoryManager.fileExists(ruleFilePath)) {  // Update method call
                         FileAndDirectoryManager.copyFileFromResources("rules", rulesFile, ruleFilePath);  // Update method call
-                        CustomLogger.getInstance().debug(String.format("Created Rules File [%s]", ruleFilePath));
+                        TBBLogger.getInstance().info("prepareRules",String.format("Created Rules File [%s]", ruleFilePath));
                     }
                 }
             }else{
-                CustomLogger.getInstance().error("Something has gone wrong preparing Rules Files, using Defaults");
+                TBBLogger.getInstance().error("prepareRules","Something has gone wrong preparing Rules Files, using Defaults");
             }
 
         } catch (IOException e) {
@@ -64,22 +64,22 @@ public class RuleManager {
             String[] ruleFiles = {"BabyZombieRules.json"};
             for (String rulesFile : ruleFiles) {
                 Path ruleFilePath = rulesDir.resolve(rulesFile);
-                CustomLogger.getInstance().debug(String.format("About to read [%s] and Load",ruleFilePath));
+                TBBLogger.getInstance().debug("loadBabyZombieRules",String.format("About to read [%s] and Load",ruleFilePath));
                 babyZombieRules = gson.fromJson(new FileReader(ruleFilePath.toFile()), BabyZombieRules.class);
 
             }
         } catch (JsonSyntaxException e) {
             // Handle JSON syntax exception
-            CustomLogger.getInstance().error(String.format("JSON Syntax Error: Failed to parse BabyZombieRules.json due to malformed JSON. [%s]", e));
+            TBBLogger.getInstance().error("loadBabyZombieRules",String.format("JSON Syntax Error: Failed to parse BabyZombieRules.json due to malformed JSON. [%s]", e));
         } catch (JsonIOException e) {
             // Handle JSON I/O exception
-            CustomLogger.getInstance().error(String.format("JSON I/O Error: Failed to read BabyZombieRules.json due to an I/O error. [%s]", e));
+            TBBLogger.getInstance().error("loadBabyZombieRules",String.format("JSON I/O Error: Failed to read BabyZombieRules.json due to an I/O error. [%s]", e));
         } catch (IOException e) {
             // Handle general I/O exception
-            CustomLogger.getInstance().error(String.format("I/O Error: Failed to read BabyZombieRules.json due to an I/O error. [%s]", e));
+            TBBLogger.getInstance().error("loadBabyZombieRules",String.format("I/O Error: Failed to read BabyZombieRules.json due to an I/O error. [%s]", e));
         }finally {
             ruleCache.populateCache(babyZombieRules);
-            CustomLogger.getInstance().info("BabyZombie Rule Cache populated");
+            TBBLogger.getInstance().info("loadBabyZombieRules","BabyZombie Rule Cache populated");
             //CustomLogger.getInstance().debug(String.format("Cache Contents:\n%s",ruleCache));
         }
     }

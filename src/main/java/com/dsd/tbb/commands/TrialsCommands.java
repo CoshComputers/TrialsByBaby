@@ -1,7 +1,7 @@
 package com.dsd.tbb.commands;
 
 import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.EnumTypes;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -23,7 +23,7 @@ public class TrialsCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(TrialsCommands.buildToggleCommand());
         dispatcher.register(TrialsCommands.buildSetCommand());
-        CustomLogger.getInstance().debug("Registered Command");
+        TBBLogger.getInstance().info("TrialsCommands","Registered Command");
     }
 
     /************************************ COMMAND EXECUTOR METHODS ***********************************/
@@ -37,7 +37,7 @@ public class TrialsCommands {
 
         sb.append(ConfigManager.getInstance().toggleMainConfigOption(configOption));
 
-        CustomLogger.getInstance().debug(sb.toString());
+        TBBLogger.getInstance().debug("toggleComand",sb.toString());
         Supplier<Component> componentSupplier = () -> Component.literal(sb.toString()).setStyle(style);
         cs.sendSuccess(componentSupplier.get(),true);
         return didSucceed;
@@ -54,7 +54,7 @@ public class TrialsCommands {
 
         sb.append(ConfigManager.getInstance().setIntConfigOption(configOption, value));
 
-        CustomLogger.getInstance().debug(sb.toString());
+        TBBLogger.getInstance().debug("setCommand",sb.toString());
         Supplier<Component> componentSupplier = () -> Component.literal(sb.toString()).setStyle(style);
         cs.sendSuccess(componentSupplier.get(), true);
         return didSucceed;

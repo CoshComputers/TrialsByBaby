@@ -2,7 +2,7 @@ package com.dsd.tbb.handlers;
 
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.CustomMobTracker;
 import com.dsd.tbb.util.SpawningUtilities;
 import net.minecraft.core.BlockPos;
@@ -60,33 +60,40 @@ public class SpawnCreatureHandler{
                 ChunkPos tempChunkPos = new ChunkPos(player.blockPosition());
                 //CustomLogger.getInstance().debug(String.format("****Player Chunk Position [%d][%d]",tempChunkPos.getRegionLocalX(),tempChunkPos.getRegionLocalZ()));
 
-                int trackerSize = CustomMobTracker.getInstance().getSize();
+                int trackerSize = CustomMobTracker.getInstance().getMobCountInRegion(world.dimension(),
+                        tempChunkPos.getRegionLocalX(), tempChunkPos.getRegionLocalZ());
                 int mobCountThreshold = ConfigManager.getInstance().getTrialsConfig().getMobCountThreshold();
 
+                TBBLogger.getInstance().bulkLog("onPlayerTick",String.format("Tracker for region [%d][%d] totals [%d]",
+                        tempChunkPos.getRegionLocalX(),tempChunkPos.getRegionLocalZ(),trackerSize));
 
                 if(trackerSize < mobCountThreshold) {
-                    CustomLogger.getInstance().debug("Tracker size less than Threshold, spawning new Mob");
                     //TODO: Need to get Applicable Rules and Pack Size. Hardcoded Pack Size for now
-                    //TODO: Need to get Entity Height without creating an entity. Hardcoded for now
                     int packSize = 4;
-                    int eHeight = 2;
+                    int eHeight = (int) Math.ceil(Zombie.DEFAULT_BB_HEIGHT); //rounding up the height.
+                    int i = 0;
 
                     safeSpawnLocations = SpawningUtilities.getSafeSpawnPositions(player.level,eHeight,player.blockPosition(),packSize);
                     //Checking if we have any safe spawn locations
                     if(safeSpawnLocations.size() > 0) {
                         for (BlockPos pos : safeSpawnLocations) {
+                            TBBLogger.getInstance().bulkLog("onPlayerTick[1]",String.format("Creating Zombie number [%d]",i));
                             Zombie zombie = EntityType.ZOMBIE.create(world);
                             if (zombie != null) {
-                                zombie.setPos(pos.getX(), pos.getY(), pos.getZ());  // Spawn zombie 2 blocks above the player
+                                TBBLogger.getInstance().bulkLog("onPlayerTick[2]",String.format("Position X[%d] Y[%f] Z[%d]",
+                                        pos.getX(),pos.getY()+1.1,pos.getZ()));
+                                zombie.setPos(pos.getX(), pos.getY()+1.1, pos.getZ());  // Spawn zombie 2 blocks above the player
+
                                 world.addFreshEntity(zombie);
                                 // Add to CustomMobTracker
                                 CustomMobTracker.getInstance().addMob(zombie);
                             } else {
-                                CustomLogger.getInstance().error("Failed to Create a Zombie - Don't Know Why");
+                                TBBLogger.getInstance().bulkLog("PlayerTickEvent[3]","Failed to Create a Zombie - Don't Know Why");
                             }
+                            i++;
                         }
                     }else{
-                        CustomLogger.getInstance().error("No safe spawning Locations found. Nothing Spawned");
+                        TBBLogger.getInstance().bulkLog("PlayerTickEvent[3]","No safe spawning Locations found. Nothing Spawned");
                     }
                 }
             }

@@ -12,6 +12,7 @@ public class FileAndDirectoryManager {
     private static Path modDirectory;
 
     private static Path playerDataDirectory;
+    private static Path logDirectory;
 
     private FileAndDirectoryManager() {
         // Private constructor to prevent instantiation
@@ -21,12 +22,14 @@ public class FileAndDirectoryManager {
         serverRootDirectory = rootPath;
         modDirectory = rootPath.resolve("trialsbybaby");
         playerDataDirectory = modDirectory.resolve("playerdata");
+        logDirectory = modDirectory.resolve("log");
         // Ensure mod directory exists
         try {
             createDirectory(modDirectory);
             createDirectory(playerDataDirectory);
+            createDirectory(logDirectory);
         } catch (IOException e) {
-            CustomLogger.getInstance().error("Failed to create Directories for Mod.");
+            TBBLogger.getInstance().error("initialize (FDM)","Failed to create Directories for Mod.");
             e.printStackTrace();  // Handle exceptions as appropriate for your use case
         }
     }
@@ -62,13 +65,17 @@ public class FileAndDirectoryManager {
         }
     }
 
+    public static Path getLogDirectory() {
+        return logDirectory;
+    }
+
     /********************************* LOG HELPERS *****************************************/
     public void logFileContents(Path filePath) {
         try {
             String content = new String(Files.readAllBytes(filePath));
-            CustomLogger.getInstance().info(String.format("File content: %s", content));
+            TBBLogger.getInstance().debug("logFileContents",String.format("File content: %s", content));
         } catch (IOException e) {
-            CustomLogger.getInstance().error(String.format("Failed to read file: %s\n%s", filePath, e));
+            TBBLogger.getInstance().error("logFileContents",String.format("Failed to read file: %s\n%s", filePath, e));
         }
     }
 }

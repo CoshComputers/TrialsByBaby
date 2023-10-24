@@ -5,7 +5,7 @@ import com.dsd.tbb.config.BabyZombieRules;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.CustomLogger;
+import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.CustomMobTracker;
 import com.dsd.tbb.util.FileAndDirectoryManager;
 import com.mojang.brigadier.CommandDispatcher;
@@ -28,20 +28,20 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
-        CustomLogger.getInstance().info(("****** INVOKED TRIALS SERVER ABOUT TO START METHOD *********"));
-        CustomLogger.getInstance().info("Initializing Mod Directories");
+        TBBLogger.getInstance().info("onServerAboutToStart","****** INVOKED TRIALS SERVER ABOUT TO START METHOD *********");
+        TBBLogger.getInstance().info("onServerAboutToStart","Initializing Mod Directories");
         Path serverDir = event.getServer().getWorldPath(LevelResource.ROOT);
         FileAndDirectoryManager.initialize(serverDir);
 
-        CustomLogger.getInstance().info(String.format("Mod Directory = %s",FileAndDirectoryManager.getModDirectory().toString()));
-        CustomLogger.getInstance().info(String.format("Player Directory = %s",FileAndDirectoryManager.getPlayerDataDirectory().toString()));
+        TBBLogger.getInstance().info("onServerAboutToStart",String.format("Mod Directory = %s",FileAndDirectoryManager.getModDirectory().toString()));
+        TBBLogger.getInstance().info("onServerAboutToStart",String.format("Player Directory = %s",FileAndDirectoryManager.getPlayerDataDirectory().toString()));
 
-        CustomLogger.getInstance().info("Loading Configurations");
+        TBBLogger.getInstance().info("onServerAboutToStart","Loading Configurations");
         configManager = ConfigManager.getInstance();
         configManager.prepareConfigs();
         configManager.loadConfigs();
 
-        CustomLogger.getInstance().info("Loading Rules");
+        TBBLogger.getInstance().info("onServerAboutToStart","Loading Rules");
         ruleManager = RuleManager.getInstance();
         ruleManager.prepareRules();
         ruleManager.loadBabyZombieRules();
@@ -50,7 +50,7 @@ public class ServerEventHandler {
     }
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
-        CustomLogger.getInstance().info(("****** INVOKED TRIALS SERVER STARTING METHOD *********"));
+        TBBLogger.getInstance().info("onServerStarting","****** INVOKED TRIALS SERVER STARTING METHOD *********");
 
         CommandDispatcher<CommandSourceStack> commandDispatcher = event.getServer().getCommands().getDispatcher();
         TrialsCommands.register(commandDispatcher);
@@ -66,13 +66,16 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event){
-        CustomLogger.getInstance().info("********** INVOKED TRIALS SERVER STOPPING METHOD **************");
+        TBBLogger.getInstance().info("onServerStopping","********** INVOKED TRIALS SERVER STOPPING METHOD **************");
         ConfigManager.getInstance().saveTrialsConfig();
 
-        CustomLogger.getInstance().debug("MOB TRACKER OUTPUT: ");
+        TBBLogger.getInstance().bulkLog("onServerStopping","MOB TRACKER OUTPUT: ");
         String allMobsInfo = CustomMobTracker.getInstance().getAllMobsInfo();
         // Log the information or do something with it
-        CustomLogger.getInstance().debug(allMobsInfo);
+        TBBLogger.getInstance().bulkLog("onServerStopping",allMobsInfo);
+        TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
+
+        TBBLogger.getInstance().writeLogToFile();
     }
 
 
@@ -92,7 +95,7 @@ public class ServerEventHandler {
             sb.append("Dimension ").append(dimensionName).append(" rules:\n");
             BabyZombieRules.DimensionRules dimensionRules = entry.getValue();
             sb.append(dimensionRules.toString()).append("\n");
-            CustomLogger.getInstance().debug(sb.toString());
+            //TBBLogger.getInstance().debug(sb.toString());
         }
     }
 
