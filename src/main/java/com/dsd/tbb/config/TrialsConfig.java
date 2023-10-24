@@ -50,7 +50,7 @@ public class TrialsConfig {
         this.overrideMobs = false;
         this.spawnpositionretry = 5;
         this.mobcountthreshold = 50;
-        this.spawnYsearchrange = 10;
+        this.spawnYsearchrange = 15;
         this.spawnGiants = false;
         this.giveInitialGear = false;
         this.giveSpecialLoot = false;
