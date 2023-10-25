@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
@@ -40,6 +41,20 @@ public class TrialsByBabyZombie extends Zombie {
         super.registerGoals();
 
         // Add custom goals here
+    }
+
+    @Override
+    public ResourceLocation getLootTable() {
+        EnumTypes.ZombieAppearance appearance = EnumTypes.ZombieAppearance.valueOf(this.entityData.get(APPEARANCE));
+        switch (appearance) {
+            case BLAZE:
+                return new ResourceLocation("your_mod_id", "entities/blaze_baby_zombie");
+            case ENDERMAN:
+                return new ResourceLocation("your_mod_id", "entities/enderman_baby_zombie");
+            case REGULAR:
+            default:
+                return new ResourceLocation("your_mod_id", "entities/regular_baby_zombie");
+        }
     }
 
     public void setAppearance(EnumTypes.ZombieAppearance appearance) {
