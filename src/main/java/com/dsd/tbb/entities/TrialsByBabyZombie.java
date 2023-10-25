@@ -43,19 +43,6 @@ public class TrialsByBabyZombie extends Zombie {
         // Add custom goals here
     }
 
-    @Override
-    public ResourceLocation getLootTable() {
-        EnumTypes.ZombieAppearance appearance = EnumTypes.ZombieAppearance.valueOf(this.entityData.get(APPEARANCE));
-        switch (appearance) {
-            case BLAZE:
-                return new ResourceLocation("your_mod_id", "entities/blaze_baby_zombie");
-            case ENDERMAN:
-                return new ResourceLocation("your_mod_id", "entities/enderman_baby_zombie");
-            case REGULAR:
-            default:
-                return new ResourceLocation("your_mod_id", "entities/regular_baby_zombie");
-        }
-    }
 
     public void setAppearance(EnumTypes.ZombieAppearance appearance) {
         this.entityData.set(APPEARANCE, appearance.name());

@@ -71,7 +71,7 @@ public class TrialsByBaby
     public static void registerEntities() {
         ENTITIES.register("trials_by_baby_zombie", () -> EntityType.Builder.of((type, world) -> new TrialsByBabyZombie(type, world), MobCategory.MONSTER)
                 .sized(0.6F, 1.5F)
-                .build(new ResourceLocation("minecraft:zombie").toString()));
+                .build(new ResourceLocation(MOD_ID, "trials_by_baby_zombie").toString()));
     }
 
 }

@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -27,6 +28,11 @@ public class ServerEventHandler {
     private static ConfigManager configManager;
     private static RuleManager ruleManager;
 
+
+    @SubscribeEvent
+    public void onLootTableLoad(LootTableLoadEvent event) {
+        TBBLogger.getInstance().bulkLog("LootTableLoadEvent",String.format("Loaded Loot Table [%s]", event.getName()));
+    }
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         TBBLogger.getInstance().info("onServerAboutToStart","****** INVOKED TRIALS SERVER ABOUT TO START METHOD *********");
@@ -75,6 +81,9 @@ public class ServerEventHandler {
     }
 
 
+
+
+
     private static void outputRules(){
         // Get the BabyZombieRules instance from the RuleManager
         BabyZombieRules babyZombieRules = ruleManager.getBabyZombieRules();
@@ -99,12 +108,12 @@ public class ServerEventHandler {
         ServerLevel world = event.getServer().overworld();  // Get the overworld
         BlockPos worldSpawnPos = world.getSharedSpawnPos();
 
-        BlockPos netherPortalPos = worldSpawnPos.offset(5, 0, 0);  // Adjust coordinates as needed
-        BlockPos endPortalPos = worldSpawnPos.offset(-5, 0, 0);  // Adjust coordinates as needed
+        BlockPos netherPortalPos = worldSpawnPos.offset(15, 0, 0);  // Adjust coordinates as needed
+        BlockPos endPortalPos = worldSpawnPos.offset(-15, 0, 0);  // Adjust coordinates as needed
 
-        for (int x = 0; x < 3; x++) {
-            for (int z = 0; z < 3; z++) {
-                    world.setBlockAndUpdate(endPortalPos.offset(x - 1, 0, z - 1), Blocks.END_PORTAL.defaultBlockState());
+        for (int x = 0; x < 2; x++) {
+            for (int z = 0; z < 2; z++) {
+                   // world.setBlockAndUpdate(endPortalPos.offset(x - 1, 0, z - 1), Blocks.END_PORTAL.defaultBlockState());
                     world.setBlockAndUpdate(netherPortalPos.offset(x - 1, 0, z - 1), Blocks.NETHER_PORTAL.defaultBlockState());
 
             }

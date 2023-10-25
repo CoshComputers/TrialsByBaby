@@ -9,7 +9,6 @@ import com.dsd.tbb.util.SpawningUtilities;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
@@ -45,21 +44,21 @@ public class SpawnCreatureHandler {
                     long tTime = level.getDayTime();
                     List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension,tTime);
 
-                    TBBLogger.getInstance().bulkLog("onPlayerTick-Rules",String.format("tDimension [%s], tTime [%d], Number of Rules matched [%d]",
-                            tDimension,tTime, rules.size()));
+                    //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules",String.format("tDimension [%s], tTime [%d], Number of Rules matched [%d]",
+                    //        tDimension,tTime, rules.size()));
 
                     for (RuleCache.ApplicableRule rule : rules) {
 
                         packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(),rule.getMaxPackSize());
                         double randToCheck = Math.random();
                         shouldSpawn = randToCheck < rule.getRarity();
-                        TBBLogger.getInstance().bulkLog("onPlayerTick-Rules",String.format("Rand [%f] - Rarity [%f]",randToCheck,rule.getRarity()));
+                        //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules",String.format("Rand [%f] - Rarity [%f]",randToCheck,rule.getRarity()));
                         if(!shouldSpawn){
-                            TBBLogger.getInstance().bulkLog("onPlayerTick-Rules","Should Spawn is False");
+                            //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules","Should Spawn is False");
                             continue; //checking the rarity in the rule to decide whether to spawn or not.
                         }
 
-                        TBBLogger.getInstance().bulkLog("onPlayerTick-Rules", String.format("Rule [%d] - %s", i, rule.toString()));
+                        //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules", String.format("Rule [%d] - %s", i, rule.toString()));
                         i++;
                         safeSpawnLocations = SpawningUtilities.getSafeSpawnPositions(player.level, eHeight, player.blockPosition(), packSize);
                         //Checking if we have any safe spawn locations
@@ -71,6 +70,7 @@ public class SpawnCreatureHandler {
                                     zombie.setAppearance(appearance);
                                     zombie.setPos(pos.getX(), pos.getY() + 1.1, pos.getZ());  // Spawn zombie 2 blocks above the player
                                     level.addFreshEntity(zombie);
+                                    TBBLogger.getInstance().bulkLog("onPLayerTick",String.format("Loot Table: %s",zombie.getLootTable().toDebugFileName()));
                                 } else {
                                     TBBLogger.getInstance().bulkLog("onPlayerTick", "Failed to Create a Zombie - Don't Know Why");
                                 }
