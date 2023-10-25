@@ -1,7 +1,11 @@
 package com.dsd.tbb.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +13,24 @@ import java.util.List;
 public class SpawningUtilities {
 
     private static final int MIN_DISTANCE = 20;
-    private static final int MAX_DISTANCE = 100;
+    private static final int MAX_DISTANCE = 50;
 
     private SpawningUtilities(){}
 
+    public static int getNumberOfNearbyEntities(Level level, Player player){
+
+        double minX = player.blockPosition().getX() - MAX_DISTANCE / 2;
+        double minY = player.blockPosition().getY() - 5;
+        double minZ = player.blockPosition().getZ() - MAX_DISTANCE / 2;
+        double maxX = player.blockPosition().getX() + MAX_DISTANCE / 2;
+        double maxY = player.blockPosition().getY() + 5;
+        double maxZ = player.blockPosition().getZ() + MAX_DISTANCE / 2;
+
+        List<LivingEntity> nearbyEntities = level.getNearbyEntities(LivingEntity.class, TargetingConditions.DEFAULT,player,
+                new AABB(minX,minY,minZ,maxX,maxY,maxZ));
+        return nearbyEntities.size();
+
+    }
     public static List<BlockPos> getSafeSpawnPositions(Level level, int eHeight, BlockPos playerPos, int numPositions) {
         List<BlockPos> safePositions = new ArrayList<>();
         int retries = 0;
@@ -20,7 +38,7 @@ public class SpawningUtilities {
 
         while (safePositions.size() < numPositions && retries < maxRetries) {
             BlockPos.MutableBlockPos randomPos = getRandomPos(playerPos);
-            BlockPos safePos = isSpawnSafe(level, eHeight, randomPos);
+            BlockPos safePos = getNumberOfNearbyEntities(level, eHeight, randomPos);
             // Assume isSpawnSafe is a method to check if a position is safe for spawning
             if ( safePos != null) {
                 safePositions.add(safePos);
@@ -28,8 +46,7 @@ public class SpawningUtilities {
                 retries++;
             }
         }
-        TBBLogger.getInstance().bulkLog("getSafeSpawnPositions",String.format("Safe Positions being returned with SIZE [%d]",safePositions.size()));
-        return safePositions;
+       return safePositions;
     }
     public static BlockPos.MutableBlockPos getRandomPos(BlockPos playerPos) {
         // Generate a random angle (in radians)
@@ -50,10 +67,9 @@ public class SpawningUtilities {
         return new BlockPos.MutableBlockPos(spawnX, spawnY, spawnZ);
     }
 
-    private static BlockPos isSpawnSafe(Level level, int eHeight, BlockPos.MutableBlockPos pos) {
+    private static BlockPos getNumberOfNearbyEntities(Level level, int eHeight, BlockPos.MutableBlockPos pos) {
         int YRange = ConfigManager.getInstance().getTrialsConfig().getSpawnYsearchrange();
         boolean isAirAbove = false;
-        //BlockPos.MutableBlockPos potentialPos = new BlockPos.MutableBlockPos(pos.getX(),pos.getY(),pos.getZ());
         //Checking For Air blocks
         for (int YPos = pos.getY() - YRange; YPos <= pos.getY() + YRange; YPos += (eHeight + 1)) {
             pos.setY(YPos);
@@ -64,14 +80,14 @@ public class SpawningUtilities {
                 }
             }
            if (isAirAbove && level.getBlockState(pos.below()).getMaterial().isSolid()) {
-                TBBLogger.getInstance().bulkLog("isSpawnSafe",String.format("Found Safe Block at X[%d] Y[%d] Z[%d]",
-                        pos.getX(),pos.getY(), pos.getZ()));
                 return pos.immutable();  // Suitable position found
             }
         }
-        TBBLogger.getInstance().bulkLog("isSpawnSafe",String.format("No Safe Block - Finished checks at X[%d] Y[%d] Z[%d]",
-                pos.getX(),pos.getY(), pos.getZ()));
+
         return null;  // No suitable position found within the search range
     }
 
+    public static int getPackSize(int minPackSize, int maxPackSize) {
+        return ModUtilities.nextInt(minPackSize,maxPackSize);
+    }
 }

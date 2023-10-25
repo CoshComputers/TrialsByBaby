@@ -1,6 +1,6 @@
 {
     "rules": {
-        "overworld": {
+        "minecraft:overworld": {
             "timeRanges": [
                 {
                     "start": 13000,
@@ -20,7 +20,7 @@
                 }
             ]
         },
-        "nether": {
+        "minecraft:the_nether": {
             "timeRanges": [
                 {
                     "start": 0,
@@ -35,7 +35,7 @@
                 }
             ]
         },
-        "end": {
+        "minecraft:the_end": {
             "timeRanges": [
                 {
                     "start": 0,

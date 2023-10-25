@@ -5,12 +5,13 @@ import com.dsd.tbb.config.BabyZombieRules;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.TBBLogger;
-import com.dsd.tbb.util.CustomMobTracker;
 import com.dsd.tbb.util.FileAndDirectoryManager;
+import com.dsd.tbb.util.TBBLogger;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -61,18 +62,13 @@ public class ServerEventHandler {
             world.setDayTime(18000);
         }
         //-------------------------------------------------------------
-
+        makePortals(event);
     }
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event){
         TBBLogger.getInstance().info("onServerStopping","********** INVOKED TRIALS SERVER STOPPING METHOD **************");
         ConfigManager.getInstance().saveTrialsConfig();
-
-        TBBLogger.getInstance().bulkLog("onServerStopping","MOB TRACKER OUTPUT: ");
-        String allMobsInfo = CustomMobTracker.getInstance().getAllMobsInfo();
-        // Log the information or do something with it
-        TBBLogger.getInstance().bulkLog("onServerStopping",allMobsInfo);
         TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
 
         TBBLogger.getInstance().writeLogToFile();
@@ -97,6 +93,23 @@ public class ServerEventHandler {
             sb.append(dimensionRules.toString()).append("\n");
             //TBBLogger.getInstance().debug(sb.toString());
         }
+    }
+
+    private static void makePortals(ServerStartingEvent event){
+        ServerLevel world = event.getServer().overworld();  // Get the overworld
+        BlockPos worldSpawnPos = world.getSharedSpawnPos();
+
+        BlockPos netherPortalPos = worldSpawnPos.offset(5, 0, 0);  // Adjust coordinates as needed
+        BlockPos endPortalPos = worldSpawnPos.offset(-5, 0, 0);  // Adjust coordinates as needed
+
+        for (int x = 0; x < 3; x++) {
+            for (int z = 0; z < 3; z++) {
+                    world.setBlockAndUpdate(endPortalPos.offset(x - 1, 0, z - 1), Blocks.END_PORTAL.defaultBlockState());
+                    world.setBlockAndUpdate(netherPortalPos.offset(x - 1, 0, z - 1), Blocks.NETHER_PORTAL.defaultBlockState());
+
+            }
+        }
+
     }
 
 }

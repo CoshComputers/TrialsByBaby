@@ -33,4 +33,5 @@ public class ModUtilities {
     }
 
     // ... Other utility methods ...
+
 }

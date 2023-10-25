@@ -1,7 +1,6 @@
 package com.dsd.tbb.entities;
 
 import com.dsd.tbb.util.EnumTypes;
-import com.dsd.tbb.rulehandling.RuleManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -16,13 +15,25 @@ import net.minecraft.world.level.Level;
 public class TrialsByBabyZombie extends Zombie {
     public static final EntityDataAccessor<String> APPEARANCE = SynchedEntityData.defineId(TrialsByBabyZombie.class, EntityDataSerializers.STRING);
     public static final int MY_DEFAULT_HEIGHT = 1;
+
+    public TrialsByBabyZombie(Level world){
+        super(world);
+        this.setBaby(true);
+        setAppearance(EnumTypes.ZombieAppearance.REGULAR);
+    }
     public TrialsByBabyZombie(EntityType type, Level world) {
 
         super(type,world);
         this.setBaby(true);
-        this.setAppearance(RuleManager.getInstance().determineAppearance(world));
+        setAppearance(EnumTypes.ZombieAppearance.REGULAR);
+
     }
 
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(APPEARANCE, EnumTypes.ZombieAppearance.REGULAR.name());
+    }
 
     @Override
     protected void registerGoals() {

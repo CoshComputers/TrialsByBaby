@@ -38,7 +38,7 @@ public class RuleCache {
         return ruleCache.size();
     }
 
-    public List<ApplicableRule> getApplicableRules(String dimension, int time) {
+    public List<ApplicableRule> getApplicableRules(String dimension, long time) {
         List<ApplicableRule> applicableRules = new ArrayList<>();
         for (Map.Entry<RuleKey, List<ApplicableRule>> entry : ruleCache.entrySet()) {
             RuleKey key = entry.getKey();

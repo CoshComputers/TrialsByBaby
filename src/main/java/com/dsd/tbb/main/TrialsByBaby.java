@@ -1,10 +1,13 @@
 package com.dsd.tbb.main;
 
 
+import com.dsd.tbb.entities.TrialsByBabyZombie;
+import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.TBBLogger;
-import com.dsd.tbb.rulehandling.RuleManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
@@ -14,6 +17,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -30,6 +34,9 @@ public class TrialsByBaby
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MOD_ID);
+
+
+
     public TrialsByBaby()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -41,9 +48,11 @@ public class TrialsByBaby
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
+        registerEntities();
         //registerEntities();
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
 
 
     }
@@ -58,11 +67,11 @@ public class TrialsByBaby
         TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
         //TBBLogger.getInstance().debug(RuleManager.getInstance().getBabyZombieRules().getRules().get("overworld").toString());
     }
-	/*
+
     public static void registerEntities() {
-        ENTITIES.register("baby_zombie", () -> EntityType.Builder.of((type, world) -> new CreatorTrialsBabyZombie(type, world), MobCategory.MONSTER)
+        ENTITIES.register("trials_by_baby_zombie", () -> EntityType.Builder.of((type, world) -> new TrialsByBabyZombie(type, world), MobCategory.MONSTER)
                 .sized(0.6F, 1.5F)
                 .build(new ResourceLocation("minecraft:zombie").toString()));
-    }*/
+    }
 
 }
