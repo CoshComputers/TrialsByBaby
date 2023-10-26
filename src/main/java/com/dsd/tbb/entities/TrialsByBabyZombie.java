@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
@@ -28,20 +27,6 @@ public class TrialsByBabyZombie extends Zombie {
         this.setBaby(true);
         setAppearance(EnumTypes.ZombieAppearance.REGULAR);
 
-    }
-
-    @Override
-    public LootContext createLootContext(boolean usedRecently, DamageSource source) {
-        ResourceLocation customLootTable = new ResourceLocation(MOD_ID, "entities/trials_by_baby_zombie");
-        return new LootContext.Builder((ServerLevel) this.level)
-                .withRandom(this.random)
-                .withParameter(LootContextParams.THIS_ENTITY, this)
-                .withParameter(LootContextParams.ORIGIN, this.position())
-                .withParameter(LootContextParams.DAMAGE_SOURCE, source)
-                .withOptionalParameter(LootContextParams.KILLER_ENTITY, source.getEntity())
-                .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, source.getDirectEntity())
-                .withParameter(LootContextParams.LOOT_TABLE, customLootTable)  // Specify custom loot table here
-                .create(LootContextParamSets.ENTITY);
     }
 
     @Override

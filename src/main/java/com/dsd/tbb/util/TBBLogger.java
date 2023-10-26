@@ -128,6 +128,10 @@ public class TBBLogger {
         return "[" + FORMATTER.format(currentTime) + "]";
     }
 
+    //TODO: Create this entry - to output the player details and potential broadcast a message
+    public void playerLogEntry(Player player) {
+    }
+
     private static class TimerLogEntry {
         String methodName;
         String timeStampString;

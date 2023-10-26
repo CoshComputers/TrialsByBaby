@@ -17,7 +17,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -65,7 +64,9 @@ public class TrialsByBaby
         TBBLogger.getInstance().debug("commonSetup",ConfigManager.getInstance().getTrialsConfig().toString());
         RuleManager.getInstance();
         TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
-        //TBBLogger.getInstance().debug(RuleManager.getInstance().getBabyZombieRules().getRules().get("overworld").toString());
+
+
+
     }
 
     public static void registerEntities() {

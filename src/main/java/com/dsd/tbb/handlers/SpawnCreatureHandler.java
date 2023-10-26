@@ -70,9 +70,6 @@ public class SpawnCreatureHandler {
                                     zombie.setAppearance(appearance);
                                     zombie.setPos(pos.getX(), pos.getY() + 1.1, pos.getZ());  // Spawn zombie 2 blocks above the player
                                     level.addFreshEntity(zombie);
-                                    TBBLogger.getInstance().bulkLog("onPLayerTick",String.format("Loot Table: %s",zombie.getLootTable().toDebugFileName()));
-                                    TBBLogger.getInstance().bulkLog("onPlayerTick",String.format("More loot table info\nPath [%s], Namespace [%s]",
-                                            zombie.getLootTable().getPath(),zombie.getLootTable().getNamespace()));
                                 } else {
                                     TBBLogger.getInstance().bulkLog("onPlayerTick", "Failed to Create a Zombie - Don't Know Why");
                                 }

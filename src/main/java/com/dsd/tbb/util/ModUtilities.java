@@ -1,5 +1,7 @@
 package com.dsd.tbb.util;
 
+import net.minecraft.world.item.enchantment.Enchantment;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ModUtilities {
@@ -32,6 +34,19 @@ public class ModUtilities {
         return ThreadLocalRandom.current().nextDouble();
     }
 
-    // ... Other utility methods ...
+    public static int getValidEnchantmentLevel(Enchantment enchantment, int level) {
+        int maxLevel = enchantment.getMaxLevel();
+        StringBuilder sb = new StringBuilder();
+
+        if (level > maxLevel) {
+            sb.append("Enchantment Level [").append(level).append("] ");
+            sb.append("for ").append(enchantment.toString());
+            sb.append("Setting level to Max Level [").append(maxLevel).append("]");
+
+           TBBLogger.getInstance().warn("getValidEnchantmentLevel",sb.toString());
+            return maxLevel;
+        }
+        return level;
+    }
 
 }

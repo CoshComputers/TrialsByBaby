@@ -1,5 +1,8 @@
 package com.dsd.tbb.util;
 
+import com.dsd.tbb.config.InitialGearConfig;
+import com.dsd.tbb.config.MobDropConfig;
+import com.dsd.tbb.config.PlayerConfig;
 import com.dsd.tbb.config.TrialsConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,14 +12,30 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ConfigManager {
 
+    private static final String TRIALS = "Trials";
+    private static final String GEAR = "InitialGear";
+    private static final String BABY = "Baby";
+    // Map to hold file name to class mapping
+    private final Map<String, Class<?>> configClassesMap = new HashMap<>();
+    // Map to hold the loaded config objects
+    private final Map<String, Object> configObjectsMap = new HashMap<>();
     private static ConfigManager INSTANCE = null;
     private static Path configDir = null;
-    private static TrialsConfig trialsConfig;
+
     private ConfigManager() {
-            this.trialsConfig = TrialsConfig.getInstance();
+        configClassesMap.put(TRIALS, TrialsConfig.class);
+        configClassesMap.put(BABY, MobDropConfig.class);
+        configClassesMap.put(GEAR, InitialGearConfig.class);
+
+        TrialsConfig trialsConfig = TrialsConfig.getInstance();
+        configObjectsMap.put(TRIALS,trialsConfig);
+
     }
 
     public static ConfigManager getInstance() {
@@ -33,8 +52,8 @@ public class ConfigManager {
             configDir = FileAndDirectoryManager.getModDirectory().resolve("config");
             if(configDir != null){
                 FileAndDirectoryManager.createDirectory(configDir);  // Update method call
-                String[] configFiles = {"TrialsConfig.json"};
-                for (String configFile : configFiles) {
+                for (String configKey : configClassesMap.keySet()) {
+                    String configFile = configKey + "Config.json";  // Add "Config.json" to the key value
                     Path configFilePath = configDir.resolve(configFile);
                     if (!FileAndDirectoryManager.fileExists(configFilePath)) {  // Update method call
                         FileAndDirectoryManager.copyFileFromResources("config", configFile, configFilePath);  // Update method call
@@ -49,23 +68,27 @@ public class ConfigManager {
         }
     }
 
+
     public void loadConfigs() {
         Gson gson = new Gson();
+        TBBLogger.getInstance().bulkLog("LoadConfigs","------------------------ Loading Configurations -------------------------");
         try {
-            // Load TrialsConfig
-            String[] configFiles = {"TrialsConfig.json"};
-            for (String configFile : configFiles) {
-                Path configFilePath = configDir.resolve("TrialsConfig.json");
-                TBBLogger.getInstance().debug("loadConfigs",String.format("About to read [%s] and load",configFilePath));
-                trialsConfig = gson.fromJson(new FileReader(configFilePath.toFile()), TrialsConfig.class);
-                TBBLogger.getInstance().debug("loadConfigs",String.format("Config Loaded: [%s]", trialsConfig.toString()));
+            for (Map.Entry<String, Class<?>> entry : configClassesMap.entrySet()) {
+                String configFileName = entry.getKey() + "Config.json";
+                Path configFilePath = configDir.resolve(configFileName);
+                TBBLogger.getInstance().bulkLog("loadConfigs",String.format("About to read [%s] and load",configFilePath));
+                Object configObject = gson.fromJson(new FileReader(configFilePath.toFile()), entry.getValue());
+                storeConfigObject(entry.getKey(), configObject);
+                TBBLogger.getInstance().bulkLog("loadConfigs",String.format("Config Loaded: [%s]", configObject.toString()));
             }
-
         } catch (IOException e) {
             e.printStackTrace();  // Handle exceptions as appropriate for your use case
         }
+        TBBLogger.getInstance().debug("loadConfigs",String.format("Size of InitialGear [%d]",this.getGearConfig().getInitialGear().size()));
+        TBBLogger.getInstance().bulkLog("LoadConfigs","---------------------- END Loading Configurations -------------------------");
     }
 
+    /**********************************SAVE METHODS*******************************************/
     public boolean saveTrialsConfig() {
         boolean didSave = false;
         // Serialize the updated configuration to JSON
@@ -87,9 +110,36 @@ public class ConfigManager {
         return didSave;
     }
 
-    public TrialsConfig getTrialsConfig() {
-        return trialsConfig;
+    /*************************** UTILITIES ***************************************************/
+
+    public void storeConfigObject(String key, Object configObject) {
+        configObjectsMap.put(key, configObject);
     }
+
+    // Method to get a config object by class
+    public <T> T getConfigObject(String key, Class<T> configClass) {
+        Object configObject = configObjectsMap.get(key);
+        if (configClass.isInstance(configObject)) {
+            return configClass.cast(configObject);
+        }
+        return null;  // or throw an exception if the config object is not found or of the wrong type
+    }
+
+
+
+    /**********************GET METHODS**********************************/
+
+    public TrialsConfig getTrialsConfig() {
+        return getConfigObject(TRIALS, TrialsConfig.class);
+    }
+
+    public MobDropConfig getBabyConfig() {
+        return getConfigObject(BABY,MobDropConfig.class);
+    }
+
+    public InitialGearConfig getGearConfig() { return getConfigObject(GEAR,InitialGearConfig.class);}
+
+    /*************************Command Handling Methods*********************************/
 
     public String toggleMainConfigOption(EnumTypes.ModConfigOption option) {
         TrialsConfig config = this.getTrialsConfig();
@@ -144,4 +194,13 @@ public class ConfigManager {
         return "Set option " + option + " to " + newValue;
     }
 
+    //TODO: Create this
+    public PlayerConfig getPlayerConfig(UUID playerUUID) {
+
+        return null;
+    }
+
+    //TODO: Create this
+    public void savePlayerConfig(UUID playerUUID, PlayerConfig playerConfig) {
+    }
 }
