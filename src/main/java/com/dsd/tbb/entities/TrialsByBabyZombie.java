@@ -31,6 +31,20 @@ public class TrialsByBabyZombie extends Zombie {
     }
 
     @Override
+    public LootContext createLootContext(boolean usedRecently, DamageSource source) {
+        ResourceLocation customLootTable = new ResourceLocation(MOD_ID, "entities/trials_by_baby_zombie");
+        return new LootContext.Builder((ServerLevel) this.level)
+                .withRandom(this.random)
+                .withParameter(LootContextParams.THIS_ENTITY, this)
+                .withParameter(LootContextParams.ORIGIN, this.position())
+                .withParameter(LootContextParams.DAMAGE_SOURCE, source)
+                .withOptionalParameter(LootContextParams.KILLER_ENTITY, source.getEntity())
+                .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, source.getDirectEntity())
+                .withParameter(LootContextParams.LOOT_TABLE, customLootTable)  // Specify custom loot table here
+                .create(LootContextParamSets.ENTITY);
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(APPEARANCE, EnumTypes.ZombieAppearance.REGULAR.name());

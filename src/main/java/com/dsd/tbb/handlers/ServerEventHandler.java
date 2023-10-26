@@ -31,7 +31,7 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {
-        TBBLogger.getInstance().bulkLog("LootTableLoadEvent",String.format("Loaded Loot Table [%s]", event.getName()));
+        TBBLogger.getInstance().bulkLog("LootTableLoadEvent",String.format("Loaded Loot Table Path-[%s]-Name[%s]",event.getName().getPath(),event.getName()));
     }
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
