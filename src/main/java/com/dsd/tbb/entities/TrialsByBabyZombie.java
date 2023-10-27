@@ -63,6 +63,9 @@ public class TrialsByBabyZombie extends Zombie {
         this.setItemSlot(EquipmentSlot.MAINHAND, handItem);
     }
 
+    public EnumTypes.ZombieAppearance getAppearance() {
+        return EnumTypes.ZombieAppearance.valueOf(this.entityData.get(APPEARANCE));
+    }
 
     private ItemStack getSkull(String skullOwner) {
         ItemStack skull = new ItemStack(Items.PLAYER_HEAD);

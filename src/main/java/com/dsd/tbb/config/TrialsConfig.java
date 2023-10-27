@@ -47,12 +47,12 @@ public class TrialsConfig {
     }
 
     private void setDefaults() {
-        this.overrideMobs = false;
+        this.overrideMobs = true;
         this.spawnpositionretry = 5;
-        this.mobcountthreshold = 50;
+        this.mobcountthreshold = 5;
         this.spawnYsearchrange = 15;
         this.spawnGiants = false;
-        this.giveInitialGear = false;
+        this.giveInitialGear = true;
         this.giveSpecialLoot = false;
         this.usePlayerHeads = false;
         this.debugOn = false;

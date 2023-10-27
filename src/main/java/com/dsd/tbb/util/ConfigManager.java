@@ -71,21 +71,20 @@ public class ConfigManager {
 
     public void loadConfigs() {
         Gson gson = new Gson();
-        TBBLogger.getInstance().bulkLog("LoadConfigs","------------------------ Loading Configurations -------------------------");
+        //TBBLogger.getInstance().bulkLog("LoadConfigs","------------------------ Loading Configurations -------------------------");
         try {
             for (Map.Entry<String, Class<?>> entry : configClassesMap.entrySet()) {
                 String configFileName = entry.getKey() + "Config.json";
                 Path configFilePath = configDir.resolve(configFileName);
-                TBBLogger.getInstance().bulkLog("loadConfigs",String.format("About to read [%s] and load",configFilePath));
+                //TBBLogger.getInstance().bulkLog("loadConfigs",String.format("About to read [%s] and load",configFilePath));
                 Object configObject = gson.fromJson(new FileReader(configFilePath.toFile()), entry.getValue());
                 storeConfigObject(entry.getKey(), configObject);
-                TBBLogger.getInstance().bulkLog("loadConfigs",String.format("Config Loaded: [%s]", configObject.toString()));
+                //TBBLogger.getInstance().bulkLog("loadConfigs",String.format("Config Loaded: [%s]", configObject.toString()));
             }
         } catch (IOException e) {
             e.printStackTrace();  // Handle exceptions as appropriate for your use case
         }
-        TBBLogger.getInstance().debug("loadConfigs",String.format("Size of InitialGear [%d]",this.getGearConfig().getInitialGear().size()));
-        TBBLogger.getInstance().bulkLog("LoadConfigs","---------------------- END Loading Configurations -------------------------");
+        //TBBLogger.getInstance().bulkLog("LoadConfigs","---------------------- END Loading Configurations -------------------------");
     }
 
     /**********************************SAVE METHODS*******************************************/

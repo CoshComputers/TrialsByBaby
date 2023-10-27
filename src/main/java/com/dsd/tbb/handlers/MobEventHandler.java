@@ -3,18 +3,18 @@ package com.dsd.tbb.handlers;
 import com.dsd.tbb.entities.TrialsByBabyZombie;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.rulehandling.RuleCache;
-import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.EnumTypes;
-import com.dsd.tbb.util.SpawningUtilities;
-import com.dsd.tbb.util.TBBLogger;
+import com.dsd.tbb.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,7 +22,40 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = TrialsByBaby.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class SpawnCreatureHandler {
+public class MobEventHandler {
+
+    @SubscribeEvent
+    public static void onLivingAttackEvent(LivingAttackEvent event){
+        //TBBLogger.getInstance().bulkLog("onLivingAttack",String.format("For mob: [%s]",
+        //        event.getEntity().getClass()));
+    }
+    @SubscribeEvent
+    public static void onLivingHurtEvent(LivingHurtEvent event){
+        //TBBLogger.getInstance().bulkLog("onLivingHurt",String.format("For mob: [%s]",
+        //        event.getEntity().getClass()));
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeathEvent(LivingDeathEvent event){
+       // TBBLogger.getInstance().bulkLog("onLivingDeath",String.format("For mob: [%s]",
+       //         event.getEntity().getClass()));
+    }
+
+    @SubscribeEvent
+    public static void onLivingDropsEvent(LivingDropsEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity instanceof TrialsByBabyZombie) {
+            TrialsByBabyZombie babyZombie = (TrialsByBabyZombie) entity;
+            ItemStack customDrop = MobDropUtilities.getDropForBabyZombie(babyZombie);
+            if(!customDrop.isEmpty()) {
+                event.getDrops().clear();  // Clear the existing drops
+                event.getDrops().add(new ItemEntity(entity.level, entity.getX(), entity.getY(), entity.getZ(), customDrop));
+            }else{
+                TBBLogger.getInstance().warn("onLivingDropEvent","No custom drops returned so dropping default item");
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         List<BlockPos> safeSpawnLocations;
@@ -35,11 +68,10 @@ public class SpawnCreatureHandler {
                 int nearbyEntityCount = SpawningUtilities.getNumberOfNearbyEntities(level, player);
 
                 if (nearbyEntityCount < mobCountThreshold) {
-                    //TODO: Need to get Applicable Rules and Pack Size. Hardcoded Pack Size for now
                     int i = 0;
                     boolean shouldSpawn = false;
                     int packSize;
-                    int eHeight = (int) Math.ceil(Zombie.DEFAULT_BB_HEIGHT); //rounding up the height.
+                    int eHeight = (int) Math.ceil(TrialsByBabyZombie.MY_DEFAULT_HEIGHT); //rounding up the height.
                     String tDimension = level.dimension().location().toString();
                     long tTime = level.getDayTime();
                     List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension,tTime);
@@ -64,18 +96,20 @@ public class SpawnCreatureHandler {
                         //Checking if we have any safe spawn locations
                         if (!safeSpawnLocations.isEmpty()) {
                             for (BlockPos pos : safeSpawnLocations) {
+                                //TBBLogger.getInstance().bulkLog("Spawning Mob",String.format("Location = [%d][%d][%d]",
+                                //        pos.getX(),pos.getY(),pos.getZ()));
                                 TrialsByBabyZombie zombie = new TrialsByBabyZombie(level);
                                 if (zombie != null) {
                                     EnumTypes.ZombieAppearance appearance = EnumTypes.ZombieAppearance.valueOf(rule.getMobType());
                                     zombie.setAppearance(appearance);
-                                    zombie.setPos(pos.getX(), pos.getY() + 1.1, pos.getZ());  // Spawn zombie 2 blocks above the player
+                                    zombie.setPos(pos.getX(), pos.getY(), pos.getZ());  // Spawn zombie 2 blocks above the player
                                     level.addFreshEntity(zombie);
                                 } else {
-                                    TBBLogger.getInstance().bulkLog("onPlayerTick", "Failed to Create a Zombie - Don't Know Why");
+                                    //TBBLogger.getInstance().bulkLog("onPlayerTick", "Failed to Create a Zombie - Don't Know Why");
                                 }
                             }
                         } else {
-                            TBBLogger.getInstance().bulkLog("onPlayerTick", "No safe spawning Locations found. Nothing Spawned");
+                            TBBLogger.getInstance().debug("onPlayerTick", "No safe spawning Locations found. Nothing Spawned");
                         }
                     }
                 }

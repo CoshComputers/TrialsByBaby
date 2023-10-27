@@ -33,7 +33,7 @@ public class PlayerEntityHelper {
         for(InitialGearConfig.GearItem gearItem : configManager.getGearConfig().getInitialGear()){
             ResourceLocation itemResourceLocation = new ResourceLocation(gearItem.getItem());
             Item item = ForgeRegistries.ITEMS.getValue(itemResourceLocation);
-            TBBLogger.getInstance().bulkLog("givePlayerGear",String.format("Gear Item to Give:\n[%s]",gearItem.toString()));
+            //TBBLogger.getInstance().bulkLog("givePlayerGear",String.format("Gear Item to Give:\n[%s]",gearItem.toString()));
             if (item == null | item == Items.AIR) {
                 TBBLogger.getInstance().error("givePlayerGear",String.format("Item not found: %s", itemResourceLocation));
             } else {

@@ -68,6 +68,10 @@ public class TBBLogger {
         StringBuilder sb = new StringBuilder();
         sb.append("[").append(formatCurrentTime()).append("],");
         sb.append("[").append(methodName).append("],").append(message);
+        if(bulkLogList.size() > 5000){
+            writeLogToFile();
+            bulkLogList.clear();
+        }
         this.bulkLogList.add(sb.toString());
     }
     public void preCall(String methodName) {

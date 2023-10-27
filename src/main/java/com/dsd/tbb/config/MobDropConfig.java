@@ -28,11 +28,11 @@ public class MobDropConfig {
         @SerializedName("drops")
         private List<DropConfig> drops;
 
-        public String getAppearance() {
+        public synchronized String getAppearance() {
             return appearance;
         }
 
-        public List<DropConfig> getDrops() {
+        public synchronized List<DropConfig> getDrops() {
             return drops;
         }
 
@@ -56,19 +56,19 @@ public class MobDropConfig {
         @SerializedName("rarity")
         private float rarity;
 
-        public String getItem() {
+        public synchronized String getItem() {
             return item;
         }
 
-        public int getMin() {
+        public synchronized int getMin() {
             return min;
         }
 
-        public int getMax() {
+        public synchronized int getMax() {
             return max;
         }
 
-        public float getRarity() {
+        public synchronized float getRarity() {
             return rarity;
         }
 

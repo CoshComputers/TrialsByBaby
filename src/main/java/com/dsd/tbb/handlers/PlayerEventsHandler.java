@@ -4,6 +4,8 @@ import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.util.PlayerManager;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,6 +25,13 @@ public class PlayerEventsHandler {
         TBBLogger.getInstance().info("onPlayerJoin",String.format("Number of Players online is [%d]",
                 playerManager.getAllPlayerConfigs().size()));
         event.getEntity().sendSystemMessage(message);
+
+        //-------COMMENT OUT BEFORE PUBLISHING
+        MobEffectInstance nightVisionEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
+        event.getEntity().addEffect(nightVisionEffect);
+        //-------------------------------------
+
+
     }
 
     @SubscribeEvent

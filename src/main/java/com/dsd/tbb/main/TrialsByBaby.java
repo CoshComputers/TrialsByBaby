@@ -34,8 +34,6 @@ public class TrialsByBaby
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MOD_ID);
 
-
-
     public TrialsByBaby()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -64,7 +62,6 @@ public class TrialsByBaby
         TBBLogger.getInstance().debug("commonSetup",ConfigManager.getInstance().getTrialsConfig().toString());
         RuleManager.getInstance();
         TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
-
 
 
     }
