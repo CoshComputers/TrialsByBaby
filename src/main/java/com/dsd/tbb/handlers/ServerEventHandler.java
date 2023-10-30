@@ -68,7 +68,7 @@ public class ServerEventHandler {
             world.setDayTime(18000);
         }*/
         //-------------------------------------------------------------
-        //makePortals(event);
+        makePortals(event);
     }
 
     @SubscribeEvent
