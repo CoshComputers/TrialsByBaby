@@ -50,18 +50,21 @@ public class MobEventHandler {
             if(!customDrop.isEmpty()) {
                 event.getDrops().clear();  // Clear the existing drops
                 event.getDrops().add(new ItemEntity(entity.level, entity.getX(), entity.getY(), entity.getZ(), customDrop));
-            }else{
-                TBBLogger.getInstance().warn("onLivingDropEvent","No custom drops returned so dropping default item");
             }
         }
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        //do nothing if player in spectator mode
+        if(event.player.isSpectator()){ return;}
+
         List<BlockPos> safeSpawnLocations;
         // Your logic here
         if (event.phase == TickEvent.Phase.END) {
             Player player = event.player;
+            TBBLogger.getInstance().bulkLog("playerTick",String.format("Player Name [%s]",
+                    player.getGameProfile().getName()));
             Level level = player.getLevel();
             if (player.level instanceof ServerLevel && !player.level.isClientSide()) { // Ensure we are on the server side.
                 int mobCountThreshold = ConfigManager.getInstance().getTrialsConfig().getMobCountThreshold();
@@ -76,40 +79,26 @@ public class MobEventHandler {
                     long tTime = level.getDayTime();
                     List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension,tTime);
 
-                    //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules",String.format("tDimension [%s], tTime [%d], Number of Rules matched [%d]",
-                    //        tDimension,tTime, rules.size()));
-
                     for (RuleCache.ApplicableRule rule : rules) {
 
                         packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(),rule.getMaxPackSize());
                         double randToCheck = Math.random();
                         shouldSpawn = randToCheck < rule.getRarity();
-                        //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules",String.format("Rand [%f] - Rarity [%f]",randToCheck,rule.getRarity()));
                         if(!shouldSpawn){
-                            //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules","Should Spawn is False");
-                            continue; //checking the rarity in the rule to decide whether to spawn or not.
+                           continue; //checking the rarity in the rule to decide whether to spawn or not.
                         }
-
-                        //TBBLogger.getInstance().bulkLog("onPlayerTick-Rules", String.format("Rule [%d] - %s", i, rule.toString()));
-                        i++;
                         safeSpawnLocations = SpawningUtilities.getSafeSpawnPositions(player.level, eHeight, player.blockPosition(), packSize);
                         //Checking if we have any safe spawn locations
                         if (!safeSpawnLocations.isEmpty()) {
                             for (BlockPos pos : safeSpawnLocations) {
-                                //TBBLogger.getInstance().bulkLog("Spawning Mob",String.format("Location = [%d][%d][%d]",
-                                //        pos.getX(),pos.getY(),pos.getZ()));
                                 TrialsByBabyZombie zombie = new TrialsByBabyZombie(level);
                                 if (zombie != null) {
                                     EnumTypes.ZombieAppearance appearance = EnumTypes.ZombieAppearance.valueOf(rule.getMobType());
                                     zombie.setAppearance(appearance);
                                     zombie.setPos(pos.getX(), pos.getY(), pos.getZ());  // Spawn zombie 2 blocks above the player
                                     level.addFreshEntity(zombie);
-                                } else {
-                                    //TBBLogger.getInstance().bulkLog("onPlayerTick", "Failed to Create a Zombie - Don't Know Why");
                                 }
                             }
-                        } else {
-                            TBBLogger.getInstance().debug("onPlayerTick", "No safe spawning Locations found. Nothing Spawned");
                         }
                     }
                 }

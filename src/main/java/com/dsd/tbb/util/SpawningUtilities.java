@@ -19,9 +19,9 @@ public class SpawningUtilities {
 
     public static int getNumberOfNearbyEntities(Level level, Player player){
 
-        double minX = player.blockPosition().getX() - MAX_DISTANCE / 2;
-        double minY = player.blockPosition().getY() - 5;
-        double minZ = player.blockPosition().getZ() - MAX_DISTANCE / 2;
+        double minX = player.blockPosition().getX();
+        double minY = player.blockPosition().getY() - (double)ConfigManager.getInstance().getTrialsConfig().getSpawnYsearchrange() / 2;
+        double minZ = player.blockPosition().getZ();
         double maxX = player.blockPosition().getX() + MAX_DISTANCE / 2;
         double maxY = player.blockPosition().getY() + 5;
         double maxZ = player.blockPosition().getZ() + MAX_DISTANCE / 2;
@@ -35,8 +35,6 @@ public class SpawningUtilities {
         List<BlockPos> safePositions = new ArrayList<>();
         int retries = 0;
         int maxRetries = ConfigManager.getInstance().getTrialsConfig().getSpawnPositionRetry();
-        //TBBLogger.getInstance().bulkLog("getSafeSpawn",String.format("Player Pos [%d][%d][%d], numPos [%d], height [%d]",
-        //        playerPos.getX(),playerPos.getY(),playerPos.getZ(),numPositions,eHeight));
         while (safePositions.size() < numPositions && retries < maxRetries) {
             BlockPos.MutableBlockPos randomPos = getRandomPos(playerPos);
             BlockPos safePos = findSafeSpawnLoc(level, eHeight, randomPos);

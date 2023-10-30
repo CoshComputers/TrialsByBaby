@@ -15,8 +15,6 @@ public class MobDropUtilities {
         MobDropConfig mobDropConfig = ConfigManager.getInstance().getBabyConfig();
         for (MobDropConfig.AppearanceConfig appearanceConfig : mobDropConfig.getMobDropConfig()) {
             if (appearanceConfig.getAppearance().equals(babyZombie.getAppearance().name())) {
-                //TBBLogger.getInstance().bulkLog("getDrop",String.format("Getting Drops for [%s] Type",
-                //        babyZombie.getAppearance().name()));
                 return chooseDrop(appearanceConfig.getDrops());
             }
         }

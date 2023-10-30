@@ -48,7 +48,7 @@ public class ServerEventHandler {
         configManager.prepareConfigs();
         configManager.loadConfigs();
 
-        TBBLogger.getInstance().debug("ServerAboutToStart",String.format("Random Name config\n %s",configManager.getNamesConfig().toString()));
+        TBBLogger.getInstance().debug("ServerAboutToStart",String.format("Some Random Name [%s]",configManager.getNamesConfig().getRandomName()));
 
         TBBLogger.getInstance().info("onServerAboutToStart","Loading Rules");
         ruleManager = RuleManager.getInstance();
@@ -65,21 +65,21 @@ public class ServerEventHandler {
         TrialsCommands.register(commandDispatcher);
 
         //-------COMMENT OUT BEFORE PUBLISHING--------------------------
-        /*for (ServerLevel world : event.getServer().getAllLevels()) {
+        for (ServerLevel world : event.getServer().getAllLevels()) {
             // Set the time to midnight (18000 ticks)
             world.setDayTime(18000);
-        }*/
+        }
         //-------------------------------------------------------------
         makePortals(event);
     }
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event){
-        //TBBLogger.getInstance().info("onServerStopping","********** INVOKED TRIALS SERVER STOPPING METHOD **************");
+        TBBLogger.getInstance().info("onServerStopping","********** INVOKED TRIALS SERVER STOPPING METHOD **************");
         ConfigManager.getInstance().saveTrialsConfig();
-        //TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
+        TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
 
-        //TBBLogger.getInstance().writeLogToFile();
+        TBBLogger.getInstance().writeLogToFile();
     }
 
 

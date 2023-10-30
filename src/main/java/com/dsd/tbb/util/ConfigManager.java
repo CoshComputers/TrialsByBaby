@@ -30,10 +30,13 @@ public class ConfigManager {
         configClassesMap.put(TRIALS, TrialsConfig.class);
         configClassesMap.put(BABY, MobDropConfig.class);
         configClassesMap.put(GEAR, InitialGearConfig.class);
+        configClassesMap.put(NAMES, NamesConfig.class);
 
         TrialsConfig trialsConfig = TrialsConfig.getInstance();
         configObjectsMap.put(TRIALS,trialsConfig);
 
+        NamesConfig namesConfig = NamesConfig.getInstance();
+        configObjectsMap.put(NAMES,namesConfig);
     }
 
     public static ConfigManager getInstance() {
