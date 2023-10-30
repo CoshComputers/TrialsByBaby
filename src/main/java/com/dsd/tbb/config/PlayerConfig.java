@@ -2,6 +2,11 @@ package com.dsd.tbb.config;
 
 import com.dsd.tbb.util.TBBLogger;
 import com.google.gson.annotations.SerializedName;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -52,15 +57,13 @@ public class PlayerConfig {
         return playerName;
     }
 
-    /*public ItemStack getPlayerHead() {
+    public ItemStack getPlayerHead() {
         ItemStack playerHead = new ItemStack(Items.PLAYER_HEAD);  // Ensure PLAYER_HEAD is the correct item for your Minecraft version
-        CompoundNBT nbt = new CompoundNBT();
-        UUID testUUID = UUID.fromString("0db1ebd5-50e2-46e9-95fb-ffd49efcf79c");
-        nbt.put("SkullOwner", NBTUtil.writeGameProfile(new CompoundNBT(), new GameProfile(testUUID, this.playerName)));
+        CompoundTag nbt = new CompoundTag();
+        nbt.put("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), new GameProfile(this.getPlayerUuid(), this.playerName)));
         playerHead.setTag(nbt);
-        CustomLogger.getInstance().debug(String.format("player [%s] head NBT = %s",this.playerName,playerHead.getTag().toString()));
         return playerHead;
-    }*/
+    }
 
     @Override
     public String toString(){

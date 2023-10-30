@@ -49,6 +49,7 @@ public class ServerEventHandler {
         configManager.loadConfigs();
 
         TBBLogger.getInstance().debug("ServerAboutToStart",String.format("Some Random Name [%s]",configManager.getNamesConfig().getRandomName()));
+        TBBLogger.getInstance().debug("ServerAboutToStart",String.format("Giant config Loaded\n%s",configManager.getGiantConfig().toString()));
 
         TBBLogger.getInstance().info("onServerAboutToStart","Loading Rules");
         ruleManager = RuleManager.getInstance();

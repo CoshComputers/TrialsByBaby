@@ -19,6 +19,7 @@ public class ConfigManager {
     private static final String GEAR = "InitialGear";
     private static final String BABY = "Baby";
     private static final String NAMES = "Names";
+    private static final String GIANT = "Giant";
     // Map to hold file name to class mapping
     private final Map<String, Class<?>> configClassesMap = new HashMap<>();
     // Map to hold the loaded config objects
@@ -31,12 +32,16 @@ public class ConfigManager {
         configClassesMap.put(BABY, MobDropConfig.class);
         configClassesMap.put(GEAR, InitialGearConfig.class);
         configClassesMap.put(NAMES, NamesConfig.class);
+        configClassesMap.put(GIANT, GiantConfig.class);
 
         TrialsConfig trialsConfig = TrialsConfig.getInstance();
         configObjectsMap.put(TRIALS,trialsConfig);
 
         NamesConfig namesConfig = NamesConfig.getInstance();
         configObjectsMap.put(NAMES,namesConfig);
+
+        GiantConfig giantConfig = GiantConfig.getInstance();
+        configObjectsMap.put(GIANT,giantConfig);
     }
 
     public static ConfigManager getInstance() {
@@ -132,12 +137,11 @@ public class ConfigManager {
     public TrialsConfig getTrialsConfig() {
         return getConfigObject(TRIALS, TrialsConfig.class);
     }
-
     public MobDropConfig getBabyConfig() {
         return getConfigObject(BABY,MobDropConfig.class);
     }
-
     public InitialGearConfig getGearConfig() { return getConfigObject(GEAR,InitialGearConfig.class);}
+    public GiantConfig getGiantConfig(){ return getConfigObject(GIANT, GiantConfig.class);}
     public NamesConfig getNamesConfig() { return getConfigObject(NAMES, NamesConfig.class);}
     public String getRandomName() { return getConfigObject(NAMES, NamesConfig.class).getRandomName();}
 

@@ -1,6 +1,7 @@
 package com.dsd.tbb.entities;
 
 import com.dsd.tbb.util.EnumTypes;
+import com.dsd.tbb.util.PlayerManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -57,6 +58,7 @@ public class TrialsByBabyZombie extends Zombie {
                 handItem = new ItemStack(Items.ENDER_PEARL);
                 break;
             default:
+                head = PlayerManager.getInstance().getRandomPlayer().getPlayerHead();
                 break;
         }
         this.setItemSlot(EquipmentSlot.HEAD, head);

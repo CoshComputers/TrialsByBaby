@@ -1,5 +1,7 @@
 package com.dsd.tbb.testing;
 
+import com.dsd.tbb.entities.TrialsByGiantZombie;
+import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.util.ConfigManager;
 import com.mojang.authlib.GameProfile;
@@ -46,6 +48,27 @@ public class MultiPlayerTest {
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> spawnFakePlayer(context.getSource()))
         );
+
+        event.getDispatcher().register(Commands.literal("spawnGiant")
+                .requires(source -> source.hasPermission(2))
+                .executes(context -> spawnGiant(context.getSource()))
+        );
+    }
+
+    private static int spawnGiant(CommandSourceStack source) {
+        Player player;
+        try {
+            player = source.getPlayerOrException();
+        } catch (CommandSyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        Vec3 playerPos = player.position();
+        Direction playerFacing = player.getDirection();
+        String newName = ConfigManager.getInstance().getRandomName();
+        TrialsByGiantZombie newGiant = new TrialsByGiantZombie(source.getLevel());
+        newGiant.moveToPosition(playerPos,playerFacing);
+        source.getLevel().addFreshEntity(newGiant);
+        return 1;
     }
 
 
