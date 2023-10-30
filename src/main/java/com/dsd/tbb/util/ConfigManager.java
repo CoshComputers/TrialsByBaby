@@ -1,9 +1,6 @@
 package com.dsd.tbb.util;
 
-import com.dsd.tbb.config.InitialGearConfig;
-import com.dsd.tbb.config.MobDropConfig;
-import com.dsd.tbb.config.PlayerConfig;
-import com.dsd.tbb.config.TrialsConfig;
+import com.dsd.tbb.config.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -21,6 +18,7 @@ public class ConfigManager {
     private static final String TRIALS = "Trials";
     private static final String GEAR = "InitialGear";
     private static final String BABY = "Baby";
+    private static final String NAMES = "Names";
     // Map to hold file name to class mapping
     private final Map<String, Class<?>> configClassesMap = new HashMap<>();
     // Map to hold the loaded config objects
@@ -137,6 +135,8 @@ public class ConfigManager {
     }
 
     public InitialGearConfig getGearConfig() { return getConfigObject(GEAR,InitialGearConfig.class);}
+    public NamesConfig getNamesConfig() { return getConfigObject(NAMES, NamesConfig.class);}
+    public String getRandomName() { return getConfigObject(NAMES, NamesConfig.class).getRandomName();}
 
     /*************************Command Handling Methods*********************************/
 

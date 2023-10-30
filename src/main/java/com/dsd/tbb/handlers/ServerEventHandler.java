@@ -48,6 +48,8 @@ public class ServerEventHandler {
         configManager.prepareConfigs();
         configManager.loadConfigs();
 
+        TBBLogger.getInstance().debug("ServerAboutToStart",String.format("Random Name config\n %s",configManager.getNamesConfig().toString()));
+
         TBBLogger.getInstance().info("onServerAboutToStart","Loading Rules");
         ruleManager = RuleManager.getInstance();
         ruleManager.prepareRules();
