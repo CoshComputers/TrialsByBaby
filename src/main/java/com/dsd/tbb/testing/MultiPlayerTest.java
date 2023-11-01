@@ -1,9 +1,10 @@
 package com.dsd.tbb.testing;
 
-import com.dsd.tbb.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.util.TBBLogger;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
@@ -62,12 +63,21 @@ public class MultiPlayerTest {
         } catch (CommandSyntaxException e) {
             throw new RuntimeException(e);
         }
+
+
         Vec3 playerPos = player.position();
         Direction playerFacing = player.getDirection();
         String newName = ConfigManager.getInstance().getRandomName();
-        TrialsByGiantZombie newGiant = new TrialsByGiantZombie(source.getLevel());
-        newGiant.moveToPosition(playerPos,playerFacing);
-        source.getLevel().addFreshEntity(newGiant);
+
+        try {
+            TrialsByGiantZombie newGiant = ModEventHandlers.TRIALS_BY_GIANT_ZOMBIE.get().create(source.getLevel());
+
+            newGiant.moveToPosition(playerPos, playerFacing);
+            source.getLevel().addFreshEntity(newGiant);
+        }catch(Exception e){
+            TBBLogger.getInstance().error("spawnGiantCommand","Something has gone wrong spawning the Giant.");
+            e.printStackTrace();
+        }
         return 1;
     }
 

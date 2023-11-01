@@ -18,6 +18,7 @@ public class GiantConfig {
     private int aggressionLevel;
     private int visibilityRange;
     private int xpPoints;
+    private double speed;
 
     private String myName;
 
@@ -29,6 +30,7 @@ public class GiantConfig {
         setCommandList.add("scaleFactor");
         setCommandList.add("followRange");
         setCommandList.add("visibilityRange");
+        setCommandList.add("speed");
 
         setDefaults();
     }
@@ -51,6 +53,7 @@ public class GiantConfig {
         this.aggressionLevel = 2;
         this.visibilityRange = 50;
         this.xpPoints = 50;
+        this.speed = 0.15;
     }
     // Getters and Setters for each field
     public static List<String> getSetCommandList() { return setCommandList; }
@@ -77,6 +80,7 @@ public class GiantConfig {
     public synchronized void setVisibilityRange(int visibilityRange) {
         this.visibilityRange = visibilityRange;
     }
+    public synchronized void setSpeed(double speed){ this.speed = speed;}
 
     public void setMyName(String myName) {
         this.myName = myName;
@@ -118,4 +122,6 @@ public class GiantConfig {
     public synchronized String getMyName() {
         return myName;
     }
+
+    public synchronized double getSpeed() { return speed; }
 }

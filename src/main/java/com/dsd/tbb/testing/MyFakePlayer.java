@@ -1,6 +1,6 @@
 package com.dsd.tbb.testing;
 
-import com.dsd.tbb.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
 import com.dsd.tbb.rulehandling.RuleCache;
 import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.EnumTypes;

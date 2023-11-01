@@ -1,7 +1,7 @@
 package com.dsd.tbb.handlers;
 
-import com.dsd.tbb.entities.TrialsByBabyZombie;
-import com.dsd.tbb.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.util.ConfigManager;
@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -36,8 +37,7 @@ public class ModEventHandlers {
     );
 
     @SubscribeEvent
-    public static void commonSetup(final FMLCommonSetupEvent event)
-    {
+    public static void commonSetup(final FMLCommonSetupEvent event) throws InstantiationException, IllegalAccessException {
         TBBLogger.getInstance().info("commonSetup","Trials By Baby has started");
         ConfigManager.getInstance();
         TBBLogger.getInstance().info("commonSetup","Configs Set to Defaults");
@@ -46,6 +46,12 @@ public class ModEventHandlers {
         TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
 
 
+
     }
+    @SubscribeEvent
+    public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
+        event.put(TRIALS_BY_GIANT_ZOMBIE.get(), TrialsByGiantZombie.createAttributes().build());
+    }
+
 }
 

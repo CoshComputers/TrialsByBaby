@@ -2,7 +2,7 @@ package com.dsd.tbb.util;
 
 
 import com.dsd.tbb.config.PlayerConfig;
-import com.dsd.tbb.entities.PlayerEntityHelper;
+import com.dsd.tbb.customs.entities.PlayerEntityHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;

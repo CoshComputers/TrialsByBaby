@@ -1,6 +1,6 @@
 package com.dsd.tbb.handlers;
 
-import com.dsd.tbb.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.rulehandling.RuleCache;
 import com.dsd.tbb.util.*;
@@ -63,8 +63,8 @@ public class MobEventHandler {
         // Your logic here
         if (event.phase == TickEvent.Phase.END) {
             Player player = event.player;
-            TBBLogger.getInstance().bulkLog("playerTick",String.format("Player Name [%s]",
-                    player.getGameProfile().getName()));
+            //TBBLogger.getInstance().bulkLog("playerTick",String.format("Player Name [%s]",
+            //        player.getGameProfile().getName()));
             Level level = player.getLevel();
             if (player.level instanceof ServerLevel && !player.level.isClientSide()) { // Ensure we are on the server side.
                 int mobCountThreshold = ConfigManager.getInstance().getTrialsConfig().getMobCountThreshold();

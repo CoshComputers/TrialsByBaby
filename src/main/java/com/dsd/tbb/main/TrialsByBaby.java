@@ -1,8 +1,8 @@
 package com.dsd.tbb.main;
 
 
-import com.dsd.tbb.entities.TrialsByBabyZombie;
-import com.dsd.tbb.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.resources.ResourceLocation;

@@ -6,6 +6,7 @@
     "followRange": 40,
     "aggressionLevel": 2,
     "visibilityRange": 50,
-    "xpPoints": 50
+    "xpPoints": 50,
+    "speed": 0.15
 
 }
