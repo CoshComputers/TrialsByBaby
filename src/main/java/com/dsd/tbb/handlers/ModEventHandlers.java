@@ -32,7 +32,7 @@ public class ModEventHandlers {
     public static final RegistryObject<EntityType<TrialsByGiantZombie>> TRIALS_BY_GIANT_ZOMBIE = ENTITIES.register(
             "trials_by_giant_zombie",
             () -> EntityType.Builder.of((EntityType<TrialsByGiantZombie> type, Level world) -> new TrialsByGiantZombie(type, world), MobCategory.MONSTER)
-                    .sized(1.2F, 1.9F)
+                    .sized(1.2F, 3.2F)
                     .build(new ResourceLocation(TrialsByBaby.MOD_ID, "trials_by_giant_zombie").toString())
     );
 

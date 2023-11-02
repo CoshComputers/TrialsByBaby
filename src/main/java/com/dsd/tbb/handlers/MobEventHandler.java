@@ -56,6 +56,7 @@ public class MobEventHandler {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+
         //do nothing if player in spectator mode
         if(event.player.isSpectator()){ return;}
 
@@ -79,7 +80,7 @@ public class MobEventHandler {
                     long tTime = level.getDayTime();
                     List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension,tTime);
 
-                    for (RuleCache.ApplicableRule rule : rules) {
+                    /*for (RuleCache.ApplicableRule rule : rules) {
 
                         packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(),rule.getMaxPackSize());
                         double randToCheck = Math.random();
@@ -100,7 +101,7 @@ public class MobEventHandler {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             }
         }

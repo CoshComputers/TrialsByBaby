@@ -3,7 +3,7 @@
     "scaleFactor":3,
     "health": 100,
     "damage": 15,
-    "followRange": 40,
+    "followRange": 50,
     "aggressionLevel": 2,
     "visibilityRange": 50,
     "xpPoints": 50,

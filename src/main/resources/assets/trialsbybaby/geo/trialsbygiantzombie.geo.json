@@ -58,17 +58,17 @@
 				},
 				{
 					"name": "left_leg",
-					"pivot": [5, 20, 0],
+					"pivot": [3, 20, 0],
 					"mirror": true,
 					"cubes": [
-						{"origin": [4, 6, -2], "size": [2, 12, 4], "inflate": 3, "uv": [0, 16]}
+						{"origin": [3, 6, -2], "size": [0, 12, 4], "inflate": 3, "uv": [0, 16]}
 					]
 				},
 				{
 					"name": "right_leg",
-					"pivot": [0, 20, 0],
+					"pivot": [-3, 20, 0],
 					"cubes": [
-						{"origin": [-4, 6, -2], "size": [2, 12, 4], "inflate": 3, "uv": [0, 16]}
+						{"origin": [-3, 6, -2], "size": [0, 12, 4], "inflate": 3, "uv": [0, 16]}
 					]
 				}
 			]
