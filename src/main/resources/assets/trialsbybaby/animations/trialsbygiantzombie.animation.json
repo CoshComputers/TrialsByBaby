@@ -143,6 +143,37 @@
 					}
 				}
 			}
+		},
+		"attack.strike": {
+			"animation_length": 0.29167,
+			"bones": {
+				"left_arm": {
+					"rotation": {
+						"0.0": {
+							"vector": [-117.5, 0, 0]
+						},
+						"0.125": {
+							"vector": [-65, 0, 0]
+						},
+						"0.25": {
+							"vector": [-117.5, 0, 0]
+						}
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"0.0": {
+							"vector": [-110, 0, 0]
+						},
+						"0.125": {
+							"vector": [-60, 0, 0]
+						},
+						"0.25": {
+							"vector": [-110, 0, 0]
+						}
+					}
+				}
+			}
 		}
 	},
 	"geckolib_format_version": 2

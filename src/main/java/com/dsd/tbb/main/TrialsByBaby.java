@@ -48,7 +48,7 @@ public class TrialsByBaby
         ITEMS.register(modEventBus);
         registerEntities();
         //registerEntities();
-        // Register ourselves for server and other game events we are interested in
+        // Register ourselves for server and other game utils we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
 

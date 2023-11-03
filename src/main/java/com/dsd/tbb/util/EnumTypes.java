@@ -6,6 +6,12 @@ import java.util.stream.Collectors;
 
 public class EnumTypes {
 
+    public enum GiantAttackType {
+        MELEE,
+        SMACKDOWN,
+        CHARGE
+    }
+
     public enum CustomMobTypes{
         BABYZOMBIE,
         GIANTZOMBIE;
