@@ -1,5 +1,7 @@
 package com.dsd.tbb.customs.entities;
 
+import com.dsd.tbb.customs.goals.GiantCombatControllerGoal;
+import com.dsd.tbb.customs.goals.GiantRandomStrollGoal;
 import com.dsd.tbb.util.ConfigManager;
 import com.dsd.tbb.util.EnumTypes;
 import net.minecraft.core.Direction;
@@ -9,7 +11,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
@@ -27,22 +28,21 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
-    // Class member variable to store the last position
     private Vec3 lastPosition = Vec3.ZERO;
     private int followRange;
     private EnumTypes.GiantAttackType attackType;
-    private boolean l_isStill;
+    private AnimationController<TrialsByGiantZombie> mainAnimController;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public AnimatableManager animatableManager = new AnimatableManager<TrialsByGiantZombie>(this);
 
+    public static final RawAnimation GIANT_ROAR_N_CHARGE = RawAnimation.begin()
+            .thenPlay("attack.roar")
+            .thenPlay("attack.charge");
+
     public TrialsByGiantZombie(EntityType type, Level world) {
         super(type, world);
         this.followRange = ConfigManager.getInstance().getGiantConfig().getFollowRange();
-        //AnimationController ac = (AnimationController)this.animatableManager.getAnimationControllers().get("walkController");
-        //ac.triggerableAnim("walk",DefaultAnimations.WALK);
-        //ac.triggerableAnim("idle",DefaultAnimations.IDLE);
-
     }
 
     public void moveToPosition(Vec3 playerPos, Direction playerFacing) {
@@ -63,48 +63,55 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        //this.entityData.define(IS_ATTACKING,false);
-
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(
-                new AnimationController<>(this, "mainController", 0, this::getAnimationState));
-
+        AnimationController<TrialsByGiantZombie> controller = new AnimationController<>(this, "mainController", 5, this::getAnimationState);
+        controller.triggerableAnim("attack_smash", DefaultAnimations.ATTACK_SLAM)
+                .triggerableAnim("attack_charge",GIANT_ROAR_N_CHARGE)
+                .triggerableAnim("walk", DefaultAnimations.WALK)
+                .triggerableAnim("idle", DefaultAnimations.IDLE)
+                .triggerableAnim("melee",DefaultAnimations.ATTACK_STRIKE);
+        controllers.add(controller);
+        this.mainAnimController = controller;
     }
+
+    public PlayState getAnimationState(AnimationState state) {
+        if (this.isDeadOrDying()) {
+            return PlayState.STOP;  // Stop animation if the entity is dead or dying
+        }
+
+
+        return PlayState.CONTINUE;  // Otherwise, continue the animation
+    }
+
 
     @Override
     public void tick() {
         super.tick();
-        // Get the current position of the giant
-        Vec3 currentPosition = this.position();
 
+        if(isAttackGoalActive()) {
+            //TBBLogger.getInstance().debug("ticking","Attack active");
+
+            // Attack animation is already being handled by the goal or animation system
+        } else if (isStrollGoalActive()) {
+           // TBBLogger.getInstance().debug("ticking","Attack not active - And WALKING");
+
+
+        } else {
+           // TBBLogger.getInstance().debug("ticking","Attack not active - And IDLE");
+            //this.triggerAnim("mainController","idle");
+        }
+        /*
+        Vec3 currentPosition = this.position();
         // Calculate the squared distance to check for movement (more efficient than the actual distance)
         double distanceSquared = currentPosition.distanceToSqr(lastPosition);
         // If the distance squared is greater than a small threshold, we consider the giant to be moving
-        l_isStill = distanceSquared < 0.001;
-        //this.l_isStill=((lastPosition.x == currentPosition.x) && (lastPosition.z == currentPosition.z) && (lastPosition.y == currentPosition.y));
-
+        boolean l_isStill = distanceSquared < 0.001;
         // Update the last position for the next check
-        lastPosition = currentPosition;
+        lastPosition = currentPosition;*/
 
-        /*animatableManager.getAnimationControllers().forEach((name, controller) -> {
-            if (controller instanceof AnimationController) {
-                int objectId = System.identityHashCode(this);
-                AnimationController.State animState = ((AnimationController<?>) controller).getAnimationState();
-                RawAnimation curAnim = ((AnimationController<?>) controller).getCurrentRawAnimation();
-                TBBLogger.getInstance().debug("Ticking", String.format("Ticking [%d] with Animation Controller %s in State %s ",
-                        objectId, ((AnimationController<?>) controller).getName(),animState.name()));
-                if (curAnim != null) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Current Active Animation [").append(curAnim).append("]");
-                    TBBLogger.getInstance().debug("Giant Tick", sb.toString());
-                } else {
-                    TBBLogger.getInstance().debug("Ticking", "No Current Animation");
-                }
-            }
-        });*/
     }
 
     @Override
@@ -114,7 +121,9 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this,
                 Player.class, this.followRange, false, false, null));
 
-        this.goalSelector.addGoal(5, new RandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(3, new GiantCombatControllerGoal(this));
+        this.goalSelector.addGoal(5, new GiantRandomStrollGoal(this, 1.0D));
+
     }
 
     @Override
@@ -124,23 +133,25 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
 
     /********************************* GETTERS / /SETTERS ****************************************/
-    public PlayState getAnimationState(AnimationState state) {
-        RawAnimation returningAnim;
-        if (this.l_isStill) {
-            returningAnim = DefaultAnimations.IDLE;
-        } else {
-            returningAnim = DefaultAnimations.WALK;
-        }
-        return state.setAndContinue(returningAnim);
-
-        /*StringBuilder sb = new StringBuilder();
-
-        for(RawAnimation.Stage stage : returningAnim.getAnimationStages()){
-        sb.append("Stage : [").append(stage.animationName()).append("]\n");
-
-        }
-        TBBLogger.getInstance().debug("getAnimState",sb.toString());*/
+    public boolean isAttackGoalActive() {
+        return this.goalSelector.getRunningGoals()
+                .anyMatch(goal -> goal.getGoal() instanceof GiantCombatControllerGoal);
     }
+    public boolean isStrollGoalActive() {
+        return this.goalSelector.getRunningGoals()
+                .anyMatch(goal -> goal.getGoal() instanceof  GiantRandomStrollGoal);
+    }
+    /*public boolean isAttackAnimationRunning() {
+        AnimationController<TrialsByGiantZombie> controller =
+                (AnimationController<TrialsByGiantZombie>) this.getAnimatableManager().getAnimationControllers().get("mainController");
+        String curAnim =   controller.getCurrentRawAnimation().getAnimationStages().get(0).animationName();
+        if(curAnim != null){
+            return false;
+        }else{
+            return curAnim.startsWith("attack");
+        }
+    }*/
+
 
     public EnumTypes.GiantAttackType getAttackType() {
         return attackType;
@@ -160,49 +171,4 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         return target != null && target instanceof Player && this.distanceTo(target) <= range;
     }
 
-
-    /*private PlayState walkingPredicate(AnimationState<TrialsByGiantZombie> state) {
-        // Get the current position of the giant
-        Vec3 currentPosition = this.position();
-
-        // Calculate the squared distance to check for movement (more efficient than the actual distance)
-        double distanceSquared = currentPosition.distanceToSqr(lastPosition);
-        TBBLogger.getInstance().bulkLog("predicate",String.format("Last Pos [%f][%f][%f], Cur Pos [%f][%f][%f] - diff sqr [%f]",
-                lastPosition.x,lastPosition.y,lastPosition.z,currentPosition.x,currentPosition.y,currentPosition.z,distanceSquared));
-        // If the distance squared is greater than a small threshold, we consider the giant to be moving
-        //isStill = distanceSquared == 0.0;
-        isStill = (lastPosition.x == currentPosition.x) && (lastPosition.z == currentPosition.z) && (lastPosition.y == currentPosition.y);
-        // Update the last position for the next check
-        lastPosition = currentPosition;
-        AnimationController ac = state.getController();
-        // Set the appropriate animation based on whether the giant is moving
-        if (isStill) {
-            TBBLogger.getInstance().bulkLog("predicate","We are still");
-            //state.setAndContinue(DefaultAnimations.IDLE);
-            //state.getController().tryTriggerAnimation("idle");
-            ac.setAnimation(DefaultAnimations.IDLE);
-
-        }else {
-            TBBLogger.getInstance().bulkLog("predicate", "We are moving");
-            // Play walking animation
-
-            //state.setAndContinue(DefaultAnimations.WALK);
-            //state.getController().tryTriggerAnimation("walk");
-        }
-
-        return PlayState.CONTINUE;
-    }*/
-
-        /*public boolean isAttacking() {
-        return this.entityData.get(IS_ATTACKING);
-    }
-    public void setAttacking(boolean isAttacking) {
-        this.entityData.set(IS_ATTACKING, isAttacking);
-    }
-    public boolean isSlamming() {
-        return this.entityData.get(IS_SLAMMING);
-    }
-    public void setSlamming(boolean isSlamming) {
-        this.entityData.set(IS_ATTACKING, isSlamming);
-    }*/
 }

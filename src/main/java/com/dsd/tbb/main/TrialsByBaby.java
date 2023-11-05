@@ -1,13 +1,9 @@
 package com.dsd.tbb.main;
 
 
-import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.util.TBBLogger;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,6 +20,7 @@ public class TrialsByBaby
 {
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "trialsbybaby";
+
     // Directly reference a slf4j logger
     private static final TBBLogger LOGGER = TBBLogger.getInstance();
     // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
@@ -31,9 +28,9 @@ public class TrialsByBaby
     // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
 
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MOD_ID);
+   // public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MOD_ID);
 
-
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MOD_ID);
 
     public TrialsByBaby()
     {
@@ -46,23 +43,30 @@ public class TrialsByBaby
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
+
+        SOUNDS.register(modEventBus);
         registerEntities();
         //registerEntities();
         // Register ourselves for server and other game utils we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
+    }
 
+
+    public static void registerSounds() {
 
     }
 
     public static void registerEntities() {
-        ENTITIES.register("trials_by_baby_zombie", () -> EntityType.Builder.of((type, world) -> new TrialsByBabyZombie(type, world), MobCategory.MONSTER)
+        /*ENTITIES.register("trials_by_baby_zombie", () -> EntityType.Builder.of((type, world) -> new TrialsByBabyZombie(type, world), MobCategory.MONSTER)
                 .sized(0.6F, 1.5F)
                 .build(new ResourceLocation(MOD_ID, "trials_by_baby_zombie").toString()));
 
         ENTITIES.register("trials_by_giant_zombie", () -> EntityType.Builder.of((type, world) -> new TrialsByGiantZombie(type, world), MobCategory.MONSTER)
                 .sized(1.2F, 1.9F)
                 .build(new ResourceLocation(MOD_ID, "trials_by_giant_zombie").toString()));
+*/
+        SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
     }
 

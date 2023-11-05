@@ -79,8 +79,8 @@ public class MobEventHandler {
                     String tDimension = level.dimension().location().toString();
                     long tTime = level.getDayTime();
                     List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension,tTime);
-
-                    /*for (RuleCache.ApplicableRule rule : rules) {
+//TODO: Comment out this bit for Testing Other Mobs
+                   /* for (RuleCache.ApplicableRule rule : rules) {
 
                         packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(),rule.getMaxPackSize());
                         double randToCheck = Math.random();
@@ -101,7 +101,7 @@ public class MobEventHandler {
                                 }
                             }
                         }
-                    }*/
+                    } *///TODO: To Here!
                 }
             }
         }

@@ -8,6 +8,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -43,6 +46,12 @@ public class TrialsByBabyZombie extends Zombie {
         // Add custom goals here
     }
 
+    public static AttributeSupplier.Builder createAttributes() {
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 20)
+                .add(Attributes.ATTACK_DAMAGE, 2)
+                .add(Attributes.MOVEMENT_SPEED, 1);
+    }
 
     public void setAppearance(EnumTypes.ZombieAppearance appearance) {
         this.entityData.set(APPEARANCE, appearance.name());
