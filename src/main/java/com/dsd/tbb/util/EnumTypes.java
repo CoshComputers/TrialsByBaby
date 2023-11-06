@@ -9,7 +9,8 @@ public class EnumTypes {
     public enum GiantAttackType {
         MELEE,
         SMACKDOWN,
-        CHARGE
+        CHARGE,
+        NONE
     }
 
     public enum CustomMobTypes{

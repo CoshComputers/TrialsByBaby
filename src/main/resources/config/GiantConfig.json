@@ -1,12 +1,12 @@
 {
     "spawnFrequency": 0.5,
-    "scaleFactor":3,
-    "health": 100,
-    "damage": 15,
+    "maxentitiesnearby": 2000,
+    "health": 200,
+    "damage": 2,
     "followRange": 50,
     "aggressionLevel": 2,
     "visibilityRange": 50,
     "xpPoints": 50,
-    "speed": 0.15
-
+    "chargeCooldown": 100,
+    "smashCooldown": 50
 }

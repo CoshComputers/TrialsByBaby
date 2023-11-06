@@ -82,10 +82,10 @@ public class ConfigManager {
             for (Map.Entry<String, Class<?>> entry : configClassesMap.entrySet()) {
                 String configFileName = entry.getKey() + "Config.json";
                 Path configFilePath = configDir.resolve(configFileName);
-                //TBBLogger.getInstance().bulkLog("loadConfigs",String.format("About to read [%s] and load",configFilePath));
+                //TBBLogger.getInstance().debug("loadConfigs",String.format("About to read [%s] and load",configFilePath));
                 Object configObject = gson.fromJson(new FileReader(configFilePath.toFile()), entry.getValue());
                 storeConfigObject(entry.getKey(), configObject);
-                //TBBLogger.getInstance().bulkLog("loadConfigs",String.format("Config Loaded: [%s]", configObject.toString()));
+                //TBBLogger.getInstance().debug("loadConfigs",String.format("Config Loaded: [%s]", configObject.toString()));
             }
         } catch (IOException e) {
             e.printStackTrace();  // Handle exceptions as appropriate for your use case

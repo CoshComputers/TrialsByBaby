@@ -3,8 +3,8 @@
         "minecraft:overworld": {
             "timeRanges": [
                 {
-                    "start": 13000,
-                    "end": 23500,
+                    "start": 0,
+                    "end": 24000,
                     "types": {
                         "REGULAR": {
                             "minPackSize": 2,

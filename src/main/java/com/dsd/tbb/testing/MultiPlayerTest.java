@@ -64,14 +64,12 @@ public class MultiPlayerTest {
             throw new RuntimeException(e);
         }
 
-
         Vec3 playerPos = player.position();
         Direction playerFacing = player.getDirection();
         String newName = ConfigManager.getInstance().getRandomName();
-
         try {
             TrialsByGiantZombie newGiant = ModEventHandlers.TRIALS_BY_GIANT_ZOMBIE.get().create(source.getLevel());
-
+            newGiant.setMyName(newName);
             newGiant.moveToPosition(playerPos, playerFacing);
             source.getLevel().addFreshEntity(newGiant);
         }catch(Exception e){

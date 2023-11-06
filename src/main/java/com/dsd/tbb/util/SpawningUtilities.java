@@ -31,7 +31,7 @@ public class SpawningUtilities {
         return nearbyEntities.size();
 
     }
-    public static List<BlockPos> getSafeSpawnPositions(Level level, int eHeight, BlockPos playerPos, int numPositions) {
+    public static List<BlockPos> getSafeSpawnPositions(Level level, float eHeight, BlockPos playerPos, int numPositions) {
         List<BlockPos> safePositions = new ArrayList<>();
         int retries = 0;
         int maxRetries = ConfigManager.getInstance().getTrialsConfig().getSpawnPositionRetry();
@@ -70,14 +70,12 @@ public class SpawningUtilities {
         return new BlockPos.MutableBlockPos(spawnX, spawnY, spawnZ);
     }
 
-    private static BlockPos findSafeSpawnLoc(Level level, int eHeight, BlockPos.MutableBlockPos pos) {
+    private static BlockPos findSafeSpawnLoc(Level level, float eHeight, BlockPos.MutableBlockPos pos) {
         int YRange = ConfigManager.getInstance().getTrialsConfig().getSpawnYsearchrange();
         BlockPos.MutableBlockPos tempPos = pos;
         boolean isAirAbove = false;
-        //TBBLogger.getInstance().bulkLog("findSafeSpawnLoc[1]",String.format("Before Loops Y Position [%d] and YRange [%d]",
-        //        pos.getY(), YRange));
         //Checking For Air blocks
-        for (int YPos = pos.getY() - YRange; YPos <= tempPos.getY() + YRange; YPos += (eHeight)) {
+        for (int YPos = pos.getY() - YRange; YPos <= tempPos.getY() + YRange; YPos += (int) eHeight) {
             pos.setY(YPos);
             //TBBLogger.getInstance().bulkLog("findSafeSpawnLoc[2]",String.format("Y Pos [%d]",pos.getY()));
             for (int i = 0; i < eHeight; i++) {
@@ -87,16 +85,15 @@ public class SpawningUtilities {
                 }
             }
             boolean isSolidBelow = level.getBlockState(pos.below()).getMaterial().isSolid();
-            //TBBLogger.getInstance().bulkLog("findSafeSpawn[3]",String.format("Air & Solid check Y value [%d], isAirAbove [%s] and isSolid below [%s]",
-            //        YPos, isAirAbove? "TRUE":"FALSE", isSolidBelow? "TRUE":"FALSE"));
-           if (isAirAbove && isSolidBelow) {
+            if (isAirAbove && isSolidBelow) {
                 pos.setY(YPos);
-                return pos.immutable();  // Suitable position found
+                int lightLevel = level.getRawBrightness(pos,level.getSkyDarken());
+                if(lightLevel <= 7) return pos.immutable();  // Suitable position found
             }
-           if(YPos > 200){
+            if(YPos > 200){
                //TBBLogger.getInstance().error("findSafeSpawnLoc","Y Value has exceeded the limit for some reason - no safe spawn found");
                break;
-           }
+            }
         }
         //TBBLogger.getInstance().debug("findSafeSpawn[4]","No Safe Spawns found, returning null");
         return null;  // No suitable position found within the search range
