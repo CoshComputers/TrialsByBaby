@@ -19,11 +19,13 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
     private boolean chargeActive = false;
     private boolean slamActive = false;
     private boolean meleeActive = false;
+    private boolean walkingActive = true;
 
     public GiantCombatControllerGoal(TrialsByGiantZombie giant) {
         super(giant, 1.0, true);
         this.originalSpeed = giant.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
         this.giant = giant;
+        this.attackType = EnumTypes.GiantAttackType.NONE;
 
     }
 
@@ -100,16 +102,16 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
 
     @Override
     public void tick(){
-        //Check if Slam or Charge are active. If they are we do not want to TICK
-        if(chargeActive || slamActive){
-            //if the roarCountdown is greater than 0, we must be in charge, so reduce and return
-            if(roarCooldown > 0) {
-                roarCooldown --;
-            }
 
-        }else{
-            super.tick();
+        //Do NOT Tick if SLAM is active or Roar Animation playing
+        if(slamActive || roarCooldown > 0){
+            if(roarCooldown > 0) roarCooldown --;
+            checkAndPerformAttack(this.mob.getTarget(),0);
+        }else{ // charge (but not roaring) or melee could be active or no attack happening
+
         }
+
+
     }
 
     @Override
@@ -122,12 +124,26 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
         TBBLogger.getInstance().debug("checkAnd",String.format(" Attack Type [%s]- D to player [%f] Giant Reach [%f] Ani Timer [%d]",
                 this.attackType.name(),d0,giantReach,animationTickTimer));
 
-        if (this.attackType == EnumTypes.GiantAttackType.CHARGE && (d0 <= giantChargeDistance || chargeActive)) {
+        //no attack currently active
+        if(this.attackType == EnumTypes.GiantAttackType.NONE){
+            if(d0 > giantChargeDistance){
+                //out of reach, so if not already walking, set walking
+                if(!walkingActive) {
+                    giant.triggerAnim("mainController", "walk");
+                    walkingActive = true;
+                }
+            }
+        }else if (this.attackType == EnumTypes.GiantAttackType.CHARGE && (d0 <= giantChargeDistance || chargeActive)) {
+            walkingActive = false;
             checkAndPerformCharge();
         } else if (this.attackType == EnumTypes.GiantAttackType.SMACKDOWN && (d0 <= giantSmackDistance || slamActive)) {
+            walkingActive = false;
             checkAndPerformSmackdown();
         } else if (this.attackType == EnumTypes.GiantAttackType.MELEE && (d0 <= (giantReach+1) || meleeActive)) {
+            walkingActive = false;
             checkAndPerformMelee();
+        }else if (d0 > giantChargeDistance){
+            //to far out for an attack and none are active:
         }
     }
 
@@ -175,7 +191,6 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
             giant.triggerAnim("mainController", "attack_charge");
             // giant.getLevel().playSound(null, giant.getX(), giant.getY(), giant.getZ(), ModEventHandlers.GIANT_ROAR,
             //         SoundSource.NEUTRAL, 1.0F, 1.0F);
-
             chargeCooldown = 600;
             roarCooldown = 50;
             animationTickTimer = 10;
