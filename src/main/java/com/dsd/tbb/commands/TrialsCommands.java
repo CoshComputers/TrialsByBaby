@@ -62,7 +62,7 @@ public class TrialsCommands {
 
     /************************LITERAL BUILDER FOR COMMANDS*****************************************/
     public static LiteralArgumentBuilder<CommandSourceStack> buildToggleCommand() {
-        return LiteralArgumentBuilder.<CommandSourceStack>literal("trialsbybaby")
+        return LiteralArgumentBuilder.<CommandSourceStack>literal("tbbmain")
                 .then(LiteralArgumentBuilder.<CommandSourceStack>literal("toggle")
                         .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("option", StringArgumentType.string())
                                 .suggests((context, builder) ->{
@@ -79,7 +79,7 @@ public class TrialsCommands {
     }
 
     public static LiteralArgumentBuilder<CommandSourceStack> buildSetCommand() {
-        return LiteralArgumentBuilder.<CommandSourceStack>literal("trialsbybaby")
+        return LiteralArgumentBuilder.<CommandSourceStack>literal("tbbmain")
                 .then(LiteralArgumentBuilder.<CommandSourceStack>literal("set")
                         .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("option", StringArgumentType.string())
                                 .suggests((context, builder) -> {

@@ -8,5 +8,11 @@
     "visibilityRange": 50,
     "xpPoints": 50,
     "chargeCooldown": 100,
-    "smashCooldown": 50
+    "smashCooldown": 50,
+    "drops": [
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:efficiency", "lvl": 9}]},
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:fortune", "lvl": 8}]},
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:mending", "lvl": 1}]},
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:unbreaking", "lvl": 8}]}
+    ]
 }

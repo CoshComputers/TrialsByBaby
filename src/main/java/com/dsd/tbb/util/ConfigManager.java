@@ -199,6 +199,34 @@ public class ConfigManager {
         return "Set option " + option + " to " + newValue;
     }
 
+    public String setGiantConfigOption(EnumTypes.ModConfigOption option, int newValue){
+        GiantConfig config = this.getGiantConfig();
+
+        switch (option) {
+            case SPAWN_FREQUENCY:
+                config.setSpawnFrequency(newValue);
+                break;
+            case SPAWN_COOLDOWN:
+                config.setSpawnCooldown(newValue);
+                break;
+            case FOLLOW_RANGE:
+                config.setFollowRange(newValue);
+                break;
+            case VISIBILITY_RANGE:
+                config.setVisibilityRange(newValue);
+                break;
+            case CHARGE_COOLDOWN:
+                config.setChargeCooldown(newValue);
+                break;
+            case SMASH_COOLDOWN:
+                config.setSmashCooldown(newValue);
+                break;
+            default:
+                return null;
+        }
+        return "Set option " + option + " to " + newValue;
+    }
+
     //TODO: Create this
     public PlayerConfig getPlayerConfig(UUID playerUUID) {
 
