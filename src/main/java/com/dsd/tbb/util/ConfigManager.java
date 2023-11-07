@@ -155,10 +155,6 @@ public class ConfigManager {
                 newValue = !config.isOverrideMobs();
                 config.setOverrideMobs(newValue);
                 break;
-            case SPAWN_GIANTS:
-                newValue = !config.isSpawnGiants();
-                config.setSpawnGiants(newValue);
-                break;
             case GIVE_INITIAL_GEAR:
                 newValue = !config.isGiveInitialGear();
                 config.setGiveInitialGear(newValue);
@@ -187,6 +183,9 @@ public class ConfigManager {
         switch (option) {
             case SPAWN_RETRIES:
                 config.setSpawnPositionRetry(newValue);
+                break;
+            case SPAWN_GIANTS:
+                config.setSpawnGiants(newValue);
                 break;
             case SPAWN_MOB_CAP:
                 config.setMobCountThreshold(newValue);

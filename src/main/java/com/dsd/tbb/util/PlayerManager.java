@@ -34,7 +34,7 @@ public class PlayerManager {
         UUID pUuid = player.getUUID();
         Path playerConfigFilePath = FileAndDirectoryManager.getPlayerDataDirectory().resolve(pUuid + ".json");
         boolean firstLogin = !FileAndDirectoryManager.fileExists(playerConfigFilePath);
-        PlayerConfig pConfig = new PlayerConfig(pUuid, pName);
+        PlayerConfig pConfig = new PlayerConfig(player,player.getLevel());
         playerConfigs.put(pUuid, pConfig);
         playerUuids.add(pUuid);
 
@@ -67,10 +67,10 @@ public class PlayerManager {
                 TBBLogger.getInstance().info("savePlayerConfig", String.format("Successfully save player config for %s", pUuid.toString()));
             } catch (JsonSyntaxException e) {
                 // Handle JSON syntax exception
-                TBBLogger.getInstance().error("loadBabyZombieRules", String.format("JSON Syntax Error: Failed to parse BabyZombieRules.json due to malformed JSON. [%s]", e));
+                TBBLogger.getInstance().error("savePlayerConfig", String.format("JSON Syntax Error: Failed to parse  player config json due to malformed JSON. [%s]", e));
             } catch (JsonIOException e) {
                 // Handle JSON I/O exception
-                TBBLogger.getInstance().error("loadBabyZombieRules", String.format("JSON I/O Error: Failed to read BabyZombieRules.json due to an I/O error. [%s]", e));
+                TBBLogger.getInstance().error("savePlayerConfig", String.format("JSON I/O Error: Failed to do something with player configjson due to an I/O error. [%s]", e));
             } catch (IOException e) {
                 TBBLogger.getInstance().error("savePlayerConfig", String.format("Failed to save player config - %s", e));
                 // Handle exception as needed for your use case

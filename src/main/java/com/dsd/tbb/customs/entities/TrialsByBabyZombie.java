@@ -8,9 +8,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -20,16 +17,16 @@ public class TrialsByBabyZombie extends Zombie {
     public static final EntityDataAccessor<String> APPEARANCE = SynchedEntityData.defineId(TrialsByBabyZombie.class, EntityDataSerializers.STRING);
     public static final int MY_DEFAULT_HEIGHT = 1;
 
-    public TrialsByBabyZombie(Level world){
+    /*public TrialsByBabyZombie(Level world){
         super(world);
         this.setBaby(true);
         setAppearance(EnumTypes.ZombieAppearance.REGULAR);
-    }
-    public TrialsByBabyZombie(EntityType type, Level world) {
+    }*/
 
+    public TrialsByBabyZombie(EntityType type, Level world) {
         super(type,world);
         this.setBaby(true);
-        setAppearance(EnumTypes.ZombieAppearance.REGULAR);
+        //setAppearance(EnumTypes.ZombieAppearance.REGULAR);
 
     }
 
@@ -44,13 +41,6 @@ public class TrialsByBabyZombie extends Zombie {
         super.registerGoals();
 
         // Add custom goals here
-    }
-
-    public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 20)
-                .add(Attributes.ATTACK_DAMAGE, 2)
-                .add(Attributes.MOVEMENT_SPEED, 1);
     }
 
     public void setAppearance(EnumTypes.ZombieAppearance appearance) {

@@ -15,7 +15,7 @@ public class TrialsConfig {
     private int spawnpositionretry;
     private int mobcountthreshold;
     private int spawnYsearchrange;
-    private boolean spawnGiants;
+    private int spawnGiants;
     private boolean giveInitialGear;
     private boolean giveSpecialLoot;
     private boolean usePlayerHeads;
@@ -24,12 +24,12 @@ public class TrialsConfig {
 
     private TrialsConfig(){
         commandList.add("overrideMobs");
-        commandList.add("spawnGiants");
         commandList.add("giveInitialGear");
         commandList.add("giveSpecialLoot");
         commandList.add("usePlayerHeads");
         commandList.add("debugOn");
 
+        setCommandList.add("spawnGiants");
         setCommandList.add("spawnpositionretry");
         setCommandList.add("mobcountthreshold");
         setCommandList.add("spawnYsearchrange");
@@ -51,7 +51,7 @@ public class TrialsConfig {
         this.spawnpositionretry = 5;
         this.mobcountthreshold = 5;
         this.spawnYsearchrange = 15;
-        this.spawnGiants = false;
+        this.spawnGiants = 1;
         this.giveInitialGear = true;
         this.giveSpecialLoot = false;
         this.usePlayerHeads = false;
@@ -94,11 +94,11 @@ public class TrialsConfig {
         this.spawnYsearchrange = spawnYsearchrange;
     }
 
-    public synchronized boolean isSpawnGiants() {
+    public synchronized int getSpawnGiants() {
         return spawnGiants;
     }
 
-    public synchronized void setSpawnGiants(boolean spawnGiants) {
+    public synchronized void setSpawnGiants(int spawnGiants) {
         this.spawnGiants = spawnGiants;
     }
 

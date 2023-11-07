@@ -1,6 +1,6 @@
 {
     "spawnFrequency": 0.5,
-    "maxentitiesnearby": 2000,
+    "spawnCooldown": 60,
     "health": 200,
     "damage": 2,
     "followRange": 50,

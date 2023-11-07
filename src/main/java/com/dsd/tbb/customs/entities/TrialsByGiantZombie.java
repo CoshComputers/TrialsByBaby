@@ -3,7 +3,6 @@ package com.dsd.tbb.customs.entities;
 import com.dsd.tbb.customs.goals.GiantCombatControllerGoal;
 import com.dsd.tbb.customs.goals.GiantRandomStrollGoal;
 import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -58,7 +57,6 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         this.followRange = ConfigManager.getInstance().getGiantConfig().getFollowRange();
         this.baseDamage = ConfigManager.getInstance().getGiantConfig().getDamage();
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(baseDamage);
-        TBBLogger.getInstance().debug("Construct Giant","MyName = " + this.myName);
         if(!world.isClientSide){
             this.bossBar = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
         }

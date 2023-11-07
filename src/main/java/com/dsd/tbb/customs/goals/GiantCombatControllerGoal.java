@@ -222,18 +222,12 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
 
 private void setDamageAmount(){
     LivingEntity target = this.mob.getTarget();
-
     double damageModifier = 1.0;
 
     if(attackType == EnumTypes.GiantAttackType.CHARGE) damageModifier = 2;
     else if (attackType == EnumTypes.GiantAttackType.SMACKDOWN) damageModifier = 1.5;
-
     if(target.isBlocking()) damageModifier = damageModifier / 2;
-
     double newDamageAmount = origDamageValue * damageModifier;
-    TBBLogger.getInstance().debug("SetDamage","Base Damage Amount " + origDamageValue + " In GIANT amount " +
-                     this.giant.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue() + " New Damage Amount " + newDamageAmount);
-
     giant.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(newDamageAmount);
 
 }

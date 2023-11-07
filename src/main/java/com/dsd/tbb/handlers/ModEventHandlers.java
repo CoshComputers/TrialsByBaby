@@ -26,7 +26,8 @@ public class ModEventHandlers {
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, TrialsByBaby.MOD_ID);
 
-    public static final RegistryObject<EntityType<TrialsByBabyZombie>> TRIALS_BY_BABY_ZOMBIE = ENTITIES.register("trials_by_baby_zombie",
+    public static final RegistryObject<EntityType<TrialsByBabyZombie>> TRIALS_BY_BABY_ZOMBIE = ENTITIES.register(
+            "trials_by_baby_zombie",
             () -> EntityType.Builder.of((EntityType<TrialsByBabyZombie> type, Level world) -> new TrialsByBabyZombie(type, world), MobCategory.MONSTER)
                     .sized(0.6F, 1.5F)
                     .build(new ResourceLocation(TrialsByBaby.MOD_ID, "trials_by_baby_zombie").toString())

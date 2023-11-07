@@ -11,7 +11,6 @@ public class GiantConfig {
     private static volatile GiantConfig INSTANCE = null;
 
     private double spawnFrequency;
-    private int maxentitiesnearby;
     private int health;
     private int damage;
     private int followRange;
@@ -21,13 +20,13 @@ public class GiantConfig {
 
     private int chargeCooldown;
     private int smashCooldown;
+    private int spawnCooldown;
 
 
 
     private GiantConfig(){
-
         setCommandList.add("spawnFrequency");
-        setCommandList.add("maxentitiesnearby");
+        setCommandList.add("spawnCooldown");
         setCommandList.add("followRange");
         setCommandList.add("visibilityRange");
         setCommandList.add("chargeCooldown");
@@ -47,7 +46,6 @@ public class GiantConfig {
 
     private void setDefaults() {
         this.spawnFrequency = 0.01;
-        this.maxentitiesnearby = 50;
         this.health = 100;
         this.damage = 1;
         this.followRange = 40;
@@ -55,6 +53,7 @@ public class GiantConfig {
         this.xpPoints = 50;
         this.chargeCooldown = 300;
         this.smashCooldown = 100;
+        this.spawnCooldown = 20000;
     }
     // Getters and Setters for each field
     public static List<String> getSetCommandList() { return setCommandList; }
@@ -81,10 +80,7 @@ public class GiantConfig {
 
     public synchronized void setChargeCooldown(int cooldown){ this.chargeCooldown = cooldown; }
     public synchronized void setSmashCooldown(int cooldown){ this.smashCooldown = cooldown; }
-
-    public synchronized void setMaxentitiesnearby(int maxentitiesnearby) {
-        this.maxentitiesnearby = maxentitiesnearby;
-    }
+    public synchronized void setSpawnCooldown(int spawnCooldown) { this.spawnCooldown = spawnCooldown;}
 
     /********************************** GETTERS *************************************/
     public synchronized double getSpawnFrequency() {
@@ -115,10 +111,7 @@ public class GiantConfig {
 
     public synchronized int getChargeCooldown() { return chargeCooldown;}
     public synchronized int getSmashCooldown() { return  smashCooldown;};
-
-    public synchronized int getMaxentitiesnearby() {
-        return maxentitiesnearby;
-    }
+    public synchronized int getSpawnCooldown() { return spawnCooldown; }
 
 
 }
