@@ -3,17 +3,17 @@
         "minecraft:overworld": {
             "timeRanges": [
                 {
-                    "start": 13000,
-                    "end": 23500,
+                    "start": 0,
+                    "end": 24000,
                     "types": {
                         "REGULAR": {
-                            "minPackSize": 2,
-                            "maxPackSize": 10,
+                            "minPackSize": 1,
+                            "maxPackSize": 1,
                             "rarity": 1.0
                         },
                         "ENDERMAN": {
-                            "minPackSize": 2,
-                            "maxPackSize": 10,
+                            "minPackSize": 1,
+                            "maxPackSize": 1,
                             "rarity": 0.1
                         }
                     }
@@ -27,8 +27,8 @@
                     "end": 24000,
                     "types": {
                         "BLAZE": {
-                            "minPackSize": 2,
-                            "maxPackSize": 10,
+                            "minPackSize": 1,
+                            "maxPackSize": 1,
                             "rarity": 1.0
                         }
                     }
@@ -42,8 +42,8 @@
                     "end": 24000,
                     "types": {
                         "ENDERMAN": {
-                            "minPackSize": 2,
-                            "maxPackSize": 10,
+                            "minPackSize": 1,
+                            "maxPackSize": 1,
                             "rarity": 1.0
                         }
                     }

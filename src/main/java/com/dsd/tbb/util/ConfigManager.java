@@ -82,10 +82,10 @@ public class ConfigManager {
             for (Map.Entry<String, Class<?>> entry : configClassesMap.entrySet()) {
                 String configFileName = entry.getKey() + "Config.json";
                 Path configFilePath = configDir.resolve(configFileName);
-                //TBBLogger.getInstance().bulkLog("loadConfigs",String.format("About to read [%s] and load",configFilePath));
+                //TBBLogger.getInstance().debug("loadConfigs",String.format("About to read [%s] and load",configFilePath));
                 Object configObject = gson.fromJson(new FileReader(configFilePath.toFile()), entry.getValue());
                 storeConfigObject(entry.getKey(), configObject);
-                //TBBLogger.getInstance().bulkLog("loadConfigs",String.format("Config Loaded: [%s]", configObject.toString()));
+                //TBBLogger.getInstance().debug("loadConfigs",String.format("Config Loaded: [%s]", configObject.toString()));
             }
         } catch (IOException e) {
             e.printStackTrace();  // Handle exceptions as appropriate for your use case
@@ -155,10 +155,6 @@ public class ConfigManager {
                 newValue = !config.isOverrideMobs();
                 config.setOverrideMobs(newValue);
                 break;
-            case SPAWN_GIANTS:
-                newValue = !config.isSpawnGiants();
-                config.setSpawnGiants(newValue);
-                break;
             case GIVE_INITIAL_GEAR:
                 newValue = !config.isGiveInitialGear();
                 config.setGiveInitialGear(newValue);
@@ -188,11 +184,42 @@ public class ConfigManager {
             case SPAWN_RETRIES:
                 config.setSpawnPositionRetry(newValue);
                 break;
+            case SPAWN_GIANTS:
+                config.setSpawnGiants(newValue);
+                break;
             case SPAWN_MOB_CAP:
                 config.setMobCountThreshold(newValue);
                 break;
             case SPAWN_Y_SEARCH_RANGE:
                 config.setSpawnYsearchange(newValue);
+                break;
+            default:
+                return null;
+        }
+        return "Set option " + option + " to " + newValue;
+    }
+
+    public String setGiantConfigOption(EnumTypes.ModConfigOption option, int newValue){
+        GiantConfig config = this.getGiantConfig();
+
+        switch (option) {
+            case SPAWN_FREQUENCY:
+                config.setSpawnFrequency(newValue);
+                break;
+            case SPAWN_COOLDOWN:
+                config.setSpawnCooldown(newValue);
+                break;
+            case FOLLOW_RANGE:
+                config.setFollowRange(newValue);
+                break;
+            case VISIBILITY_RANGE:
+                config.setVisibilityRange(newValue);
+                break;
+            case CHARGE_COOLDOWN:
+                config.setChargeCooldown(newValue);
+                break;
+            case SMASH_COOLDOWN:
+                config.setSmashCooldown(newValue);
                 break;
             default:
                 return null;

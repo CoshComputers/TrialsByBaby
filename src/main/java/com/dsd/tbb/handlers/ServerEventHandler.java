@@ -1,5 +1,6 @@
 package com.dsd.tbb.handlers;
 
+import com.dsd.tbb.commands.GiantCommands;
 import com.dsd.tbb.commands.TrialsCommands;
 import com.dsd.tbb.config.BabyZombieRules;
 import com.dsd.tbb.main.TrialsByBaby;
@@ -64,6 +65,7 @@ public class ServerEventHandler {
 
         CommandDispatcher<CommandSourceStack> commandDispatcher = event.getServer().getCommands().getDispatcher();
         TrialsCommands.register(commandDispatcher);
+        GiantCommands.register(commandDispatcher);
 
         //-------COMMENT OUT BEFORE PUBLISHING--------------------------
         for (ServerLevel world : event.getServer().getAllLevels()) {

@@ -3,10 +3,16 @@ package com.dsd.tbb.customs.entities;
 import com.dsd.tbb.customs.goals.GiantCombatControllerGoal;
 import com.dsd.tbb.customs.goals.GiantRandomStrollGoal;
 import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.EnumTypes;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.BossEvent;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -15,6 +21,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -26,16 +33,21 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
-    private Vec3 lastPosition = Vec3.ZERO;
+    private String myName;
     private int followRange;
-    private EnumTypes.GiantAttackType attackType;
-    private AnimationController<TrialsByGiantZombie> mainAnimController;
+    private double baseDamage;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
+    private ServerBossEvent bossBar;
     public AnimatableManager animatableManager = new AnimatableManager<TrialsByGiantZombie>(this);
 
+    public static final double BB_RANGE = 64.0;
+    public static final float WIDTH = 1.2F;
+    public static final float HEIGHT = 3.2F;
     public static final RawAnimation GIANT_ROAR_N_CHARGE = RawAnimation.begin()
             .thenPlay("attack.roar")
             .thenPlay("attack.charge");
@@ -43,21 +55,27 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     public TrialsByGiantZombie(EntityType type, Level world) {
         super(type, world);
         this.followRange = ConfigManager.getInstance().getGiantConfig().getFollowRange();
+        this.baseDamage = ConfigManager.getInstance().getGiantConfig().getDamage();
+        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(baseDamage);
+        if(!world.isClientSide){
+            this.bossBar = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        }
     }
 
     public void moveToPosition(Vec3 playerPos, Direction playerFacing) {
         Vec3 offset = new Vec3(playerFacing.getStepX() * 5, 0, playerFacing.getStepZ() * 5);
         Vec3 newPos = playerPos.add(offset);
-        lastPosition = newPos;
         this.setPos(newPos.x, newPos.y, newPos.z);
     }
-
+    public void moveToPosition(BlockPos spawnPos) {
+        this.setPos(spawnPos.getX(),spawnPos.getY(),spawnPos.getZ());
+    }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, ConfigManager.getInstance().getGiantConfig().getHealth())
                 .add(Attributes.ATTACK_DAMAGE, ConfigManager.getInstance().getGiantConfig().getDamage())
-                .add(Attributes.MOVEMENT_SPEED, ConfigManager.getInstance().getGiantConfig().getSpeed());
+                .add(Attributes.MOVEMENT_SPEED, 0.15);
     }
 
     @Override
@@ -69,48 +87,63 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         AnimationController<TrialsByGiantZombie> controller = new AnimationController<>(this, "mainController", 5, this::getAnimationState);
         controller.triggerableAnim("attack_smash", DefaultAnimations.ATTACK_SLAM)
-                .triggerableAnim("attack_charge",GIANT_ROAR_N_CHARGE)
+                .triggerableAnim("attack_charge", GIANT_ROAR_N_CHARGE)
                 .triggerableAnim("walk", DefaultAnimations.WALK)
                 .triggerableAnim("idle", DefaultAnimations.IDLE)
-                .triggerableAnim("melee",DefaultAnimations.ATTACK_STRIKE);
+                .triggerableAnim("melee", DefaultAnimations.ATTACK_STRIKE);
         controllers.add(controller);
-        this.mainAnimController = controller;
     }
 
     public PlayState getAnimationState(AnimationState state) {
         if (this.isDeadOrDying()) {
             return PlayState.STOP;  // Stop animation if the entity is dead or dying
         }
-
-
         return PlayState.CONTINUE;  // Otherwise, continue the animation
     }
-
 
     @Override
     public void tick() {
         super.tick();
+        if (!this.level.isClientSide && this.bossBar != null) {
+            //update the progress on the Boss Bar
+            this.bossBar.setProgress(this.getHealth() / this.getMaxHealth());
 
-        if(isAttackGoalActive()) {
+            //set a bounding box around the Giant to check if players are within range of
+            //it. If they are they'll be able to see the Boss Bar
+            AABB bossBarRange = new AABB(this.blockPosition()).inflate(BB_RANGE);
+
+            // Add players that are now within range and not already seeing the boss bar
+            List<Player> playersInRange = this.level.getEntitiesOfClass(Player.class, bossBarRange);
+            for (Player player : playersInRange) {
+                if (!this.bossBar.getPlayers().contains(player)) {
+                    this.bossBar.addPlayer((ServerPlayer) player);
+                }
+            }
+
+            // Remove players that are out of range
+            List<Player> playersToRemove = new ArrayList<>();
+            for (ServerPlayer player : this.bossBar.getPlayers()) {
+                if (!bossBarRange.contains(player.position())) {
+                    playersToRemove.add(player);
+                }
+            }
+            for (Player player : playersToRemove) {
+                this.bossBar.removePlayer((ServerPlayer) player);
+            }
+        }
+
+        if (isAttackGoalActive()) {
             //TBBLogger.getInstance().debug("ticking","Attack active");
 
             // Attack animation is already being handled by the goal or animation system
         } else if (isStrollGoalActive()) {
-           // TBBLogger.getInstance().debug("ticking","Attack not active - And WALKING");
+            // TBBLogger.getInstance().debug("ticking","Attack not active - And WALKING");
 
 
         } else {
-           // TBBLogger.getInstance().debug("ticking","Attack not active - And IDLE");
+            // TBBLogger.getInstance().debug("ticking","Attack not active - And IDLE");
             //this.triggerAnim("mainController","idle");
         }
-        /*
-        Vec3 currentPosition = this.position();
-        // Calculate the squared distance to check for movement (more efficient than the actual distance)
-        double distanceSquared = currentPosition.distanceToSqr(lastPosition);
-        // If the distance squared is greater than a small threshold, we consider the giant to be moving
-        boolean l_isStill = distanceSquared < 0.001;
-        // Update the last position for the next check
-        lastPosition = currentPosition;*/
 
     }
 
@@ -131,44 +164,67 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         return this.cache;
     }
 
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        if (this.myName != null && !this.myName.isEmpty()) {
+            // Convert the simple string to a JSON string representing a text component
+            compound.putString("CustomName", Component.Serializer.toJson(Component.literal(this.myName)));
+        }
+    }
 
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("CustomName", 8)) { // 8 signifies a string
+            // Convert the JSON string back to a Component
+            Component comp = Component.Serializer.fromJson(compound.getString("CustomName"));
+            this.setMyName(comp.getString());
+        }
+        this.updateBossBarName();
+    }
+
+    @Override
+    public void die(DamageSource cause) {
+        super.die(cause);
+        // Set the boss bar to invisible
+        if(!this.level.isClientSide && this.bossBar != null) this.bossBar.setVisible(false);
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        super.remove(reason);
+        if (!this.level.isClientSide && this.bossBar != null) {
+            this.bossBar.removeAllPlayers();
+        }
+    }
     /********************************* GETTERS / /SETTERS ****************************************/
     public boolean isAttackGoalActive() {
         return this.goalSelector.getRunningGoals()
                 .anyMatch(goal -> goal.getGoal() instanceof GiantCombatControllerGoal);
     }
+
     public boolean isStrollGoalActive() {
         return this.goalSelector.getRunningGoals()
-                .anyMatch(goal -> goal.getGoal() instanceof  GiantRandomStrollGoal);
-    }
-    /*public boolean isAttackAnimationRunning() {
-        AnimationController<TrialsByGiantZombie> controller =
-                (AnimationController<TrialsByGiantZombie>) this.getAnimatableManager().getAnimationControllers().get("mainController");
-        String curAnim =   controller.getCurrentRawAnimation().getAnimationStages().get(0).animationName();
-        if(curAnim != null){
-            return false;
-        }else{
-            return curAnim.startsWith("attack");
-        }
-    }*/
-
-
-    public EnumTypes.GiantAttackType getAttackType() {
-        return attackType;
-    }
-
-    public void setAttackType(EnumTypes.GiantAttackType attackType) {
-        this.attackType = attackType;
+                .anyMatch(goal -> goal.getGoal() instanceof GiantRandomStrollGoal);
     }
 
     public AnimatableManager getAnimatableManager() {
         return animatableManager;
     }
 
-
-    public boolean isPlayerInRange(double range) {
-        LivingEntity target = this.getTarget();
-        return target != null && target instanceof Player && this.distanceTo(target) <= range;
+    public String getMyName() {
+        return myName;
     }
 
+    public void updateBossBarName() {
+        if (this.bossBar != null && this.myName != null && !this.myName.isEmpty()) {
+            this.bossBar.setName(Component.literal(this.myName));
+        }
+    }
+
+    public void setMyName(String myName) {
+        this.myName = myName;
+        updateBossBarName();
+    }
 }

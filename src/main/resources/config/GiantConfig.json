@@ -1,12 +1,18 @@
 {
     "spawnFrequency": 0.5,
-    "scaleFactor":3,
-    "health": 100,
-    "damage": 15,
+    "spawnCooldown": 60,
+    "health": 200,
+    "damage": 2,
     "followRange": 50,
     "aggressionLevel": 2,
     "visibilityRange": 50,
     "xpPoints": 50,
-    "speed": 0.15
-
+    "chargeCooldown": 100,
+    "smashCooldown": 50,
+    "drops": [
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:efficiency", "lvl": 9}]},
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:fortune", "lvl": 8}]},
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:mending", "lvl": 1}]},
+        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:unbreaking", "lvl": 8}]}
+    ]
 }

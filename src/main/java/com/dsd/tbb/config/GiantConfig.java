@@ -11,26 +11,26 @@ public class GiantConfig {
     private static volatile GiantConfig INSTANCE = null;
 
     private double spawnFrequency;
-    private int scaleFactor;
     private int health;
     private int damage;
     private int followRange;
-    private int aggressionLevel;
     private int visibilityRange;
     private int xpPoints;
-    private double speed;
-
     private String myName;
+
+    private int chargeCooldown;
+    private int smashCooldown;
+    private int spawnCooldown;
 
 
 
     private GiantConfig(){
-
         setCommandList.add("spawnFrequency");
-        setCommandList.add("scaleFactor");
+        setCommandList.add("spawnCooldown");
         setCommandList.add("followRange");
         setCommandList.add("visibilityRange");
-        setCommandList.add("speed");
+        setCommandList.add("chargeCooldown");
+        setCommandList.add("smashCooldown");
 
         setDefaults();
     }
@@ -46,14 +46,14 @@ public class GiantConfig {
 
     private void setDefaults() {
         this.spawnFrequency = 0.01;
-        this.scaleFactor = 2;
         this.health = 100;
-        this.damage = 15;
+        this.damage = 1;
         this.followRange = 40;
-        this.aggressionLevel = 2;
         this.visibilityRange = 50;
         this.xpPoints = 50;
-        this.speed = 0.15;
+        this.chargeCooldown = 300;
+        this.smashCooldown = 100;
+        this.spawnCooldown = 20000;
     }
     // Getters and Setters for each field
     public static List<String> getSetCommandList() { return setCommandList; }
@@ -68,33 +68,24 @@ public class GiantConfig {
     public synchronized void setSpawnFrequency(double spawnFrequency) {
         this.spawnFrequency = spawnFrequency;
     }
-
-    public synchronized void setScaleFactor(int scaleFactor) {
-        this.scaleFactor = scaleFactor;
-    }
-
     public synchronized void setFollowRange(int followRange) {
         this.followRange = followRange;
     }
-
     public synchronized void setVisibilityRange(int visibilityRange) {
         this.visibilityRange = visibilityRange;
     }
-    public synchronized void setSpeed(double speed){ this.speed = speed;}
-
-    public void setMyName(String myName) {
+    public synchronized void setMyName(String myName) {
         this.myName = myName;
     }
+
+    public synchronized void setChargeCooldown(int cooldown){ this.chargeCooldown = cooldown; }
+    public synchronized void setSmashCooldown(int cooldown){ this.smashCooldown = cooldown; }
+    public synchronized void setSpawnCooldown(int spawnCooldown) { this.spawnCooldown = spawnCooldown;}
 
     /********************************** GETTERS *************************************/
     public synchronized double getSpawnFrequency() {
         return spawnFrequency;
     }
-
-    public synchronized int getScaleFactor() {
-        return scaleFactor;
-    }
-
     public synchronized int getHealth() {
         return health;
     }
@@ -106,11 +97,6 @@ public class GiantConfig {
     public synchronized int getFollowRange() {
         return followRange;
     }
-
-    public synchronized int getAggressionLevel() {
-        return aggressionLevel;
-    }
-
     public synchronized int getVisibilityRange() {
         return visibilityRange;
     }
@@ -123,5 +109,9 @@ public class GiantConfig {
         return myName;
     }
 
-    public synchronized double getSpeed() { return speed; }
+    public synchronized int getChargeCooldown() { return chargeCooldown;}
+    public synchronized int getSmashCooldown() { return  smashCooldown;};
+    public synchronized int getSpawnCooldown() { return spawnCooldown; }
+
+
 }

@@ -32,8 +32,15 @@ public class EnumTypes {
         GIVE_INITIAL_GEAR("giveInitialGear"),
         GIVE_SPECIAL_LOOT("giveSpecialLoot"),
         USE_PLAYER_HEADS("usePlayerHeads"),
-        DEBUG_ON("debugOn");
+        DEBUG_ON("debugOn"),
 
+        //*****GIANT COMMAND OPTIONS *******/
+       SPAWN_FREQUENCY("spawnFrequency"),
+       SPAWN_COOLDOWN("spawnCooldown"),
+       FOLLOW_RANGE("followRange"),
+       VISIBILITY_RANGE("visibilityRange"),
+       CHARGE_COOLDOWN("chargeCooldown"),
+       SMASH_COOLDOWN("smashCooldown");
         private final String optionName;
 
         ModConfigOption(String optionName) {
