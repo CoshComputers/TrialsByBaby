@@ -40,8 +40,8 @@ public class PlayerManager {
 
         //Now save the config. This will overwrite existing files or create new.
         savePlayerConfig(pUuid);
-        TBBLogger.getInstance().debug("playerJoinGame",String.format("First Login = [%s] - Give Initial Gear = [%s]",
-                firstLogin ? "TRUE":"FALSE", isGiveGear ? "TRUE":"FALSE"));
+        //TBBLogger.getInstance().debug("playerJoinGame",String.format("First Login = [%s] - Give Initial Gear = [%s]",
+        //        firstLogin ? "TRUE":"FALSE", isGiveGear ? "TRUE":"FALSE"));
         if(firstLogin && isGiveGear){
             //do some stuff, like giving gear
             PlayerEntityHelper.givePlayerGear(player);

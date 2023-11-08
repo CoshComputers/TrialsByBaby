@@ -23,6 +23,7 @@ public class PlayerEventsHandler {
 
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        //TODO: Why is my gear being deleted when I join a server the second time
         Component message = Component.literal("Welcome to the Server");
         UUID pUuid = event.getEntity().getUUID();
         String pName = event.getEntity().getName().getString();
@@ -36,7 +37,6 @@ public class PlayerEventsHandler {
         MobEffectInstance nightVisionEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
         event.getEntity().addEffect(nightVisionEffect);
         //-------------------------------------
-        TBBLogger.getInstance().bulkLog("PlayerJoin",String.format("Player Y Pos [%d] ", event.getEntity().blockPosition().getY()));
 
     }
 

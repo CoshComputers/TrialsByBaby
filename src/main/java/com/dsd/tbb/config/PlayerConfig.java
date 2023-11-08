@@ -40,7 +40,7 @@ public class PlayerConfig {
         this.playerName = player.getName().getString();
         updatePlayerTimeStamp();
         updateNearbyGiants(level,player);
-        TBBLogger.getInstance().debug("PlayerConfig constructor", this.toString());
+        //TBBLogger.getInstance().debug("PlayerConfig constructor", this.toString());
 
     }
 

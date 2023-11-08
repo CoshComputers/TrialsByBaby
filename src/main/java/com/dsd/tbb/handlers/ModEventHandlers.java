@@ -45,7 +45,7 @@ public class ModEventHandlers {
         TBBLogger.getInstance().info("commonSetup","Trials By Baby has started");
         ConfigManager.getInstance();
         TBBLogger.getInstance().info("commonSetup","Configs Set to Defaults");
-        TBBLogger.getInstance().debug("commonSetup",ConfigManager.getInstance().getTrialsConfig().toString());
+        //TBBLogger.getInstance().debug("commonSetup",ConfigManager.getInstance().getTrialsConfig().toString());
         RuleManager.getInstance();
         TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
 

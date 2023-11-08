@@ -1,6 +1,5 @@
 package com.dsd.tbb.testing;
 
-import com.dsd.tbb.util.TBBLogger;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -74,8 +73,8 @@ public class MyFakePlayer extends FakePlayer {
         int randomZ = random.nextInt((maxMoveRange - minMoveRange) + 1) + minMoveRange;
 
         BlockPos surfacePos = this.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, new BlockPos(randomX, 0, randomZ));
-        TBBLogger.getInstance().debug("moveToRandom-FakePlayer",String.format("Moved To [%d][%d][%d]",
-                surfacePos.getX(), surfacePos.getY(), surfacePos.getZ()));
+        //TBBLogger.getInstance().debug("moveToRandom-FakePlayer",String.format("Moved To [%d][%d][%d]",
+        //        surfacePos.getX(), surfacePos.getY(), surfacePos.getZ()));
         this.setPos(surfacePos.getX(), surfacePos.getY(), surfacePos.getZ());
     }
 

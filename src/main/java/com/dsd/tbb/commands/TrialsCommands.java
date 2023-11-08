@@ -37,7 +37,7 @@ public class TrialsCommands {
 
         sb.append(ConfigManager.getInstance().toggleMainConfigOption(configOption));
 
-        TBBLogger.getInstance().debug("toggleComand",sb.toString());
+        //TBBLogger.getInstance().debug("toggleComand",sb.toString());
         Supplier<Component> componentSupplier = () -> Component.literal(sb.toString()).setStyle(style);
         cs.sendSuccess(componentSupplier.get(),true);
         return didSucceed;
@@ -54,7 +54,7 @@ public class TrialsCommands {
 
         sb.append(ConfigManager.getInstance().setIntConfigOption(configOption, value));
 
-        TBBLogger.getInstance().debug("setCommand",sb.toString());
+        //TBBLogger.getInstance().debug("setCommand",sb.toString());
         Supplier<Component> componentSupplier = () -> Component.literal(sb.toString()).setStyle(style);
         cs.sendSuccess(componentSupplier.get(), true);
         return didSucceed;
