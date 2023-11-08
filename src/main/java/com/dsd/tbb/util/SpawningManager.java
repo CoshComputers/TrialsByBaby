@@ -77,12 +77,13 @@ public class SpawningManager {
     private static UUID spawnGiant(BlockPos pos, Level world) {
         // Instantiate and spawn the GIANT entity at the given position
         String newName = ConfigManager.getInstance().getRandomName();
-        TBBLogger.getInstance().debug("SpawnGiant", String.format("Name of Giant [%s] - Y Pos [%d] ",
-                newName,pos.getY()));
+       // TBBLogger.getInstance().debug("SpawnGiant", String.format("Name of Giant [%s] - Y Pos [%d] ",
+       //         newName,pos.getY()));
         try {
             TrialsByGiantZombie newGiant = ModEventHandlers.TRIALS_BY_GIANT_ZOMBIE.get().create(world);
             newGiant.setMyName(newName);
             newGiant.moveToPosition(pos);
+            newGiant.setRandomDrops();
 
             world.addFreshEntity(newGiant);
             // Apply the glowing effect for 1 or 2 minutes (1200 or 2400 ticks)

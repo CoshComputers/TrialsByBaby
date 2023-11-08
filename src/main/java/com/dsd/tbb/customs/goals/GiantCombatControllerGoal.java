@@ -34,7 +34,7 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
 
         this.originalSpeed = giant.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue();
         this.origDamageValue = ConfigManager.getInstance().getGiantConfig().getDamage();
-        TBBLogger.getInstance().debug("Construct Melee Goal","Damage Value = " + origDamageValue);
+        //TBBLogger.getInstance().debug("Construct Melee Goal","Damage Value = " + origDamageValue);
 
     }
 

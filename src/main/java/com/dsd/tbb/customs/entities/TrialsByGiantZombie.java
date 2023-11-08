@@ -1,11 +1,14 @@
 package com.dsd.tbb.customs.entities;
 
+import com.dsd.tbb.config.GiantConfig;
 import com.dsd.tbb.customs.goals.GiantCombatControllerGoal;
 import com.dsd.tbb.customs.goals.GiantRandomStrollGoal;
 import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -38,6 +42,8 @@ import java.util.List;
 
 public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
+
+    private List<ItemStack> drops = new ArrayList<>();
     private String myName;
     private int followRange;
     private double baseDamage;
@@ -78,6 +84,22 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
                 .add(Attributes.MOVEMENT_SPEED, 0.15);
     }
 
+    public void setRandomDrops() {
+        GiantConfig config = ConfigManager.getInstance().getGiantConfig();
+        this.drops.addAll(config.getRandomDrops());
+
+        TBBLogger.getInstance().debug("SetRandomDrops",String.format("[%d] Drops added to Giant [%s]",drops.size(),myName));
+    }
+
+
+    // Call this when the giant is defeated to drop the items
+    @Override
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitInPlayer) {
+        super.dropCustomDeathLoot(source, looting, recentlyHitInPlayer);
+        for (ItemStack drop : drops) {
+            this.spawnAtLocation(drop, 0.0F);
+        }
+    }
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
@@ -171,6 +193,15 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
             // Convert the simple string to a JSON string representing a text component
             compound.putString("CustomName", Component.Serializer.toJson(Component.literal(this.myName)));
         }
+
+        ListTag listTag = new ListTag();
+        for (ItemStack stack : this.drops) {
+            CompoundTag itemTag = new CompoundTag();
+            stack.save(itemTag);
+            listTag.add(itemTag);
+        }
+        compound.put("EnchantedBooks", listTag);
+
     }
 
     @Override
@@ -182,6 +213,12 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
             this.setMyName(comp.getString());
         }
         this.updateBossBarName();
+
+        ListTag listTag = compound.getList("EnchantedBooks", 10); // 10 is the tag type for CompoundTag
+        for (int i = 0; i < listTag.size(); i++) {
+            CompoundTag itemTag = listTag.getCompound(i);
+            this.drops.add(ItemStack.of(itemTag));
+        }
     }
 
     @Override

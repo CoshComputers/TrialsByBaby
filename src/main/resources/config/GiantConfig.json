@@ -1,18 +1,84 @@
 {
-    "spawnFrequency": 0.5,
-    "spawnCooldown": 60,
-    "health": 200,
-    "damage": 2,
-    "followRange": 50,
-    "aggressionLevel": 2,
-    "visibilityRange": 50,
-    "xpPoints": 50,
-    "chargeCooldown": 100,
-    "smashCooldown": 50,
-    "drops": [
-        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:efficiency", "lvl": 9}]},
-        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:fortune", "lvl": 8}]},
-        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:mending", "lvl": 1}]},
-        {"id": "minecraft:enchanted_book", "ench": [{"id": "minecraft:unbreaking", "lvl": 8}]}
-    ]
+  "spawnFrequency": 0.5,
+  "spawnCooldown": 60,
+  "health": 200,
+  "damage": 2,
+  "followRange": 50,
+  "aggressionLevel": 2,
+  "visibilityRange": 50,
+  "xpPoints": 50,
+  "chargeCooldown": 100,
+  "smashCooldown": 50,
+  "drops": [
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:efficiency",
+      "maxlevel": 9
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:fortune",
+      "maxlevel": 9
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:mending",
+      "maxlevel": 1
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:unbreaking",
+      "maxlevel": 10
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:sharpness",
+      "maxlevel": 10
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:looting",
+      "maxlevel": 9
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:feather_falling",
+      "maxlevel": 10
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:protection",
+      "maxlevel": 10
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:power",
+      "maxlevel": 10
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:punch",
+      "maxlevel": 9
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:lure",
+      "maxlevel": 9
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:fire_protection",
+      "maxlevel": 10
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:blast_protection",
+      "maxlevel": 10
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "enchantment": "minecraft:projectile_protection",
+      "maxlevel": 10
+    }
+  ]
 }

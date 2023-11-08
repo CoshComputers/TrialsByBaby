@@ -56,7 +56,7 @@ public class GiantCommands {
         assert configOption != null;
         sb.append(ConfigManager.getInstance().setGiantConfigOption(configOption, value));
 
-        TBBLogger.getInstance().debug("setGiantCommand", sb.toString());
+        //TBBLogger.getInstance().debug("setGiantCommand", sb.toString());
         Supplier<Component> componentSupplier = () -> Component.literal(sb.toString()).setStyle(style);
         cs.sendSuccess(componentSupplier.get(), true);
         return didSucceed;

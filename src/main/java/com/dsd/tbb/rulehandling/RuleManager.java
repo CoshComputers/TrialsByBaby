@@ -64,7 +64,7 @@ public class RuleManager {
             String[] ruleFiles = {"BabyZombieRules.json"};
             for (String rulesFile : ruleFiles) {
                 Path ruleFilePath = rulesDir.resolve(rulesFile);
-                TBBLogger.getInstance().debug("loadBabyZombieRules",String.format("About to read [%s] and Load",ruleFilePath));
+                //TBBLogger.getInstance().debug("loadBabyZombieRules",String.format("About to read [%s] and Load",ruleFilePath));
                 babyZombieRules = gson.fromJson(new FileReader(ruleFilePath.toFile()), BabyZombieRules.class);
 
             }
