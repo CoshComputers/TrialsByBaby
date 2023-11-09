@@ -3,7 +3,7 @@ package com.dsd.tbb.testing;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.main.TrialsByBaby;
-import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.TBBLogger;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

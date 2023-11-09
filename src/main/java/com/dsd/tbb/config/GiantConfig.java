@@ -1,7 +1,6 @@
 package com.dsd.tbb.config;
 
 import com.dsd.tbb.util.ModUtilities;
-import com.dsd.tbb.util.TBBLogger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -87,8 +86,6 @@ public class GiantConfig {
         Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(drop.getEnchantment()));
         if(enchantment != null) {
             int enchantmentLevel = getNewEnchantmentLevel(enchantment,drop.getMaxlevel());
-            TBBLogger.getInstance().debug("CreateItemStack",String.format("Enchantment [%s] level Drop [%d] Max[%d] Actual[%d]",
-                    enchantment,drop.getMaxlevel(),enchantment.getMaxLevel(),enchantmentLevel));
             enchantments.put(enchantment,enchantmentLevel);
             EnchantmentHelper.setEnchantments(enchantments, itemStack);
         }

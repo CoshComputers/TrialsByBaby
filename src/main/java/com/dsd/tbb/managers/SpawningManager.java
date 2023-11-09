@@ -1,10 +1,13 @@
-package com.dsd.tbb.util;
+package com.dsd.tbb.managers;
 
 import com.dsd.tbb.config.PlayerConfig;
 import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.rulehandling.RuleCache;
+import com.dsd.tbb.util.EnumTypes;
+import com.dsd.tbb.util.SpawningUtilities;
+import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -16,16 +19,19 @@ import java.util.UUID;
 
 
 public class SpawningManager {
-    private static final int GLOWING_TIMER = 2400;
+   //private static final Map<UUID, TrialsByGiantZombie> giantZombieMap = new ConcurrentHashMap<>();
+
+    private static final int GLOWING_TIMER = 1 * (20 * 60); // n * (20*60) where n is the number of minutes to glow
+
     public static void spawnManagerTick(Level level, Player player, PlayerConfig playerConfig) {
         // Check and spawn Baby Zombies
         babyZombieSpawnCheck(level, player);
 
         // Check and spawn Giants
-        if(playerConfig.GIANT_COOLDOWN <= 0) {
+        if (playerConfig.GIANT_COOLDOWN <= 0) {
             giantSpawnCheck(level, player, playerConfig);
-        }else{
-            playerConfig.GIANT_COOLDOWN --;
+        } else {
+            playerConfig.GIANT_COOLDOWN--;
         }
     }
 
@@ -33,33 +39,33 @@ public class SpawningManager {
         //Generate a list of the rules that match time and dimension
         String tDimension = level.dimension().location().toString();
         long tTime = level.getDayTime();
-        List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension,tTime);
-        if(rules.isEmpty()) {
-            TBBLogger.getInstance().warn("babyZombieSpawnCheck","No Rules Matched, so not spawning");
-            return;
+        List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension, tTime);
+        if (rules.isEmpty()) {
+           return;
         }
 
         for (RuleCache.ApplicableRule rule : rules) {
-            if(!SpawningUtilities.shouldSpawnBaby(level,player,rule.getRarity())){
+            if (!SpawningUtilities.shouldSpawnBaby(level, player, rule.getRarity())) {
                 continue; //we shouldn't spawn so continuing onto the next rule
             }
             int eHeight = TrialsByBabyZombie.MY_DEFAULT_HEIGHT;
-            int packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(),rule.getMaxPackSize());
+            int packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(), rule.getMaxPackSize());
             List<BlockPos> safeSpawnLocations = SpawningUtilities.getSafeSpawnPositions(level, eHeight, player.blockPosition(), packSize, true);
-            if(!safeSpawnLocations.isEmpty()){
-                spawnBabies(level,safeSpawnLocations,EnumTypes.ZombieAppearance.valueOf(rule.getMobType()));
+            if (!safeSpawnLocations.isEmpty()) {
+                spawnBabies(level, safeSpawnLocations, EnumTypes.ZombieAppearance.valueOf(rule.getMobType()));
             }
         }
     }
 
     private static void giantSpawnCheck(Level level, Player player, PlayerConfig playerConfig) {
+         playerConfig.updateNearbyGiants(level, player);
 
-        playerConfig.updateNearbyGiants(level, player);
         // Check for spawning conditions
         if (SpawningUtilities.shouldSpawnGiant(playerConfig)) {
             List<BlockPos> potentialPositions = SpawningUtilities.getSafeSpawnPositions(
                     level, TrialsByGiantZombie.HEIGHT, player.blockPosition(), 1, false);
             if (!potentialPositions.isEmpty()) {
+
                 BlockPos spawnPos = potentialPositions.get(0); //we should only ever have 1 location here.
                 if (spawnPos != null) {
                     UUID giantUUID = spawnGiant(spawnPos, level);
@@ -77,8 +83,6 @@ public class SpawningManager {
     private static UUID spawnGiant(BlockPos pos, Level world) {
         // Instantiate and spawn the GIANT entity at the given position
         String newName = ConfigManager.getInstance().getRandomName();
-       // TBBLogger.getInstance().debug("SpawnGiant", String.format("Name of Giant [%s] - Y Pos [%d] ",
-       //         newName,pos.getY()));
         try {
             TrialsByGiantZombie newGiant = ModEventHandlers.TRIALS_BY_GIANT_ZOMBIE.get().create(world);
             newGiant.setMyName(newName);
@@ -86,6 +90,7 @@ public class SpawningManager {
             newGiant.setRandomDrops();
 
             world.addFreshEntity(newGiant);
+            //addGiantZombie(newGiant);
             // Apply the glowing effect for 1 or 2 minutes (1200 or 2400 ticks)
             MobEffectInstance glowingEffect = new MobEffectInstance(MobEffects.GLOWING, GLOWING_TIMER);
             newGiant.addEffect(glowingEffect);
@@ -100,12 +105,77 @@ public class SpawningManager {
         return null;
     }
 
-    private static void spawnBabies(Level level, List<BlockPos>safeSpawnLocations,EnumTypes.ZombieAppearance appearance){
+    private static void spawnBabies(Level level, List<BlockPos> safeSpawnLocations, EnumTypes.ZombieAppearance appearance) {
         for (BlockPos pos : safeSpawnLocations) {
             TrialsByBabyZombie newBaby = ModEventHandlers.TRIALS_BY_BABY_ZOMBIE.get().create(level);
             newBaby.setAppearance(appearance);
-            newBaby.setPos(pos.getX(),pos.getY(),pos.getZ());
+            newBaby.setPos(pos.getX(), pos.getY(), pos.getZ());
             level.addFreshEntity(newBaby);
         }
     }
+
+    /*public static void saveGiantZombies() {
+        List<String> uuidList = giantZombieMap.keySet().stream()
+                .map(UUID::toString)
+                .collect(Collectors.toList());
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String jsonString = gson.toJson(uuidList);
+
+        Path file = FileAndDirectoryManager.getWorldDirectory().resolve("giant_zombies.json");
+        try {
+            Files.write(file, jsonString.getBytes(),StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void loadGiantZombies(MinecraftServer server) {
+        Path file = FileAndDirectoryManager.getWorldDirectory().resolve("giant_zombies.json");
+        if (Files.exists(file)) {
+            try {
+                String jsonString = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+                Gson gson = new Gson();
+                List<String> uuidList = gson.fromJson(jsonString, new TypeToken<List<String>>() {
+                }.getType());
+
+                for (ServerLevel level : server.getAllLevels()) { // This iterates through all dimensions
+                    for (String uuidStr : uuidList) {
+                        UUID uuid = UUID.fromString(uuidStr);
+                        for (Entity entity : level.getAllEntities()) { // Adjust this method to your version
+                            if (entity.getUUID().equals(uuid) && entity instanceof TrialsByGiantZombie) {
+                                TBBLogger.getInstance().debug("LoadGiants",String.format("Putting [%s] in the list with UUID [%s]",
+                                        ((TrialsByGiantZombie) entity).getMyName(),entity.getUUID()));
+                                giantZombieMap.put(uuid, (TrialsByGiantZombie) entity);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }*/
+
+    /*public static TrialsByGiantZombie getGiantZombieByUUID(UUID uuid) {
+        return giantZombieMap.get(uuid);
+    }
+
+    public static void addGiantZombie(TrialsByGiantZombie giantZombie) {
+        giantZombieMap.put(giantZombie.getUUID(), giantZombie);
+    }
+
+    public static void removeGiantZombieByUUID(UUID uuid) {
+        giantZombieMap.remove(uuid);
+    }
+
+    public static Collection<TrialsByGiantZombie> getAllGiants() {
+        return giantZombieMap.values();
+    }
+
+    public static int numberOfGiantsInAllDimensions() {
+        return giantZombieMap.size();
+    }*/
+
 }

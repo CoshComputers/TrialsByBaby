@@ -1,6 +1,8 @@
-package com.dsd.tbb.util;
+package com.dsd.tbb.managers;
 
 import com.dsd.tbb.config.*;
+import com.dsd.tbb.util.EnumTypes;
+import com.dsd.tbb.util.TBBLogger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

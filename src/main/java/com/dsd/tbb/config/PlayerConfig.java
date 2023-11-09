@@ -1,8 +1,7 @@
 package com.dsd.tbb.config;
 
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
-import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.TBBLogger;
+import com.dsd.tbb.managers.ConfigManager;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
@@ -65,11 +64,11 @@ public class PlayerConfig {
         return Collections.unmodifiableSet(nearbyGiants);
     }
 
-    public int numberOfNearbyGiants() {
+    public synchronized int numberOfNearbyGiants() {
         return nearbyGiants.size();
     }
 
-    public void updateNearbyGiants(Level level, Player player) {
+    public synchronized void updateNearbyGiants(Level level, Player player) {
         // Define the search area around the player
         AABB searchArea = new AABB(
                 player.getX() - MAX_SCAN_DISTANCE, player.getY() - MAX_SCAN_DISTANCE, player.getZ() - MAX_SCAN_DISTANCE,

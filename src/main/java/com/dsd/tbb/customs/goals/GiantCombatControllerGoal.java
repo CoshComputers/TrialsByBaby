@@ -1,10 +1,9 @@
 package com.dsd.tbb.customs.goals;
 
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
-import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.ModUtilities;
-import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -179,6 +178,7 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
                 animationTickTimer--;
             } else {
                 setDamageAmount();
+                //TODO: Add Nauseu affect to player, add knockback to player
                 giant.doHurtTarget(this.mob.getTarget());
                 giant.setLastHurtMob(this.mob.getTarget());
                 attackType = EnumTypes.GiantAttackType.NONE;
@@ -207,6 +207,7 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
             } else {
                 if(distanceToTarget <= G_REACH) { //the Charge has to hit the player
                     setDamageAmount();
+                    //ToDO: Add knock back to player
                     giant.doHurtTarget(target);
                     giant.setLastHurtMob(target);
                     resetDamageAmount();

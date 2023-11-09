@@ -1,7 +1,7 @@
 package com.dsd.tbb.customs.entities;
 
 import com.dsd.tbb.util.EnumTypes;
-import com.dsd.tbb.util.PlayerManager;
+import com.dsd.tbb.managers.PlayerManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
