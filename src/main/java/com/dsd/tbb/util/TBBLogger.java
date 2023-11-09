@@ -1,6 +1,8 @@
 package com.dsd.tbb.util;
 
 
+import com.dsd.tbb.managers.ConfigManager;
+import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
@@ -41,6 +43,7 @@ public class TBBLogger {
     }
 
     public void debug(String method, String message) {
+        bulkLog("[DEBUG]"+method,message);
        if(ConfigManager.getInstance().getTrialsConfig().isDebugOn()) {
             logger.debug(ANSI_BLUE + "[" + method + "]" +message + ANSI_RESET);
        }
@@ -48,12 +51,16 @@ public class TBBLogger {
     }
     // Similarly for other log levels...
     public void info(String method, String message) {
+        bulkLog("[INFO]"+method,message);
         logger.info(ANSI_GREEN + "[" + method + "]" + message + ANSI_RESET);
     }
     public void error(String method, String message) {
+        bulkLog("[ERROR]"+method,message);
         logger.error(ANSI_RED + "[" + method + "]" +message + ANSI_RESET);
     }
-    public void warn(String method, String message) { logger.warn(ANSI_YELLOW + "[" + method + "]" +message + ANSI_RESET);}
+    public void warn(String method, String message) {
+        bulkLog("[WARN]"+method,message);
+        logger.warn(ANSI_YELLOW + "[" + method + "]" +message + ANSI_RESET);}
 
     public void broadcastMessage(String message) {
 

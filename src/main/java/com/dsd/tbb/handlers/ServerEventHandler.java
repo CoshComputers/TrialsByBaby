@@ -4,17 +4,20 @@ import com.dsd.tbb.commands.GiantCommands;
 import com.dsd.tbb.commands.TrialsCommands;
 import com.dsd.tbb.config.BabyZombieRules;
 import com.dsd.tbb.main.TrialsByBaby;
+import com.dsd.tbb.managers.BossBarManager;
+import com.dsd.tbb.managers.ConfigManager;
+import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.dsd.tbb.rulehandling.RuleManager;
-import com.dsd.tbb.util.ConfigManager;
-import com.dsd.tbb.util.FileAndDirectoryManager;
 import com.dsd.tbb.util.TBBLogger;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -56,8 +59,22 @@ public class ServerEventHandler {
         ruleManager = RuleManager.getInstance();
         ruleManager.prepareRules();
         ruleManager.loadBabyZombieRules();
+        //SpawningManager.loadGiantZombies(event.getServer());
         //outputRules();
 
+        MinecraftServer server = event.getServer();
+
+        server.getAllLevels().forEach(level -> {
+            TBBLogger.getInstance().debug("Server Start Entity Dump",String.format("Level - %s",
+                    level.dimension().location()));
+            level.getAllEntities().forEach(entity -> {
+                // Print out entity information, including type and dimension
+                TBBLogger.getInstance().debug("Server start entity dump", String.format("Entity: [%s], UUID: [%s], " +
+                                "Type: [%s], World: [%s]", entity.getName().getString(), entity.getUUID(), entity.getType().toShortString(),
+                        level.dimension().location()));
+            });
+
+        });
     }
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
@@ -74,29 +91,41 @@ public class ServerEventHandler {
         }
         //-------------------------------------------------------------
         makePortals(event);
+
+
     }
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            // Get all loaded levels from the server and update boss bars for each
+            MinecraftServer server = event.getServer(); // Obtain the MinecraftServer instance
+            for (ServerLevel level : server.getAllLevels()) {
+                BossBarManager.getInstance().updateBossBars(level);
+            }
+        }
+    }
+
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event){
         TBBLogger.getInstance().info("onServerStopping","********** INVOKED TRIALS SERVER STOPPING METHOD **************");
         ConfigManager.getInstance().saveTrialsConfig();
+        //SpawningManager.saveGiantZombies();
         TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
 
         TBBLogger.getInstance().writeLogToFile();
     }
 
 
-
-
-
     private static void outputRules(){
         // Get the BabyZombieRules instance from the RuleManager
         BabyZombieRules babyZombieRules = ruleManager.getBabyZombieRules();
 
-// Get the map of DimensionRules from the BabyZombieRules instance
+        // Get the map of DimensionRules from the BabyZombieRules instance
         Map<String, BabyZombieRules.DimensionRules> dimensionRulesMap = babyZombieRules.getRules();
 
-// Iterate through the map of DimensionRules
+        // Iterate through the map of DimensionRules
         for (Map.Entry<String, BabyZombieRules.DimensionRules> entry : dimensionRulesMap.entrySet()) {
             // Get the key (dimension name) and value (DimensionRules object) from each entry in the map
             StringBuilder sb = new StringBuilder();

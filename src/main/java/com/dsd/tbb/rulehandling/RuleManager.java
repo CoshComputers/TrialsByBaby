@@ -3,7 +3,7 @@ package com.dsd.tbb.rulehandling;
 import com.dsd.tbb.config.BabyZombieRules;
 import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.EnumTypes;
-import com.dsd.tbb.util.FileAndDirectoryManager;
+import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;

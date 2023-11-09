@@ -1,9 +1,9 @@
 package com.dsd.tbb.customs.entities;
 
 import com.dsd.tbb.config.InitialGearConfig;
-import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.ModUtilities;
-import com.dsd.tbb.util.PlayerManager;
+import com.dsd.tbb.managers.PlayerManager;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;

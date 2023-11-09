@@ -1,6 +1,6 @@
 package com.dsd.tbb.commands;
 
-import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.TBBLogger;
 import com.mojang.brigadier.CommandDispatcher;

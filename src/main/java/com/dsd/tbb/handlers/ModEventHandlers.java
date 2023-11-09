@@ -4,7 +4,7 @@ import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.rulehandling.RuleManager;
-import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -58,6 +58,8 @@ public class ModEventHandlers {
         event.put(TRIALS_BY_GIANT_ZOMBIE.get(), TrialsByGiantZombie.createAttributes().build());
         event.put(TRIALS_BY_BABY_ZOMBIE.get(), TrialsByBabyZombie.createAttributes().build());
     }
+
+
 
 }
 

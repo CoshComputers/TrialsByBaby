@@ -3,18 +3,19 @@ package com.dsd.tbb.customs.entities;
 import com.dsd.tbb.config.GiantConfig;
 import com.dsd.tbb.customs.goals.GiantCombatControllerGoal;
 import com.dsd.tbb.customs.goals.GiantRandomStrollGoal;
-import com.dsd.tbb.util.ConfigManager;
+import com.dsd.tbb.managers.BossBarManager;
+import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerBossEvent;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -25,7 +26,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -39,16 +39,21 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
+    //Data to share between Client and Server
+    private static final EntityDataAccessor<String> GIANT_NAME = SynchedEntityData.defineId(TrialsByGiantZombie.class, EntityDataSerializers.STRING);
+
+    //--------------------------------------
+
+    private final BossBarManager bossBarManager;
 
     private List<ItemStack> drops = new ArrayList<>();
-    private String myName;
     private int followRange;
     private double baseDamage;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private ServerBossEvent bossBar;
     public AnimatableManager animatableManager = new AnimatableManager<TrialsByGiantZombie>(this);
 
     public static final double BB_RANGE = 64.0;
@@ -60,11 +65,19 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
     public TrialsByGiantZombie(EntityType type, Level world) {
         super(type, world);
+        UUID uniqueID = this.getUUID();
+        //TBBLogger.getInstance().bulkLog("Entity Constructor",String.format("Constructing UUID [%s]",uniqueID));
         this.followRange = ConfigManager.getInstance().getGiantConfig().getFollowRange();
         this.baseDamage = ConfigManager.getInstance().getGiantConfig().getDamage();
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(baseDamage);
+        this.setPersistenceRequired();
         if(!world.isClientSide){
-            this.bossBar = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+            TBBLogger.getInstance().bulkLog("Giant Constructor",String.format("Dimension [%s]", world.dimension().location()));
+            this.bossBarManager = BossBarManager.getInstance();
+            bossBarManager.createBossBar(this.getUUID(), this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+
+        }else{
+            this.bossBarManager = null;
         }
     }
 
@@ -87,8 +100,6 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     public void setRandomDrops() {
         GiantConfig config = ConfigManager.getInstance().getGiantConfig();
         this.drops.addAll(config.getRandomDrops());
-
-        TBBLogger.getInstance().debug("SetRandomDrops",String.format("[%d] Drops added to Giant [%s]",drops.size(),myName));
     }
 
 
@@ -103,6 +114,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
+        this.entityData.define(GIANT_NAME, "");
     }
 
     @Override
@@ -126,46 +138,10 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide && this.bossBar != null) {
-            //update the progress on the Boss Bar
-            this.bossBar.setProgress(this.getHealth() / this.getMaxHealth());
 
-            //set a bounding box around the Giant to check if players are within range of
-            //it. If they are they'll be able to see the Boss Bar
-            AABB bossBarRange = new AABB(this.blockPosition()).inflate(BB_RANGE);
-
-            // Add players that are now within range and not already seeing the boss bar
-            List<Player> playersInRange = this.level.getEntitiesOfClass(Player.class, bossBarRange);
-            for (Player player : playersInRange) {
-                if (!this.bossBar.getPlayers().contains(player)) {
-                    this.bossBar.addPlayer((ServerPlayer) player);
-                }
-            }
-
-            // Remove players that are out of range
-            List<Player> playersToRemove = new ArrayList<>();
-            for (ServerPlayer player : this.bossBar.getPlayers()) {
-                if (!bossBarRange.contains(player.position())) {
-                    playersToRemove.add(player);
-                }
-            }
-            for (Player player : playersToRemove) {
-                this.bossBar.removePlayer((ServerPlayer) player);
-            }
-        }
-
-        if (isAttackGoalActive()) {
-            //TBBLogger.getInstance().debug("ticking","Attack active");
-
-            // Attack animation is already being handled by the goal or animation system
-        } else if (isStrollGoalActive()) {
-            // TBBLogger.getInstance().debug("ticking","Attack not active - And WALKING");
-
-
-        } else {
-            // TBBLogger.getInstance().debug("ticking","Attack not active - And IDLE");
-            //this.triggerAnim("mainController","idle");
-        }
+        //Update Boss Bar Progress.
+        float healthPercentage = this.getHealth() / this.getMaxHealth();
+        BossBarManager.getInstance().updateProgress(this.getUUID(), healthPercentage);
 
     }
 
@@ -188,10 +164,11 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
+        //TBBLogger.getInstance().bulkLog("Entity Save Additional",String.format("Adding Additional Data for Save [%s]",this.getMyName()));
         super.addAdditionalSaveData(compound);
-        if (this.myName != null && !this.myName.isEmpty()) {
+        if (this.getMyName() != null && !this.getMyName().isEmpty()) {
             // Convert the simple string to a JSON string representing a text component
-            compound.putString("CustomName", Component.Serializer.toJson(Component.literal(this.myName)));
+            compound.putString("CustomName", Component.Serializer.toJson(Component.literal(this.getMyName())));
         }
 
         ListTag listTag = new ListTag();
@@ -206,6 +183,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
+        //TBBLogger.getInstance().bulkLog("Entity Read Additional",String.format("Reading Additional Data for Save [%s]",this.getMyName()));
         super.readAdditionalSaveData(compound);
         if (compound.contains("CustomName", 8)) { // 8 signifies a string
             // Convert the JSON string back to a Component
@@ -222,19 +200,24 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     }
 
     @Override
-    public void die(DamageSource cause) {
-        super.die(cause);
-        // Set the boss bar to invisible
-        if(!this.level.isClientSide && this.bossBar != null) this.bossBar.setVisible(false);
+    public void checkDespawn() {
+
+        // Overriding without calling super prevents the default despawn logic from running
     }
 
+
+
     @Override
-    public void remove(Entity.RemovalReason reason) {
-        super.remove(reason);
-        if (!this.level.isClientSide && this.bossBar != null) {
-            this.bossBar.removeAllPlayers();
+    public void die(DamageSource cause) {
+        super.die(cause);
+        //SpawningManager.removeGiantZombieByUUID(this.getUUID());
+        // Set the boss bar to invisible
+        if (!this.level.isClientSide) {
+            TBBLogger.getInstance().debug("Entity Die",String.format("Giant [%s] Died",this.getMyName()));
+            BossBarManager.getInstance().removeBossBar(this.getUUID());
         }
     }
+
     /********************************* GETTERS / /SETTERS ****************************************/
     public boolean isAttackGoalActive() {
         return this.goalSelector.getRunningGoals()
@@ -251,17 +234,27 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     }
 
     public String getMyName() {
-        return myName;
+        return this.entityData.get(GIANT_NAME);
     }
 
     public void updateBossBarName() {
-        if (this.bossBar != null && this.myName != null && !this.myName.isEmpty()) {
-            this.bossBar.setName(Component.literal(this.myName));
+        if (this.getMyName() != null && !this.getMyName().isEmpty()) {
+            BossBarManager.getInstance().setBossBarName(this.getUUID(), Component.literal(this.getMyName()));
         }
     }
 
     public void setMyName(String myName) {
-        this.myName = myName;
+        //TBBLogger.getInstance().bulkLog("Setting Name",String.format("Name [%s] Set for UUID [%s]",myName,this.getUUID()));
+        this.entityData.set(GIANT_NAME, myName);
         updateBossBarName();
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Giant - [").append(this.getMyName()).append("] UUID [").append(this.getUUID()).append("] ");
+        sb.append("In Dimension [").append(this.getLevel().dimension().location()).append("] ");
+
+        return sb.toString();
     }
 }
