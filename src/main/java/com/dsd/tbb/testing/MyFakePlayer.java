@@ -115,48 +115,6 @@ public class MyFakePlayer extends FakePlayer {
     public void tick(){
         super.tick();
 
-       /* long currentTime = this.level.getGameTime();
-        if ((currentTime - spawnTime) % MOVE_INTERVAL == 0) {
-            moveToRandomLocation();
-        }
 
-        Level level = this.getLevel();
-        if (this.level instanceof ServerLevel && !this.level.isClientSide()) { // Ensure we are on the server side.
-            int mobCountThreshold = ConfigManager.getInstance().getTrialsConfig().getMobCountThreshold();
-            int nearbyEntityCount = SpawningUtilities.getNumberOfNearbyEntities(level, this);
-
-            if (nearbyEntityCount < mobCountThreshold) {
-                int i = 0;
-                boolean shouldSpawn = false;
-                int packSize;
-                int eHeight = (int) Math.ceil(TrialsByBabyZombie.MY_DEFAULT_HEIGHT); //rounding up the height.
-                String tDimension = level.dimension().location().toString();
-                long tTime = level.getDayTime();
-                List<RuleCache.ApplicableRule> rules = RuleCache.getInstance().getApplicableRules(tDimension,tTime);
-
-                for (RuleCache.ApplicableRule rule : rules) {
-
-                    packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(),rule.getMaxPackSize());
-                    double randToCheck = Math.random();
-                    shouldSpawn = randToCheck < rule.getRarity();
-                    if(!shouldSpawn){
-                        continue; //checking the rarity in the rule to decide whether to spawn or not.
-                    }
-                    List<BlockPos> safeSpawnLocations = SpawningUtilities.getSafeSpawnPositions(this.level, eHeight, this.blockPosition(), packSize, true);
-                    //Checking if we have any safe spawn locations
-                    if (!safeSpawnLocations.isEmpty()) {
-                        for (BlockPos pos : safeSpawnLocations) {
-                            TrialsByBabyZombie zombie = new TrialsByBabyZombie(level);
-                            if (zombie != null) {
-                                EnumTypes.ZombieAppearance appearance = EnumTypes.ZombieAppearance.valueOf(rule.getMobType());
-                                zombie.setAppearance(appearance);
-                                zombie.setPos(pos.getX(), pos.getY(), pos.getZ());  // Spawn zombie 2 blocks above the player
-                                level.addFreshEntity(zombie);
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
     }
 }

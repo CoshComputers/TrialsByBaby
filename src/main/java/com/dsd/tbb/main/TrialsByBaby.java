@@ -13,6 +13,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(TrialsByBaby.MOD_ID)
@@ -20,6 +22,8 @@ public class TrialsByBaby
 {
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "trialsbybaby";
+    public static ScheduledExecutorService scheduler;
+
 
     // Directly reference a slf4j logger
     private static final TBBLogger LOGGER = TBBLogger.getInstance();

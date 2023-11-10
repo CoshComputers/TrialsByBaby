@@ -1,5 +1,6 @@
 package com.dsd.tbb.managers;
 
+import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
@@ -34,22 +35,44 @@ public class BossBarManager {
         ServerBossEvent bossBar = new ServerBossEvent(name, color, overlay);
         // Add the new boss bar to the map with the giant's UUID as the key
         this.bossBars.put(giantId, bossBar);
-        TBBLogger.getInstance().debug("createBossBar",String.format("Created Boss Bar for giant [%s]",giantId));
+        TBBLogger.getInstance().debug("createBossBar",String.format("Created Boss Bar for giant [%s]-[%s]",giantId, name.getString()));
         return bossBar;
     }
 
+    public ServerBossEvent getOrCreateBossBar(UUID giantId, Component name, BossEvent.BossBarColor color, BossEvent.BossBarOverlay overlay){
+        ServerBossEvent bossBar = bossBars.get(giantId);
+        if(bossBar == null){
+            TBBLogger.getInstance().bulkLog("getOrCreateBossBar",String.format("Have to Create Boss Bar for Giant [%s]-[%s]",
+                    giantId,name.getString()));
+            bossBar = createBossBar(giantId, name, color, overlay);
+        }
+        TBBLogger.getInstance().bulkLog("getOrCreateBossBar",String.format("Returning Boss Bar for Giant [%s]-[%s]",
+                giantId,name.getString()));
+
+        return bossBar;
+    }
+
+    public void ensureBossBarsExist(ServerLevel level){
+        for (Entity entity : level.getAllEntities()) {
+            if (entity instanceof TrialsByGiantZombie) {
+                UUID giantUUID = entity.getUUID();
+                TrialsByGiantZombie giant = (TrialsByGiantZombie) entity;
+                // Check if Boss Bar exists, and create if not
+                getOrCreateBossBar(giantUUID, giant.getDisplayName(),BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+            }
+        }
+    }
+
     public void updateBossBars(ServerLevel level) {
-        TBBLogger.getInstance().bulkLog("updateBossBar",String.format("Number of Boss Bars = [%d]",
-                this.bossBars.size()));
         this.bossBars.forEach((uuid, bossBar) -> {
             Entity giant = level.getEntity(uuid);
-            TBBLogger.getInstance().bulkLog("updateBossBar", String.format("Null [%s], Is Alive [%s]",
-                    giant==null?"true":"false","TEMP"));
+           // TBBLogger.getInstance().bulkLog("updateBossBar", String.format("Null [%s], Is Alive [%s]",
+           //         giant==null?"true":"false","TEMP"));
             if (giant != null && giant.isAlive()) { // Ensure the giant is alive
                 AABB bossBarRange = new AABB(giant.blockPosition()).inflate(BB_RANGE);
                 List<ServerPlayer> playersInRange = level.getEntitiesOfClass(ServerPlayer.class, bossBarRange);
-                TBBLogger.getInstance().bulkLog("updateBossBars",String.format("Players in Range = [%d]",
-                        playersInRange.size()));
+                //TBBLogger.getInstance().bulkLog("updateBossBars",String.format("Players in Range = [%d]",
+                //        playersInRange.size()));
                 // Add new players to the boss bar and remove players who are no longer in range
                 // Add players who are in range and not already seeing the boss bar
                 for (ServerPlayer player : playersInRange) {
@@ -68,7 +91,7 @@ public class BossBarManager {
                     }
                 });
             }else {
-                TBBLogger.getInstance().bulkLog("updateBossBar",String.format("UUID [%s] Giant Null or Not Alive",uuid));
+                //TBBLogger.getInstance().bulkLog("updateBossBar",String.format("UUID [%s] Giant Null or Not Alive",uuid));
                 // If the giant is null or not alive, remove the boss bar
                 //removeBossBar(uuid);
             }
@@ -102,6 +125,11 @@ public class BossBarManager {
         if (bossBar != null) {
             bossBar.removeAllPlayers();
         }
+    }
+
+    public void removeAllBossBars(){
+        TBBLogger.getInstance().warn("RemoveAllBossBars","Removing all boss bars!");
+        bossBars.clear();
     }
     public void onDimensionChange(ServerPlayer player) {
         // Handle dimension change events for boss bars

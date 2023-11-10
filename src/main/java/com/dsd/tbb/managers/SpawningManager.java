@@ -26,13 +26,8 @@ public class SpawningManager {
     public static void spawnManagerTick(Level level, Player player, PlayerConfig playerConfig) {
         // Check and spawn Baby Zombies
         babyZombieSpawnCheck(level, player);
+        giantSpawnCheck(level, player, playerConfig);
 
-        // Check and spawn Giants
-        if (playerConfig.GIANT_COOLDOWN <= 0) {
-            giantSpawnCheck(level, player, playerConfig);
-        } else {
-            playerConfig.GIANT_COOLDOWN--;
-        }
     }
 
     private static void babyZombieSpawnCheck(Level level, Player player) {
@@ -59,7 +54,8 @@ public class SpawningManager {
 
     private static void giantSpawnCheck(Level level, Player player, PlayerConfig playerConfig) {
          playerConfig.updateNearbyGiants(level, player);
-
+         TBBLogger.getInstance().debug("giantSpawnCheck",String.format("Number of Nearby Giants: [%d]",
+                 playerConfig.numberOfNearbyGiants()));
         // Check for spawning conditions
         if (SpawningUtilities.shouldSpawnGiant(playerConfig)) {
             List<BlockPos> potentialPositions = SpawningUtilities.getSafeSpawnPositions(

@@ -1,6 +1,6 @@
 {
   "spawnFrequency": 0.5,
-  "spawnCooldown": 60,
+  "spawnCooldown": 200,
   "health": 200,
   "damage": 2,
   "followRange": 50,

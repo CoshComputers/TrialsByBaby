@@ -26,6 +26,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Mod.EventBusSubscriber(modid = TrialsByBaby.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEventHandler {
@@ -40,6 +42,7 @@ public class ServerEventHandler {
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         TBBLogger.getInstance().info("onServerAboutToStart","****** INVOKED TRIALS SERVER ABOUT TO START METHOD *********");
+        TrialsByBaby.scheduler = Executors.newScheduledThreadPool(1);
         TBBLogger.getInstance().info("onServerAboutToStart","Initializing Mod Directories");
         Path serverDir = event.getServer().getWorldPath(LevelResource.ROOT);
         FileAndDirectoryManager.initialize(serverDir);
@@ -61,21 +64,7 @@ public class ServerEventHandler {
         ruleManager.loadBabyZombieRules();
         //SpawningManager.loadGiantZombies(event.getServer());
         //outputRules();
-
-        MinecraftServer server = event.getServer();
-
-        server.getAllLevels().forEach(level -> {
-            TBBLogger.getInstance().debug("Server Start Entity Dump",String.format("Level - %s",
-                    level.dimension().location()));
-            level.getAllEntities().forEach(entity -> {
-                // Print out entity information, including type and dimension
-                TBBLogger.getInstance().debug("Server start entity dump", String.format("Entity: [%s], UUID: [%s], " +
-                                "Type: [%s], World: [%s]", entity.getName().getString(), entity.getUUID(), entity.getType().toShortString(),
-                        level.dimension().location()));
-            });
-
-        });
-    }
+}
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
         TBBLogger.getInstance().info("onServerStarting","****** INVOKED TRIALS SERVER STARTING METHOD *********");
@@ -111,6 +100,18 @@ public class ServerEventHandler {
     public static void onServerStopping(ServerStoppingEvent event){
         TBBLogger.getInstance().info("onServerStopping","********** INVOKED TRIALS SERVER STOPPING METHOD **************");
         ConfigManager.getInstance().saveTrialsConfig();
+        BossBarManager.getInstance().removeAllBossBars();
+
+        TrialsByBaby.scheduler.shutdown();
+        try {
+            if (!TrialsByBaby.scheduler.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                TrialsByBaby.scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            TrialsByBaby.scheduler.shutdownNow();
+            Thread.currentThread().interrupt(); // Preserve interrupt status
+        }
+
         //SpawningManager.saveGiantZombies();
         TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
 

@@ -74,7 +74,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         if(!world.isClientSide){
             TBBLogger.getInstance().bulkLog("Giant Constructor",String.format("Dimension [%s]", world.dimension().location()));
             this.bossBarManager = BossBarManager.getInstance();
-            bossBarManager.createBossBar(this.getUUID(), this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+            bossBarManager.getOrCreateBossBar(this.getUUID(), this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
 
         }else{
             this.bossBarManager = null;
