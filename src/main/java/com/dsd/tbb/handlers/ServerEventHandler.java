@@ -1,5 +1,7 @@
 package com.dsd.tbb.handlers;
 
+import com.dsd.tbb.ZZtesting.MultiPlayerTestScheduler;
+import com.dsd.tbb.ZZtesting.loggers.ServerPerformanceMonitor;
 import com.dsd.tbb.commands.GiantCommands;
 import com.dsd.tbb.commands.TrialsCommands;
 import com.dsd.tbb.config.BabyZombieRules;
@@ -8,12 +10,14 @@ import com.dsd.tbb.managers.BossBarManager;
 import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.dsd.tbb.rulehandling.RuleManager;
+import com.dsd.tbb.util.CentralizedLoggerScheduler;
 import com.dsd.tbb.util.TBBLogger;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.event.LootTableLoadEvent;
@@ -33,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerEventHandler {
     private static ConfigManager configManager;
     private static RuleManager ruleManager;
-
+    private static CentralizedLoggerScheduler cls;
 
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {
@@ -68,10 +72,12 @@ public class ServerEventHandler {
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
         TBBLogger.getInstance().info("onServerStarting","****** INVOKED TRIALS SERVER STARTING METHOD *********");
-
+        TBBLogger.getInstance().info("onServierStarting","\n\n");
         CommandDispatcher<CommandSourceStack> commandDispatcher = event.getServer().getCommands().getDispatcher();
         TrialsCommands.register(commandDispatcher);
         GiantCommands.register(commandDispatcher);
+        cls = new CentralizedLoggerScheduler();
+        event.getServer().getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, event.getServer());
 
         //-------COMMENT OUT BEFORE PUBLISHING--------------------------
         for (ServerLevel world : event.getServer().getAllLevels()) {
@@ -79,7 +85,7 @@ public class ServerEventHandler {
             world.setDayTime(18000);
         }
         //-------------------------------------------------------------
-        makePortals(event);
+       // makePortals(event);
 
 
     }
@@ -92,6 +98,11 @@ public class ServerEventHandler {
             for (ServerLevel level : server.getAllLevels()) {
                 BossBarManager.getInstance().updateBossBars(level);
             }
+            ServerPerformanceMonitor.onTick(event);
+            MultiPlayerTestScheduler.onTick();
+
+
+
         }
     }
 
@@ -115,7 +126,11 @@ public class ServerEventHandler {
         //SpawningManager.saveGiantZombies();
         TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
 
+        /*ServerPerformanceMonitor.writeToFile();
+        TestEventLogger.writeToFile();
+        TestResultData.writeToFile();*/
         TBBLogger.getInstance().writeLogToFile();
+
     }
 
 

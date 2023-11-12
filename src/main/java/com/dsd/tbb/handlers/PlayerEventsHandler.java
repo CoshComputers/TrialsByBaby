@@ -1,5 +1,6 @@
 package com.dsd.tbb.handlers;
 
+import com.dsd.tbb.ZZtesting.MultiPlayerTest;
 import com.dsd.tbb.config.PlayerConfig;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.BossBarManager;
@@ -14,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
@@ -40,8 +42,8 @@ public class PlayerEventsHandler {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         // Your code here
         playerManager.playerJoinedGame(event.getEntity(), pName);
-        TBBLogger.getInstance().info("onPlayerJoin", String.format("Number of Players online is [%d]",
-                playerManager.getAllPlayerConfigs().size()));
+        //TBBLogger.getInstance().info("onPlayerJoin", String.format("Number of Players online is [%d]",
+        //         playerManager.getAllPlayerConfigs().size()));
         event.getEntity().sendSystemMessage(message);
 
         //-------COMMENT OUT BEFORE PUBLISHING
@@ -49,8 +51,11 @@ public class PlayerEventsHandler {
         event.getEntity().addEffect(nightVisionEffect);
         //-------------------------------------
         ServerLevel tLevel = ((ServerPlayer) event.getEntity()).getLevel();
-        TBBLogger.getInstance().debug("Player Joined",String.format("Level - %s",
-                    tLevel.dimension().location()));
+        //TBBLogger.getInstance().debug("Player Joined",String.format("Level - %s",
+        //            tLevel.dimension().location()));
+        player.setGameMode(GameType.SPECTATOR);
+        MultiPlayerTest.logTestStart(player);
+
         BossBarManager bossBarManager = BossBarManager.getInstance();
         TrialsByBaby.scheduler.schedule(()-> {
             bossBarManager.ensureBossBarsExist(tLevel);
@@ -63,6 +68,7 @@ public class PlayerEventsHandler {
     public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         UUID pUuid = event.getEntity().getUUID();
         playerManager.playerLeftGame(pUuid);
+        MultiPlayerTest.logTestEnd();
 
     }
 
@@ -90,7 +96,7 @@ public class PlayerEventsHandler {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if(spawnGiantTickCooldown <=0) {
-            TBBLogger.getInstance().bulkLog("Ticking Player","Cooldown done - checking Spawn");
+            //TBBLogger.getInstance().bulkLog("Ticking Player","Cooldown done - checking Spawn");
             spawnGiantTickCooldown = ConfigManager.getInstance().getGiantConfig().getSpawnCooldown();
             if (!event.player.level.isClientSide && event.side == LogicalSide.SERVER) {
                 Player thisPlayer = event.player;

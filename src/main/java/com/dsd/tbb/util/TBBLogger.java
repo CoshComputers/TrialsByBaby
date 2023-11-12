@@ -30,7 +30,7 @@ public class TBBLogger {
     private static final TBBLogger INSTANCE = new TBBLogger();
     private final Logger logger;
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSSS");
 
 
     private TBBLogger() {

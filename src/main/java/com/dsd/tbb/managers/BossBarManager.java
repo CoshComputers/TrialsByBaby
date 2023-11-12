@@ -1,5 +1,6 @@
 package com.dsd.tbb.managers;
 
+import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.network.chat.Component;
@@ -12,6 +13,7 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class BossBarManager {
     private static BossBarManager instance;
@@ -34,20 +36,26 @@ public class BossBarManager {
         // Create a new ServerBossEvent with the giant's name, color, and overlay
         ServerBossEvent bossBar = new ServerBossEvent(name, color, overlay);
         // Add the new boss bar to the map with the giant's UUID as the key
-        this.bossBars.put(giantId, bossBar);
-        TBBLogger.getInstance().debug("createBossBar",String.format("Created Boss Bar for giant [%s]-[%s]",giantId, name.getString()));
+        synchronized (this.bossBars) {
+            this.bossBars.put(giantId, bossBar);
+        }
+        //TBBLogger.getInstance().debug("createBossBar",String.format("Created Boss Bar for giant [%s]-[%s]",giantId, name.getString()));
         return bossBar;
     }
 
     public ServerBossEvent getOrCreateBossBar(UUID giantId, Component name, BossEvent.BossBarColor color, BossEvent.BossBarOverlay overlay){
-        ServerBossEvent bossBar = bossBars.get(giantId);
+        ServerBossEvent bossBar;
+        synchronized (this.bossBars) {
+            bossBar = this.bossBars.get(giantId);
+        }
+
         if(bossBar == null){
-            TBBLogger.getInstance().bulkLog("getOrCreateBossBar",String.format("Have to Create Boss Bar for Giant [%s]-[%s]",
-                    giantId,name.getString()));
+            //TBBLogger.getInstance().bulkLog("getOrCreateBossBar",String.format("Have to Create Boss Bar for Giant [%s]-[%s]",
+           //         giantId,name.getString()));
             bossBar = createBossBar(giantId, name, color, overlay);
         }
-        TBBLogger.getInstance().bulkLog("getOrCreateBossBar",String.format("Returning Boss Bar for Giant [%s]-[%s]",
-                giantId,name.getString()));
+        //TBBLogger.getInstance().bulkLog("getOrCreateBossBar",String.format("Returning Boss Bar for Giant [%s]-[%s]",
+        //        giantId,name.getString()));
 
         return bossBar;
     }
@@ -63,102 +71,126 @@ public class BossBarManager {
         }
     }
 
+
     public void updateBossBars(ServerLevel level) {
-        this.bossBars.forEach((uuid, bossBar) -> {
-            Entity giant = level.getEntity(uuid);
-           // TBBLogger.getInstance().bulkLog("updateBossBar", String.format("Null [%s], Is Alive [%s]",
-           //         giant==null?"true":"false","TEMP"));
-            if (giant != null && giant.isAlive()) { // Ensure the giant is alive
-                AABB bossBarRange = new AABB(giant.blockPosition()).inflate(BB_RANGE);
-                List<ServerPlayer> playersInRange = level.getEntitiesOfClass(ServerPlayer.class, bossBarRange);
-                //TBBLogger.getInstance().bulkLog("updateBossBars",String.format("Players in Range = [%d]",
-                //        playersInRange.size()));
-                // Add new players to the boss bar and remove players who are no longer in range
-                // Add players who are in range and not already seeing the boss bar
-                for (ServerPlayer player : playersInRange) {
-                    if (!bossBar.getPlayers().contains(player)) {
-                        TBBLogger.getInstance().debug("updateBossBar", String.format("Added Player [%s] to Boss Bar",
-                                player.getName()));
-                        bossBar.addPlayer(player);
-                    }
+        synchronized (this.bossBars) {
+            this.bossBars.forEach((uuid, bossBar) -> {
+                Entity giant = level.getEntity(uuid);
+                if (giant != null && giant.isAlive()) {
+                    AABB bossBarRange = new AABB(giant.blockPosition()).inflate(BB_RANGE);
+                    List<ServerPlayer> playersInRange = level.getEntitiesOfClass(ServerPlayer.class, bossBarRange);
+
+                    addPlayersToBossBar(bossBar, playersInRange);
+                    removePlayersFromBossBar(bossBar, playersInRange, level);
                 }
-                // Remove players who are no longer in range or in a different dimension
-                bossBar.getPlayers().forEach(player -> {
-                    if (!playersInRange.contains(player) || !player.level.dimension().equals(level.dimension())) {
-                        TBBLogger.getInstance().debug("updateBossBar", String.format("Removing Player [%s] to Boss Bar",
-                                player.getName()));
-                        bossBar.removePlayer(player);
-                    }
-                });
-            }else {
-                //TBBLogger.getInstance().bulkLog("updateBossBar",String.format("UUID [%s] Giant Null or Not Alive",uuid));
-                // If the giant is null or not alive, remove the boss bar
-                //removeBossBar(uuid);
+            });
+        }
+    }
+
+    private void addPlayersToBossBar(ServerBossEvent bossBar, List<ServerPlayer> playersInRange) {
+        // Iterate over players in range and add them to the boss bar if not already present
+        for (ServerPlayer player : playersInRange) {
+            if (!bossBar.getPlayers().contains(player)) {
+                TBBLogger.getInstance().debug("updateBossBar", String.format("Added Player [%s] to Boss Bar", player.getName()));
+                TestEventLogger.logEvent(player.getStringUUID(), "Boss Bar Update","Adding Player to Boss Bar");
+                bossBar.addPlayer(player);
             }
+        }
+    }
+
+    private void removePlayersFromBossBar(ServerBossEvent bossBar, List<ServerPlayer> playersInRange, ServerLevel level) {
+        // Collect players to be removed
+        List<ServerPlayer> playersToRemove = bossBar.getPlayers().stream()
+                .filter(player -> !playersInRange.contains(player) || !player.level.dimension().equals(level.dimension()))
+                .collect(Collectors.toList());
+
+        // Remove players after iteration
+        playersToRemove.forEach(player -> {
+            TBBLogger.getInstance().debug("updateBossBar", String.format("Removing Player [%s] from Boss Bar", player.getName()));
+            bossBar.removePlayer(player);
+            TestEventLogger.logEvent(player.getStringUUID(), "Boss Bar Update","Removing Player to Boss Bar");
         });
     }
 
     public void updateProgress(UUID giantId, float progress) {
-        ServerBossEvent bossBar = bossBars.get(giantId);
-        if (bossBar != null) {
-            bossBar.setProgress(progress);
+        synchronized (this.bossBars) {
+            ServerBossEvent bossBar = this.bossBars.get(giantId);
+            if (bossBar != null) {
+                bossBar.setProgress(progress);
+            }
         }
     }
 
     public void addPlayerToBossBar(ServerPlayer player, UUID giantId) {
-        ServerBossEvent bossBar = bossBars.get(giantId);
-        if (bossBar != null && !bossBar.getPlayers().contains(player)) {
-            bossBar.addPlayer(player);
-        }
-    }
-
-    public void removePlayerFromBossBar(ServerPlayer player, UUID giantId) {
-        ServerBossEvent bossBar = bossBars.get(giantId);
-        if (bossBar != null && bossBar.getPlayers().contains(player)) {
-            bossBar.removePlayer(player);
+        synchronized (this.bossBars) {
+            ServerBossEvent bossBar = this.bossBars.get(giantId);
+            if (bossBar != null && !bossBar.getPlayers().contains(player)) {
+                bossBar.addPlayer(player);
+            }
         }
     }
 
     public void removeBossBar(UUID uuid) {
         TBBLogger.getInstance().debug("removeBossBar",String.format("Removing Boss Bar for UUID [%s]",uuid));
-        ServerBossEvent bossBar = bossBars.remove(uuid);
-        if (bossBar != null) {
-            bossBar.removeAllPlayers();
+        synchronized (this.bossBars) {
+            ServerBossEvent bossBar = this.bossBars.remove(uuid);
+            if (bossBar != null) {
+                bossBar.removeAllPlayers();
+            }
         }
     }
 
     public void removeAllBossBars(){
-        TBBLogger.getInstance().warn("RemoveAllBossBars","Removing all boss bars!");
-        bossBars.clear();
+        //TBBLogger.getInstance().warn("RemoveAllBossBars","Removing all boss bars!");
+        synchronized (this.bossBars) {
+            this.bossBars.clear();
+        }
     }
     public void onDimensionChange(ServerPlayer player) {
         // Handle dimension change events for boss bars
     }
 
     public Collection<ServerPlayer> getPlayers(UUID giantId) {
-        ServerBossEvent bossBar = bossBars.get(giantId);
-        return bossBar != null ? bossBar.getPlayers() : Collections.emptyList();
+        synchronized (this.bossBars) {
+            ServerBossEvent bossBar = this.bossBars.get(giantId);
+            return bossBar != null ? bossBar.getPlayers() : Collections.emptyList();
+        }
     }
 
     public void setVisible(UUID giantId, boolean visible) {
-        ServerBossEvent bossBar = bossBars.get(giantId);
-        if (bossBar != null) {
-            bossBar.setVisible(visible);
-            // If the visibility is set to false, you may also want to remove all players
-            if (!visible) {
-                bossBar.removeAllPlayers();
+        synchronized (this.bossBars) {
+            ServerBossEvent bossBar = this.bossBars.get(giantId);
+            if (bossBar != null) {
+                bossBar.setVisible(visible);
+                // If the visibility is set to false, you may also want to remove all players
+                if (!visible) {
+                    bossBar.removeAllPlayers();
+                }
             }
         }
     }
 
 
     public void setBossBarName(UUID giantId, Component name) {
-        ServerBossEvent bossBar = bossBars.get(giantId);
-        if (bossBar != null) {
-            bossBar.setName(name);
+        synchronized (this.bossBars) {
+            ServerBossEvent bossBar = this.bossBars.get(giantId);
+            if (bossBar != null) {
+                bossBar.setName(name);
+            }
         }
     }
 
+    public Collection<ServerBossEvent> getBossBarsForPlayer(UUID playerUUID) {
+        List<ServerBossEvent> playerBossBars = new ArrayList<>();
+        synchronized (this.bossBars) {
+            for (ServerBossEvent bossBar : this.bossBars.values()) {
+                if (bossBar.getPlayers().stream().anyMatch(player -> player.getUUID().equals(playerUUID))) {
+                    playerBossBars.add(bossBar);
+                }
+            }
+        }
+        return playerBossBars;
+    }
 
     // Additional methods as needed...
 }

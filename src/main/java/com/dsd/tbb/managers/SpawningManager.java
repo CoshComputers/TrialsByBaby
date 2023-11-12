@@ -1,5 +1,6 @@
 package com.dsd.tbb.managers;
 
+import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
 import com.dsd.tbb.config.PlayerConfig;
 import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
@@ -40,12 +41,15 @@ public class SpawningManager {
         }
 
         for (RuleCache.ApplicableRule rule : rules) {
-            if (!SpawningUtilities.shouldSpawnBaby(level, player, rule.getRarity())) {
+            int numToSpawn = SpawningUtilities.shouldSpawnBaby(level, player, rule.getRarity());
+            //TBBLogger.getInstance().debug("Baby Spawn Check","Number to Spawn = " + numToSpawn);
+            //TestEventLogger.logEvent(player.getStringUUID(), "Number to Spawn","Number to spawn = " + numToSpawn);
+            if (numToSpawn <= 0) {
                 continue; //we shouldn't spawn so continuing onto the next rule
             }
             int eHeight = TrialsByBabyZombie.MY_DEFAULT_HEIGHT;
-            int packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(), rule.getMaxPackSize());
-            List<BlockPos> safeSpawnLocations = SpawningUtilities.getSafeSpawnPositions(level, eHeight, player.blockPosition(), packSize, true);
+            //int packSize = SpawningUtilities.getPackSize(rule.getMinPackSize(), rule.getMaxPackSize());
+            List<BlockPos> safeSpawnLocations = SpawningUtilities.getSafeSpawnPositions(level, eHeight, player.blockPosition(), numToSpawn, true);
             if (!safeSpawnLocations.isEmpty()) {
                 spawnBabies(level, safeSpawnLocations, EnumTypes.ZombieAppearance.valueOf(rule.getMobType()));
             }
@@ -54,8 +58,8 @@ public class SpawningManager {
 
     private static void giantSpawnCheck(Level level, Player player, PlayerConfig playerConfig) {
          playerConfig.updateNearbyGiants(level, player);
-         TBBLogger.getInstance().debug("giantSpawnCheck",String.format("Number of Nearby Giants: [%d]",
-                 playerConfig.numberOfNearbyGiants()));
+         //TBBLogger.getInstance().debug("giantSpawnCheck",String.format("Number of Nearby Giants: [%d]",
+         //        playerConfig.numberOfNearbyGiants()));
         // Check for spawning conditions
         if (SpawningUtilities.shouldSpawnGiant(playerConfig)) {
             List<BlockPos> potentialPositions = SpawningUtilities.getSafeSpawnPositions(
@@ -86,6 +90,7 @@ public class SpawningManager {
             newGiant.setRandomDrops();
 
             world.addFreshEntity(newGiant);
+            TestEventLogger.logEvent(newGiant.getUUID().toString(),"Giant Spawning","New Giant has been spawned");
             //addGiantZombie(newGiant);
             // Apply the glowing effect for 1 or 2 minutes (1200 or 2400 ticks)
             MobEffectInstance glowingEffect = new MobEffectInstance(MobEffects.GLOWING, GLOWING_TIMER);
@@ -107,6 +112,7 @@ public class SpawningManager {
             newBaby.setAppearance(appearance);
             newBaby.setPos(pos.getX(), pos.getY(), pos.getZ());
             level.addFreshEntity(newBaby);
+            //TestEventLogger.logEvent(newBaby.getUUID().toString(),"Baby Spawning","New Baby has been spawned");
         }
     }
 

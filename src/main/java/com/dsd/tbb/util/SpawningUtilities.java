@@ -127,17 +127,21 @@ public class SpawningUtilities {
                && ModUtilities.nextDouble() < ConfigManager.getInstance().getGiantConfig().getSpawnFrequency();
     }
 
-    public static boolean shouldSpawnBaby(Level level, Player player, double rarity){
+    public static int shouldSpawnBaby(Level level, Player player, double rarity){
         boolean shouldSpawn = false;
         int mobCountThreshold = ConfigManager.getInstance().getTrialsConfig().getMobCountThreshold();
+       // TBBLogger.getInstance().debug("shouldSpawnBaby",String.format("Current Threshold = [%d]",mobCountThreshold));
         int nearbyEntityCount = SpawningUtilities.getNumberOfNearbyBabies(level, player);
+        //TBBLogger.getInstance().debug("shouldSpawnBaby",String.format("Near player = [%d]",nearbyEntityCount));
 
         //Check if we are within the mobCountThreshold around the player
         if (nearbyEntityCount < mobCountThreshold) {
             double randSpawnCheck = ModUtilities.nextDouble();
-            shouldSpawn = randSpawnCheck < rarity;
+            if(randSpawnCheck < rarity){
+                return mobCountThreshold - nearbyEntityCount;
+            }
         }
 
-        return shouldSpawn;
+        return 0;
     }
 }

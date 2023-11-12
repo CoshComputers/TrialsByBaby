@@ -1,5 +1,6 @@
 package com.dsd.tbb.customs.entities;
 
+import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
 import com.dsd.tbb.config.GiantConfig;
 import com.dsd.tbb.customs.goals.GiantCombatControllerGoal;
 import com.dsd.tbb.customs.goals.GiantRandomStrollGoal;
@@ -30,15 +31,13 @@ import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
@@ -47,14 +46,15 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     private static final EntityDataAccessor<String> GIANT_NAME = SynchedEntityData.defineId(TrialsByGiantZombie.class, EntityDataSerializers.STRING);
 
     //--------------------------------------
-
+/*TODO - Set up a Enum and state variable to track what the giant is doing.
+*  Use the data sync for client and server syncing. And use GetAnim to cross check client and server*/
     private final BossBarManager bossBarManager;
 
     private List<ItemStack> drops = new ArrayList<>();
     private int followRange;
     private double baseDamage;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public AnimatableManager animatableManager = new AnimatableManager<TrialsByGiantZombie>(this);
+    public AnimatableManager<TrialsByGiantZombie> animatableManager = new AnimatableManager<>(this);
 
     public static final double BB_RANGE = 64.0;
     public static final float WIDTH = 1.2F;
@@ -72,7 +72,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(baseDamage);
         this.setPersistenceRequired();
         if(!world.isClientSide){
-            TBBLogger.getInstance().bulkLog("Giant Constructor",String.format("Dimension [%s]", world.dimension().location()));
+            //TBBLogger.getInstance().bulkLog("Giant Constructor",String.format("Dimension [%s]", world.dimension().location()));
             this.bossBarManager = BossBarManager.getInstance();
             bossBarManager.getOrCreateBossBar(this.getUUID(), this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
 
@@ -138,11 +138,28 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-
+        String animString;
         //Update Boss Bar Progress.
         float healthPercentage = this.getHealth() / this.getMaxHealth();
         BossBarManager.getInstance().updateProgress(this.getUUID(), healthPercentage);
+        // Assuming this.animatableManager is your AnimationManager instance
+        Map controllers = this.animatableManager.getAnimationControllers();
 
+// Retrieve the specific controller using its name
+        AnimationController<?> mainController = (AnimationController<?>) controllers.get("mainController");
+        if(mainController != null) {
+            AnimationProcessor.QueuedAnimation currentAnimation = mainController.getCurrentAnimation();
+            if(currentAnimation != null){
+                animString = currentAnimation != null ? currentAnimation.toString() : "No Animation";
+            }else{
+                this.triggerAnim("mainController","idle");
+                animString = "No Amimation Cur Anim null - triggering idle";
+            }
+
+        }else{
+            animString = "No Animation due Controller null";
+        }
+        TestEventLogger.logEvent(this.stringUUID,"Giant Animation Check",animString);
     }
 
     @Override
