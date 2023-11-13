@@ -1,5 +1,5 @@
 {
-  "spawnFrequency": 0.5,
+  "spawnFrequency": 1.0,
   "spawnCooldown": 200,
   "health": 200,
   "damage": 2,

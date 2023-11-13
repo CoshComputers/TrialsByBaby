@@ -122,7 +122,7 @@ public class MultiPlayerTest {
         fakePlayer.moveTo(spawnPos);
         source.getLevel().addFreshEntity(fakePlayer);
         TBBLogger.getInstance().info("Created Fake Player", String.format("[%s]", fakePlayer.getUUID()));
-        TestEventLogger.logEvent(fakePlayer.getStringUUID() ,"Fake Player Created", "Fake player created from Command");
+        TestEventLogger.logEvent(fakePlayer.getStringUUID() ,"Fake Player Created",String.valueOf(fakePlayer.getId()),"Fake player created from Command");
 
         Supplier<net.minecraft.network.chat.Component> componentSupplier = () -> Component.literal("Spawned fake player " + fakePlayerName + " at " + spawnPos).setStyle(style);
         source.sendSuccess(componentSupplier.get(),true);

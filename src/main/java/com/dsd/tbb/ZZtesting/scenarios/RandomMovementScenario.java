@@ -57,7 +57,7 @@ public class RandomMovementScenario implements ITestScenario {
         BlockPos newPos = new BlockPos(x, y, z);
         player.setPos(newPos.getX(), newPos.getY(), newPos.getZ());
         TBBLogger.getInstance().info("Moving Fake Player",String.format("[%s] - [%d][%d][%d]",player.getUUID(),x,y,z));
-        TestEventLogger.logEvent(player.getStringUUID(), "Move Fake Player",String.format("Fake Player Moved to [%d][%d][%d]",x,y,z));
+        TestEventLogger.logEvent(player.getStringUUID(), "Move Fake Player",String.valueOf(player.getId()) ,String.format("Fake Player Moved to [%d][%d][%d]",x,y,z));
         // Assuming TestResultData handling is done elsewhere
     }
 }

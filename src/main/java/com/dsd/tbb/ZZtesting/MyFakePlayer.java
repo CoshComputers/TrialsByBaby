@@ -75,8 +75,8 @@ public class MyFakePlayer extends FakePlayer {
         }
 
         if(recordEntityCountCooldown <=0){
-            int eCount = EntityCounter.countEntities(this.getLevel());
-            TestEventLogger.logEvent(this.stringUUID,"Total Entity Count", String.valueOf(eCount));
+            //int eCount = ModUtilities.countEntities(this.getLevel());
+            //TestEventLogger.logEvent(this.stringUUID,"Total Entity Count", String.valueOf(eCount));
             recordEntityCountCooldown = MAX_RECORD_ENTITY_COUNT_COOLDOWN;
         }else{
             recordEntityCountCooldown --;
@@ -109,7 +109,7 @@ public class MyFakePlayer extends FakePlayer {
         // Implement the logic to safely remove this FakePlayer from the world
         // This might include dropping items, clearing effects, etc.
         TBBLogger.getInstance().info("Fake Player Terminating",String.format("Fake Player [%s] Terminated", this.getUUID()));
-        TestEventLogger.logEvent(this.getUUID().toString(),"Fake Player Terminating","Removing Self due to Timer expiring");
+        TestEventLogger.logEvent(this.getUUID().toString(),"Fake Player Terminating",String.valueOf(this.getId()) ,"Removing Self due to Timer expiring");
         this.remove(Entity.RemovalReason.DISCARDED); // Example removal
 
     }
@@ -144,12 +144,6 @@ public class MyFakePlayer extends FakePlayer {
 
     public class EntityCounter {
 
-        public static int countEntities(ServerLevel serverLevel) {
-            int count = 0;
-            for (Entity entity : serverLevel.getAllEntities()) {
-                count++;
-            }
-            return count;
-        }
+
     }
 }

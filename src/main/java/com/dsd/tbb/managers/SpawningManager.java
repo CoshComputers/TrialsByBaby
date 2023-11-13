@@ -90,7 +90,7 @@ public class SpawningManager {
             newGiant.setRandomDrops();
 
             world.addFreshEntity(newGiant);
-            TestEventLogger.logEvent(newGiant.getUUID().toString(),"Giant Spawning","New Giant has been spawned");
+            TestEventLogger.logEvent(newGiant.getUUID().toString(),"Giant Spawning",String.valueOf(newGiant.getId()),"New Giant has been spawned");
             //addGiantZombie(newGiant);
             // Apply the glowing effect for 1 or 2 minutes (1200 or 2400 ticks)
             MobEffectInstance glowingEffect = new MobEffectInstance(MobEffects.GLOWING, GLOWING_TIMER);

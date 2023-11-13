@@ -3,11 +3,10 @@ package com.dsd.tbb.handlers;
 import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.main.TrialsByBaby;
-import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.managers.ConfigManager;
+import com.dsd.tbb.rulehandling.RuleManager;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
@@ -22,7 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 @Mod.EventBusSubscriber(modid = TrialsByBaby.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEventHandlers {
 
-    public static final SoundEvent GIANT_ROAR = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(TrialsByBaby.MOD_ID, "roar"));
+    ;
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, TrialsByBaby.MOD_ID);
 

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class TestEventLogger {
     private static final List<String> eventLog = new ArrayList<>();
-    private static final String HEADER = "Timestamp,UUID,EventType,AdditionalInfo";
+    private static final String HEADER = "Timestamp,UUID,EventType,Entity ID,AdditionalInfo";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd-HH:mm:ss.SSSS");
 
     static {
@@ -31,11 +31,12 @@ public class TestEventLogger {
      * @param eventType     The type of event.
      * @param additionalInfo Additional information related to the event.
      */
-    public static synchronized void logEvent(String uuid, String eventType, String additionalInfo) {
+    public static synchronized void logEvent(String uuid, String eventType,String entityID, String additionalInfo) {
         String dataLine = String.join(",",
                 TimeUtil.getCurrentTimestamp(),
                 uuid,
                 eventType,
+                entityID,
                 additionalInfo
         );
         eventLog.add(dataLine);

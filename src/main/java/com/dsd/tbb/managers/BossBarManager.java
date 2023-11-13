@@ -92,7 +92,7 @@ public class BossBarManager {
         for (ServerPlayer player : playersInRange) {
             if (!bossBar.getPlayers().contains(player)) {
                 TBBLogger.getInstance().debug("updateBossBar", String.format("Added Player [%s] to Boss Bar", player.getName()));
-                TestEventLogger.logEvent(player.getStringUUID(), "Boss Bar Update","Adding Player to Boss Bar");
+                //TestEventLogger.logEvent(player.getStringUUID(), "Boss Bar Update","Adding Player to Boss Bar");
                 bossBar.addPlayer(player);
             }
         }
@@ -108,7 +108,7 @@ public class BossBarManager {
         playersToRemove.forEach(player -> {
             TBBLogger.getInstance().debug("updateBossBar", String.format("Removing Player [%s] from Boss Bar", player.getName()));
             bossBar.removePlayer(player);
-            TestEventLogger.logEvent(player.getStringUUID(), "Boss Bar Update","Removing Player to Boss Bar");
+            //TestEventLogger.logEvent(player.getStringUUID(), "Boss Bar Update","Removing Player to Boss Bar");
         });
     }
 

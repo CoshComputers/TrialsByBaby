@@ -6,6 +6,16 @@ import java.util.stream.Collectors;
 
 public class EnumTypes {
 
+    public enum GiantState {
+        SPAWNED,
+        IDLE,
+        WALKING,
+        ATTACKING_START,
+        ATTACKING_CHARGE,
+        ATTACKING_SMASH,
+        ATTACKING_MELEE,
+        ATTACKING_STOPPING;
+    }
     public enum GiantAttackType {
         MELEE,
         SMACKDOWN,

@@ -27,6 +27,7 @@ public class CentralizedLoggerScheduler {
         ServerPerformanceMonitor.writeToFile();
         TestEventLogger.writeToFile();
         TestResultData.writeToFile();
+        ModUtilities.writeGiantLogs();
 
         // Shutdown the executor service
         shutdownExecutorService();

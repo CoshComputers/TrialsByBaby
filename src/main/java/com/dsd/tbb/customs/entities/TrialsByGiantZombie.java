@@ -1,11 +1,13 @@
 package com.dsd.tbb.customs.entities;
 
-import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
+import com.dsd.tbb.ZZtesting.loggers.GiantDataLogger;
 import com.dsd.tbb.config.GiantConfig;
 import com.dsd.tbb.customs.goals.GiantCombatControllerGoal;
 import com.dsd.tbb.customs.goals.GiantRandomStrollGoal;
 import com.dsd.tbb.managers.BossBarManager;
 import com.dsd.tbb.managers.ConfigManager;
+import com.dsd.tbb.managers.ModSounds;
+import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -38,24 +41,27 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
     //Data to share between Client and Server
     private static final EntityDataAccessor<String> GIANT_NAME = SynchedEntityData.defineId(TrialsByGiantZombie.class, EntityDataSerializers.STRING);
-
+    private static EntityDataAccessor<String> GIANT_STATE = SynchedEntityData.defineId(TrialsByGiantZombie.class, EntityDataSerializers.STRING);
     //--------------------------------------
-/*TODO - Set up a Enum and state variable to track what the giant is doing.
-*  Use the data sync for client and server syncing. And use GetAnim to cross check client and server*/
-    private final BossBarManager bossBarManager;
 
+    private static final int MAX_LOGGING_COOLDOWN = 5; //log every n ticks
+    private static final int MAX_WRITE_LOG_COOLDOWN = 1 * (60 * 20); //min * (ticks per second)
+    private int loggingCooldown = 0;
+    private int writeLogCooldown = 0;
+    private final BossBarManager bossBarManager;
     private List<ItemStack> drops = new ArrayList<>();
     private int followRange;
     private double baseDamage;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public AnimatableManager<TrialsByGiantZombie> animatableManager = new AnimatableManager<>(this);
+    public GiantDataLogger gEventLog;
 
+    private EnumTypes.GiantState previousState = EnumTypes.GiantState.SPAWNED;
     public static final double BB_RANGE = 64.0;
     public static final float WIDTH = 1.2F;
     public static final float HEIGHT = 3.2F;
@@ -65,12 +71,12 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
     public TrialsByGiantZombie(EntityType type, Level world) {
         super(type, world);
-        UUID uniqueID = this.getUUID();
-        //TBBLogger.getInstance().bulkLog("Entity Constructor",String.format("Constructing UUID [%s]",uniqueID));
+        this.setEventLog(this.getId(), this.stringUUID);
         this.followRange = ConfigManager.getInstance().getGiantConfig().getFollowRange();
         this.baseDamage = ConfigManager.getInstance().getGiantConfig().getDamage();
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(baseDamage);
         this.setPersistenceRequired();
+        this.setEventLog(this.getId(), this.stringUUID);
         if(!world.isClientSide){
             //TBBLogger.getInstance().bulkLog("Giant Constructor",String.format("Dimension [%s]", world.dimension().location()));
             this.bossBarManager = BossBarManager.getInstance();
@@ -115,6 +121,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(GIANT_NAME, "");
+        this.entityData.define(GIANT_STATE, EnumTypes.GiantState.SPAWNED.name());
     }
 
     @Override
@@ -126,6 +133,8 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
                 .triggerableAnim("idle", DefaultAnimations.IDLE)
                 .triggerableAnim("melee", DefaultAnimations.ATTACK_STRIKE);
         controllers.add(controller);
+
+
     }
 
     public PlayState getAnimationState(AnimationState state) {
@@ -135,31 +144,72 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         return PlayState.CONTINUE;  // Otherwise, continue the animation
     }
 
+    /************************************ TICK METHOD****************************/
     @Override
     public void tick() {
         super.tick();
-        String animString;
+        if(gEventLog == null){
+            this.setEventLog(this.getId(),this.stringUUID);
+        }
+
+        if(this.getLevel().isClientSide){
+            EnumTypes.GiantState currentState = this.getState();
+
+            // Check if the state has changed to ATTACKING_CHARGE
+            if (currentState == EnumTypes.GiantState.ATTACKING_CHARGE && previousState != EnumTypes.GiantState.ATTACKING_CHARGE) {
+                // Play the roar sound
+                playRoar();
+                TBBLogger.getInstance().debug("Client Side Tick","Playing Roar as State changed to CHARGE");
+                // Update the previous state
+                previousState = currentState;
+            } else if (currentState != previousState) {
+                // Update the previous state if it's different but not ATTACKING_CHARGE
+                previousState = currentState;
+            }
+        }
+
+
         //Update Boss Bar Progress.
         float healthPercentage = this.getHealth() / this.getMaxHealth();
         BossBarManager.getInstance().updateProgress(this.getUUID(), healthPercentage);
-        // Assuming this.animatableManager is your AnimationManager instance
-        Map controllers = this.animatableManager.getAnimationControllers();
 
-// Retrieve the specific controller using its name
-        AnimationController<?> mainController = (AnimationController<?>) controllers.get("mainController");
-        if(mainController != null) {
-            AnimationProcessor.QueuedAnimation currentAnimation = mainController.getCurrentAnimation();
-            if(currentAnimation != null){
-                animString = currentAnimation != null ? currentAnimation.toString() : "No Animation";
+        /******************* TICK LOGGING SPACE FOR GIANT TESTING *****************************************/
+        if(this.loggingCooldown <= 0) {
+            loggingCooldown = MAX_LOGGING_COOLDOWN;
+            String animString = "null";
+            //Attempt to get the current active animation
+            Map<String, AnimationController<TrialsByGiantZombie>> contMap = this.getAnimatableManager().getAnimationControllers();
+            AnimationController<TrialsByGiantZombie> cont = contMap.get("mainController");
+            if(cont != null){
+                AnimationProcessor.QueuedAnimation qAnim = cont.getCurrentAnimation();
+                if(qAnim != null){
+                    Animation anim = qAnim.animation();
+                    if(anim != null){
+                        animString = anim.name();
+                    }else{
+                        animString = "No Active Animation";
+                    }
+                }else{
+                    //TBBLogger.getInstance().warn("Giant Ticking","No Acitve Animation Queue");
+                    animString = "No Active Queued Animations";
+                }
             }else{
-                this.triggerAnim("mainController","idle");
-                animString = "No Amimation Cur Anim null - triggering idle";
+                TBBLogger.getInstance().warn("Giant Ticking","Animation Controller null");
+                animString = "No Controller";
             }
 
+            gEventLog.recordData(this.getMyName(),"Ticking",this.level.isClientSide,this.getState(),false,
+                    this.blockPosition(),this.getDeltaMovement(),getActiveGoal(),healthPercentage, animString);
         }else{
-            animString = "No Animation due Controller null";
+            loggingCooldown --;
         }
-        TestEventLogger.logEvent(this.stringUUID,"Giant Animation Check",animString);
+
+        if(writeLogCooldown <= 0){
+            gEventLog.writeToFile();
+            writeLogCooldown = MAX_WRITE_LOG_COOLDOWN;
+        }else{
+            writeLogCooldown --;
+        }
     }
 
     @Override
@@ -170,7 +220,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
                 Player.class, this.followRange, false, false, null));
 
         this.goalSelector.addGoal(3, new GiantCombatControllerGoal(this));
-        this.goalSelector.addGoal(5, new GiantRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(5, new GiantRandomStrollGoal(this, 1.0, 50, false));
 
     }
 
@@ -218,7 +268,6 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
 
     @Override
     public void checkDespawn() {
-
         // Overriding without calling super prevents the default despawn logic from running
     }
 
@@ -233,9 +282,26 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
             TBBLogger.getInstance().debug("Entity Die",String.format("Giant [%s] Died",this.getMyName()));
             BossBarManager.getInstance().removeBossBar(this.getUUID());
         }
+        gEventLog.recordData(this.getMyName(),"Die Event",this.level.isClientSide,this.getState(),false,this.blockPosition(),
+                this.getDeltaMovement(),getActiveGoal(),0.00f,"No Active Animation Due to Dieing");
+        gEventLog.writeToFile();
+    }
+
+    public void playRoar(){
+        TBBLogger.getInstance().debug("playRoar",String.format("Loc: [%d][%d][%d] - Sound ToString: %s",
+                this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ(),
+                ModSounds.GIANT_ROAR.get().getLocation().toString()));
+        this.getLevel().playSound(null, this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ()
+                , ModSounds.GIANT_ROAR.get(),SoundSource.HOSTILE, 10.0F, 1.0F);
     }
 
     /********************************* GETTERS / /SETTERS ****************************************/
+    public String getActiveGoal(){
+        if(isAttackGoalActive()) return "Attacking Goal";
+        if(isStrollGoalActive()) return "Stroll Goal";
+
+        return "No Goal";
+    }
     public boolean isAttackGoalActive() {
         return this.goalSelector.getRunningGoals()
                 .anyMatch(goal -> goal.getGoal() instanceof GiantCombatControllerGoal);
@@ -245,9 +311,23 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         return this.goalSelector.getRunningGoals()
                 .anyMatch(goal -> goal.getGoal() instanceof GiantRandomStrollGoal);
     }
+    public void setState(EnumTypes.GiantState state) {
+        this.entityData.set(GIANT_STATE, state.name());
+    }
+    public EnumTypes.GiantState getState() {
+        String stateStr = this.entityData.get(GIANT_STATE);
+        try {
+            return EnumTypes.GiantState.valueOf(stateStr);
+        } catch (IllegalArgumentException e) {
+            // Handle the case where the string does not correspond to any enum value
+            TBBLogger.getInstance().error("GiantGetState",String.format("State Enum not defined for string [%s]",
+                    stateStr));
+            return EnumTypes.GiantState.IDLE; // Default or error handling state
+        }
+    }
 
-    public AnimatableManager getAnimatableManager() {
-        return animatableManager;
+    public AnimatableManager<TrialsByGiantZombie> getAnimatableManager() {
+        return this.animatableManager;
     }
 
     public String getMyName() {
@@ -266,6 +346,13 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         updateBossBarName();
     }
 
+    public void setEventLog(int id, String uuid){
+
+        gEventLog = new GiantDataLogger(id,uuid,this.level.isClientSide);
+    }
+    public GiantDataLogger getEventLog(){
+        return gEventLog;
+    }
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

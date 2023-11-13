@@ -1,8 +1,8 @@
 {
-  "roar": {
-    "category": "neutral",
-    "sounds": [
-      "trialsbybaby:giantroars"
-    ]
-  }
+  "sounds": [
+    {
+      "name": "trialsbybaby:giantroars",
+      "stream": false
+    }
+  ]
 }

@@ -73,6 +73,7 @@ public class ServerEventHandler {
     public static void onServerStarting(ServerStartingEvent event) {
         TBBLogger.getInstance().info("onServerStarting","****** INVOKED TRIALS SERVER STARTING METHOD *********");
         TBBLogger.getInstance().info("onServierStarting","\n\n");
+        TrialsByBaby.setServer(event.getServer());
         CommandDispatcher<CommandSourceStack> commandDispatcher = event.getServer().getCommands().getDispatcher();
         TrialsCommands.register(commandDispatcher);
         GiantCommands.register(commandDispatcher);
@@ -112,7 +113,6 @@ public class ServerEventHandler {
         TBBLogger.getInstance().info("onServerStopping","********** INVOKED TRIALS SERVER STOPPING METHOD **************");
         ConfigManager.getInstance().saveTrialsConfig();
         BossBarManager.getInstance().removeAllBossBars();
-
         TrialsByBaby.scheduler.shutdown();
         try {
             if (!TrialsByBaby.scheduler.awaitTermination(800, TimeUnit.MILLISECONDS)) {
@@ -122,6 +122,7 @@ public class ServerEventHandler {
             TrialsByBaby.scheduler.shutdownNow();
             Thread.currentThread().interrupt(); // Preserve interrupt status
         }
+
 
         //SpawningManager.saveGiantZombies();
         TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");

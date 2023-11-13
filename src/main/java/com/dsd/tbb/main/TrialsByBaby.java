@@ -2,8 +2,9 @@ package com.dsd.tbb.main;
 
 
 import com.dsd.tbb.handlers.ModEventHandlers;
+import com.dsd.tbb.managers.ModSounds;
 import com.dsd.tbb.util.TBBLogger;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,7 +24,7 @@ public class TrialsByBaby
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "trialsbybaby";
     public static ScheduledExecutorService scheduler;
-
+    public static MinecraftServer MOD_SERVER = null;
 
     // Directly reference a slf4j logger
     private static final TBBLogger LOGGER = TBBLogger.getInstance();
@@ -31,10 +32,6 @@ public class TrialsByBaby
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-
-   // public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MOD_ID);
-
-    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MOD_ID);
 
     public TrialsByBaby()
     {
@@ -48,8 +45,7 @@ public class TrialsByBaby
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
 
-        SOUNDS.register(modEventBus);
-        registerEntities();
+        ModSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         //registerEntities();
         // Register ourselves for server and other game utils we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -71,8 +67,20 @@ public class TrialsByBaby
                 .sized(1.2F, 1.9F)
                 .build(new ResourceLocation(MOD_ID, "trials_by_giant_zombie").toString()));
 */
-        SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
+
+    }
+
+    /************************************* HOOKS *************************************/
+    public static void triggerShutdown() {
+        MOD_SERVER.halt(false); // Gracefully stops the server
+    }
+
+
+    /************************************* GETTERS/SETTERS *************************************/
+
+    public static void setServer(MinecraftServer server){
+        MOD_SERVER = server;
     }
 
 }

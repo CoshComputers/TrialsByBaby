@@ -1,5 +1,11 @@
 package com.dsd.tbb.util;
 
+import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.main.TrialsByBaby;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -49,4 +55,41 @@ public class ModUtilities {
         return level;
     }
 
+    public static int countEntities(ServerLevel serverLevel) {
+        int count = 0;
+        for (Entity entity : serverLevel.getAllEntities()) {
+            count++;
+        }
+        return count;
+    }
+    public static int countGiants(ServerLevel serverLevel) {
+        int count = 0;
+        for (Entity entity : serverLevel.getAllEntities()) {
+            if(entity instanceof TrialsByGiantZombie) count++;
+        }
+        return count;
+    }
+    public static int countBabies(ServerLevel serverLevel) {
+        int count = 0;
+        for (Entity entity : serverLevel.getAllEntities()) {
+            if(entity instanceof TrialsByBabyZombie) count++;
+        }
+        return count;
+    }
+
+    public static void writeGiantLogs(){
+        MinecraftServer server = TrialsByBaby.MOD_SERVER;
+
+        for(ServerLevel serverLevel : server.getAllLevels()) {
+            for (Entity entity : serverLevel.getAllEntities()) {
+                if (entity instanceof TrialsByGiantZombie) {
+                    //TBBLogger.getInstance().debug("Writing Giant Event Logs", "Writing for Giant " +
+                     //       ((TrialsByGiantZombie) entity).getMyName());
+                    ((TrialsByGiantZombie) entity).getEventLog().writeToFile();
+                    ;
+                }
+            }
+        }
+
+    }
 }
