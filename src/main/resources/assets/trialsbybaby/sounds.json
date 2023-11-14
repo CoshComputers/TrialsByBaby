@@ -1,0 +1,11 @@
+{
+  "giant_roar": {
+    "subtitle": "trialsbybaby.subtitle.giant_roar",
+    "sounds":[
+      {
+        "name": "trialsbybaby:giantroars",
+        "stream": false
+      }
+    ]
+  }
+}

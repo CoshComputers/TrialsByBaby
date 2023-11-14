@@ -12,6 +12,6 @@ public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, TrialsByBaby.MOD_ID);
 
     public static final RegistryObject<SoundEvent> GIANT_ROAR = SOUNDS.register("giant_roar",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(TrialsByBaby.MOD_ID, "giantroars")));
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(TrialsByBaby.MOD_ID, "giant_roar")));
 }
 

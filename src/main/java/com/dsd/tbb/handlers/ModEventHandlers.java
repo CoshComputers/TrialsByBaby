@@ -47,11 +47,10 @@ public class ModEventHandlers {
         //TBBLogger.getInstance().debug("commonSetup",ConfigManager.getInstance().getTrialsConfig().toString());
         RuleManager.getInstance();
         TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
-
-
-
-
     }
+
+
+
     @SubscribeEvent
     public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
         event.put(TRIALS_BY_GIANT_ZOMBIE.get(), TrialsByGiantZombie.createAttributes().build());

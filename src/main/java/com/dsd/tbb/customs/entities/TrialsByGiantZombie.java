@@ -152,7 +152,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
             this.setEventLog(this.getId(),this.stringUUID);
         }
 
-        if(this.getLevel().isClientSide){
+       /* if(this.getLevel().isClientSide){
             EnumTypes.GiantState currentState = this.getState();
 
             // Check if the state has changed to ATTACKING_CHARGE
@@ -166,7 +166,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
                 // Update the previous state if it's different but not ATTACKING_CHARGE
                 previousState = currentState;
             }
-        }
+        }*/
 
 
         //Update Boss Bar Progress.
@@ -292,7 +292,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
                 this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ(),
                 ModSounds.GIANT_ROAR.get().getLocation().toString()));
         this.getLevel().playSound(null, this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ()
-                , ModSounds.GIANT_ROAR.get(),SoundSource.HOSTILE, 10.0F, 1.0F);
+                , ModSounds.GIANT_ROAR.get(),SoundSource.HOSTILE, 20.0F, 1.0F);
     }
 
     /********************************* GETTERS / /SETTERS ****************************************/

@@ -1,0 +1,80 @@
+
+---------------MOD OUTLINE------------------------------------
+Mod Name: Trials By Baby Zombie
+
+Minecraft Version: 1.19.4
+
+Forge Version: 45.2.4
+
+API and Libraries:
+
+Forge API: The mod is built on the Forge platform, which is known for its extensive modding capabilities in Minecraft.
+Geckolib: Utilized for advanced animations and entity behaviors, enhancing the visual and interactive aspects of the mod.
+Development Environment: IntelliJ IDE
+
+Key Features:
+
+Custom Entities: The mod introduces unique mobs like TrialsByBabyZombie and TrialsByGiant, each with distinct behaviors and appearances.
+Event Handling: Utilizes Forge's event bus system for efficient event management and mod interactions within the game.
+Configuration Management: Managed through the ConfigManager class, allowing for flexible and dynamic mod configurations.
+Custom Mob Behavior and Spawning: The mod includes custom logic for mob behavior and spawning, leveraging SpawningUtilities for complex spawn conditions.
+Mob Drop Management: MobDropUtilities handle the loot and drops from custom entities, offering a customizable loot experience.
+Custom Logging: Implemented with TBBLogger for detailed and mod-specific logging, aiding in debugging and development.
+Object-Oriented Design: Emphasizes principles like encapsulation, polymorphism, and the use of Singleton pattern in ConfigManager for efficient resource management.
+Command Implementation: Includes custom commands for runtime control and toggling of features within the game.
+Gradle Build and Packaging: Guidance on gradle configurations for efficient mod building and distribution.
+JSON Operations: Utilizes Gson for handling JSON data, crucial for configuration and data management.
+
+Purpose: Designed to enhance the entertainment value for content creators and their audience by introducing challenging and engaging gameplay elements.
+
+
+---------- ANALYSIS APPROACH ------------------
+Objective:
+Analyze the impact of varying baby zombie spawn rates on Minecraft server performance, focusing on metrics like Ticks Per Second (TPS) and memory usage.
+
+Data Files Utilized:
+
+Server Performance Data: Time-stamped metrics including TPS, memory usage, and time taken for operations.
+Test Data: Details on the number and type of entities spawned, including baby zombies, their locations, and timestamps.
+Test Events Data: Records of specific in-game events, such as entity spawns and player movements, with timestamps.
+Analysis Plan:
+
+Data Merging and Preparation:
+
+Merge datasets based on timestamps for a comprehensive view correlating server metrics with in-game events and entity counts.
+Correlation Analysis:
+
+Examine the relationship between entity spawning rates and server performance metrics.
+Assess how changes in spawn rates affect TPS and memory usage.
+Time-Series Analysis:
+
+Plot TPS and memory usage over time to identify trends or anomalies.
+Overlay key events, such as spikes in entity spawns, against server performance metrics.
+Statistical Summary:
+
+Provide summaries of key metrics like average or peak TPS during different testing phases.
+Insights and Recommendations:
+
+Identify performance bottlenecks or issues and suggest optimizations based on observed data.
+Key Analysis Tasks:
+Cleaning and Merging Data: Ensuring data integrity by cleaning and accurately merging different datasets.
+Correlation Analysis: Calculating correlation coefficients to understand the relationship between spawn rates and server performance.
+Visual Time-Series Analysis: Creating plots to visually analyze TPS and memory usage over time in relation to entity spawn events.
+Comparative Analysis: Comparing results from different test scenarios to identify the optimal balance between entity spawn rates and server performance.
+
+
+Other areas of interest would be the memory usage by entity. EG: we should be able to work out how much memory each entity is consuming. The only entities we'll have are The real player (one - and in spectator mode and not moving, so a negligble amount- assume zero - Fake Players, GIants, Babies. The counts of these can be calculated from the event log and test data  data sets. 
+
+
+
+-------LOG DETAILS----------------
+
+The "x-TestData.csv" files contain the recording of data points from within our FakePlayer Objects. The UUID is the fakeplayers unique ID, and the position is where in the world it is (this shows the movement of the player), the baby and giant counts are the entity counts and the bossbarCount is the number of bossBars that fake player would see on it's gui. These points are vital as the numbers show that the MOD is working as expected. The Boss Bar data should align to the number of Giants count, give or take a small margin for error and timing. If this is different then something isn't working in the code. 
+
+The x-TestEvents.csv file shows specific events that occur. For example - when checking if the mod needs to spawn more Baby Zombies around the player, or when the Mod periodically checks the total entity count on the world.
+
+The x-ServerPerformance.csv file shows various performance metrics - this is used to correlated Memory usage, TPS, etc against the events and fake player test data. 
+
+These log files are created every x minutes the tests are running, for example - i've just ran a 3 ish minute test and we have 4 of each file. 
+
+-----------------------------------------------

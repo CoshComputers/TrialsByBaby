@@ -221,6 +221,8 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
             chargeCooldown = ConfigManager.getInstance().getGiantConfig().getChargeCooldown();
             roarCooldown = 50;
             animationTickTimer = 40;
+
+            giant.playRoar();
         } else {
             if (distanceToTarget > G_REACH && animationTickTimer > 0) {
                 animationTickTimer--;
