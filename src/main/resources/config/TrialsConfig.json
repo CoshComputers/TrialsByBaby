@@ -1,9 +1,9 @@
 {
     "overrideMobs": true,
     "spawnpositionretry": 5,
-    "mobcountthreshold": 1,
+    "mobcountthreshold": 50,
     "spawnYsearchrange": 5,
-    "spawnGiants": 3,
+    "spawnGiants": 1,
     "giveInitialGear": true,
     "giveSpecialLoot": true,
     "usePlayerHeads": true,

@@ -47,8 +47,10 @@ public class PlayerEventsHandler {
         event.getEntity().sendSystemMessage(message);
 
         //-------COMMENT OUT BEFORE PUBLISHING
-        MobEffectInstance nightVisionEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
-        event.getEntity().addEffect(nightVisionEffect);
+        MobEffectInstance pEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
+        event.getEntity().addEffect(pEffect);
+        pEffect = new MobEffectInstance(MobEffects.SATURATION,99999);
+        event.getEntity().addEffect(pEffect);
         //-------------------------------------
         ServerLevel tLevel = ((ServerPlayer) event.getEntity()).getLevel();
         //TBBLogger.getInstance().debug("Player Joined",String.format("Level - %s",

@@ -52,7 +52,7 @@ public class RandomMovementScenario implements ITestScenario {
 
         int x = random.nextInt(RADIUS * 2) - RADIUS + originalPos.getX();
         int z = random.nextInt(RADIUS * 2) - RADIUS + originalPos.getZ();
-        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z); // Find a safe Y position
+        int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z); // Find a safe Y position
 
         BlockPos newPos = new BlockPos(x, y, z);
         player.setPos(newPos.getX(), newPos.getY(), newPos.getZ());

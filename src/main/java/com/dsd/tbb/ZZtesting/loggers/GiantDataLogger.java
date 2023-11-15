@@ -55,20 +55,22 @@ public class GiantDataLogger {
     }
 
     public void writeToFile() {
-        DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String fileName = fileNameFormatter.format(LocalDateTime.now()) + "-" + this.entityID +
-                (isClientLog? "Client" : "Server") + "-GiantData.csv";
-        Path logDir = FileAndDirectoryManager.getLogDirectory();
-        Path filePath = Paths.get(logDir.toString(), fileName);
+        if(!isClientLog) {
+            DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+            String fileName = fileNameFormatter.format(LocalDateTime.now()) + "-" + this.entityID +
+                    (isClientLog ? "Client" : "Server") + "-GiantData.csv";
+            Path logDir = FileAndDirectoryManager.getLogDirectory();
+            Path filePath = Paths.get(logDir.toString(), fileName);
 
-        try {
-            Files.write(filePath, testData);
-            //TBBLogger.getInstance().info("write Test Data", "Test data written to " + filePath);
-            testData.clear();
-            testData.add(HEADER);
+            try {
+                Files.write(filePath, testData);
+                //TBBLogger.getInstance().info("write Test Data", "Test data written to " + filePath);
+                testData.clear();
+                testData.add(HEADER);
 
-        } catch (IOException e) {
-            TBBLogger.getInstance().error("write Test Data", "Error writing test data to file: " + e.getMessage());
+            } catch (IOException e) {
+                TBBLogger.getInstance().error("write Test Data", "Error writing test data to file: " + e.getMessage());
+            }
         }
     }
 }

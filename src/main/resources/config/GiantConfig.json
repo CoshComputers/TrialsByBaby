@@ -4,7 +4,7 @@
   "health": 200,
   "damage": 2,
   "followRange": 50,
-  "aggressionLevel": 1,
+  "aggressionLevel": 5,
   "visibilityRange": 50,
   "xpPoints": 50,
   "chargeCooldown": 100,
