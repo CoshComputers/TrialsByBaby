@@ -7,5 +7,14 @@
         "stream": false
       }
     ]
+  },
+  "giant_smash": {
+    "subtitle": "trialsbybaby.subtitle.giant_smash",
+    "sounds":[
+      {
+        "name": "trialsbybaby:giantsmash",
+        "stream": false
+      }
+    ]
   }
 }

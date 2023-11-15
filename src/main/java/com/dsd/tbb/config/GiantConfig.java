@@ -22,6 +22,7 @@ public class GiantConfig {
     private int damage;
     private int followRange;
     private int visibilityRange;
+    private int aggressionLevel;
     private int xpPoints;
     private String myName;
 
@@ -39,6 +40,7 @@ public class GiantConfig {
         setCommandList.add("visibilityRange");
         setCommandList.add("chargeCooldown");
         setCommandList.add("smashCooldown");
+        setCommandList.add("aggressionLevel");
 
         setDefaults();
     }
@@ -58,6 +60,7 @@ public class GiantConfig {
         this.damage = 1;
         this.followRange = 40;
         this.visibilityRange = 50;
+        this.aggressionLevel = 2;
         this.xpPoints = 50;
         this.chargeCooldown = 300;
         this.smashCooldown = 100;
@@ -133,6 +136,13 @@ public class GiantConfig {
 
     public synchronized void setDrops(List<EnchantedBookDrop> drops) { this.drops = drops;}
 
+    public int getAggressionLevel() {
+        return aggressionLevel;
+    }
+
+    public void setAggressionLevel(int aggressionLevel) {
+        this.aggressionLevel = aggressionLevel;
+    }
 
     /********************************** GETTERS *************************************/
     public synchronized double getSpawnFrequency() {
@@ -164,6 +174,9 @@ public class GiantConfig {
     public synchronized int getChargeCooldown() { return chargeCooldown;}
     public synchronized int getSmashCooldown() { return  smashCooldown;};
     public synchronized int getSpawnCooldown() { return spawnCooldown; }
+
+
+
     public List<EnchantedBookDrop> getDrops() {
         return drops;
     }

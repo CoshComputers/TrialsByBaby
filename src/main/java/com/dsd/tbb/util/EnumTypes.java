@@ -50,7 +50,8 @@ public class EnumTypes {
        FOLLOW_RANGE("followRange"),
        VISIBILITY_RANGE("visibilityRange"),
        CHARGE_COOLDOWN("chargeCooldown"),
-       SMASH_COOLDOWN("smashCooldown");
+       SMASH_COOLDOWN("smashCooldown"),
+       AGRESSION_LEVEL("aggressionLevel");
         private final String optionName;
 
         ModConfigOption(String optionName) {

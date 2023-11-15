@@ -13,5 +13,8 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> GIANT_ROAR = SOUNDS.register("giant_roar",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(TrialsByBaby.MOD_ID, "giant_roar")));
+
+    public static final RegistryObject<SoundEvent> GIANT_SMASH = SOUNDS.register("giant_smash",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(TrialsByBaby.MOD_ID, "giant_smash")));
 }
 

@@ -5,9 +5,13 @@ import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.ModUtilities;
+import com.dsd.tbb.util.TBBLogger;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.phys.Vec3;
 
 public class GiantCombatControllerGoal extends MeleeAttackGoal {
     private static final int G_CHARGE_DISTANCE = 100;
@@ -82,7 +86,7 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
 
         //if we are in a CHARGE:
         if (attackType == EnumTypes.GiantAttackType.CHARGE) {
-            if (roarCooldown <= 0) { //tick so giant moves towards target
+             if (roarCooldown <= 0) { //tick so giant moves towards target
                 giant.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.originalSpeed * 3);
                 super.tick();
             } else { //Do not tick if in Charge and Roar counter > 0
@@ -167,6 +171,7 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
 
     private void checkAndPerformMelee(boolean firstCall) {
         if (firstCall) {
+            giant.setLastAttackType(EnumTypes.GiantAttackType.MELEE);
             walking = false;
             giant.triggerAnim("mainController", "melee");
             giant.setState(EnumTypes.GiantState.ATTACKING_MELEE);
@@ -175,9 +180,8 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
             if (animationTickTimer > 0) {
                 animationTickTimer--;
             } else {
-                setDamageAmount();
-                giant.doHurtTarget(this.mob.getTarget());
-                giant.setLastHurtMob(this.mob.getTarget());
+                inflictDamage();
+                giant.playHit();
                 resetAttacks();
             }
         }
@@ -186,20 +190,19 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
 
     private void checkAndPerformSmackdown(boolean firstCall) {
         if (firstCall) {
+            giant.setLastAttackType(EnumTypes.GiantAttackType.SMACKDOWN);
             walking = false;
             giant.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
             giant.triggerAnim("mainController", "attack_smash");
             giant.setState(EnumTypes.GiantState.ATTACKING_SMASH);
+            giant.playSmash();
             smashCooldown = ConfigManager.getInstance().getGiantConfig().getSmashCooldown();
             animationTickTimer = 25;
         } else {
             if (animationTickTimer > 0) {
                 animationTickTimer--;
             } else {
-                setDamageAmount();
-                //TODO: Add Nauseu affect to player, add knockback to player
-                giant.doHurtTarget(this.mob.getTarget());
-                giant.setLastHurtMob(this.mob.getTarget());
+                inflictDamage();
                 attackType = EnumTypes.GiantAttackType.NONE;
                 resetAttacks();
             }
@@ -211,27 +214,29 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
         LivingEntity target = giant.getTarget();
         double distanceToTarget = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
         if (firstCall) {
+            giant.setLastAttackType(EnumTypes.GiantAttackType.CHARGE);
             giant.setState(EnumTypes.GiantState.ATTACKING_CHARGE);
             walking = false;
             giant.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
             giant.triggerAnim("mainController", "attack_charge");
             TestEventLogger.logEvent(giant.getStringUUID(), "Giant Attack Goal",String.valueOf(giant.getId()),
                     "Initiated Charge");
-
+            giant.playRoar();
             chargeCooldown = ConfigManager.getInstance().getGiantConfig().getChargeCooldown();
             roarCooldown = 50;
             animationTickTimer = 40;
 
-            giant.playRoar();
+
         } else {
             if (distanceToTarget > G_REACH && animationTickTimer > 0) {
                 animationTickTimer--;
             } else {
                 if (distanceToTarget <= G_REACH) { //the Charge has to hit the player
-                    setDamageAmount();
-                    //ToDO: Add knock back to player
-                    giant.doHurtTarget(target);
-                    giant.setLastHurtMob(target);
+                    giant.playThud();
+                    inflictDamage();
+                    TBBLogger.getInstance().debug("Charge Attack","Aggression Level = " +
+                            ConfigManager.getInstance().getGiantConfig().getAggressionLevel());
+                    applyChargeKnockback(giant.getTarget(),ConfigManager.getInstance().getGiantConfig().getAggressionLevel());
                     resetAttacks();
                 }
             }
@@ -241,17 +246,55 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
 
     /***************************************** HELPER METHODS ***********************************************/
 
-    private void setDamageAmount() {
-        LivingEntity target = this.mob.getTarget();
-        double damageModifier = 1.0;
+    private void inflictDamage() {
+        if (giant.getTarget() == null) {
+            return;
+        }
 
-        if (attackType == EnumTypes.GiantAttackType.CHARGE) damageModifier = 2;
-        else if (attackType == EnumTypes.GiantAttackType.SMACKDOWN) damageModifier = 1.5;
-        if (target.isBlocking()) damageModifier = damageModifier / 2;
-        double newDamageAmount = origDamageValue * damageModifier;
-        giant.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(newDamageAmount);
+        LivingEntity livingTarget = giant.getTarget();
+        float currentHealth = livingTarget.getHealth();
+        float maxHealth = livingTarget.getMaxHealth();
+        float damage = 0.0F;
+        // Check if the target is blocking with a shield
+        boolean isBlocking = livingTarget.isBlocking();
+
+        // Determine damage based on the attack type
+        switch (this.attackType) {
+            case CHARGE:
+                damage = (currentHealth <= maxHealth * 0.20F) ? currentHealth : maxHealth * 0.60F;
+                if(isBlocking) damage *=0.5; //Blocking with a shield has a 50% reduction in damage from a charge.
+                break;
+            case SMACKDOWN:
+                MobEffectInstance nauseaEffect = new MobEffectInstance(MobEffects.CONFUSION, 40,1);
+                livingTarget.addEffect(nauseaEffect);
+                damage = (currentHealth <= maxHealth * 0.15F) ? currentHealth : maxHealth * 0.40F;
+                if(isBlocking) damage *=0.1f; //A shield only protects a tiny amount from smashing the ground.
+                break;
+            default:
+                damage = (float) giant.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue();
+        }
+
+        giant.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(damage);
+        giant.doHurtTarget(livingTarget);
+        giant.setLastHurtMob(livingTarget);
+    }
+
+    private void applyChargeKnockback(LivingEntity target, double strength) {
+        // Calculate direction based on positions
+        double dX = target.getX() - giant.getX();
+        double dZ = target.getZ() - giant.getZ();
+        double distance = Math.sqrt(dX * dX + dZ * dZ);
+
+        // Normalize and apply the strength
+        double normalizedDX = dX / distance;
+        double normalizedDZ = dZ / distance;
+
+        // Apply knockback using deltaMovement
+        target.setDeltaMovement(new Vec3(normalizedDX * strength, 0.4, normalizedDZ * strength));
 
     }
+
+
     private void triggerWalking() {
         if (!walking) {
             giant.triggerAnim("mainController", "walk");

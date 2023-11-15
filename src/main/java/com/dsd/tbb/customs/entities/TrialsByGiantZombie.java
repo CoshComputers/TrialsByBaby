@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -61,7 +62,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     public AnimatableManager<TrialsByGiantZombie> animatableManager = new AnimatableManager<>(this);
     public GiantDataLogger gEventLog;
 
-    private EnumTypes.GiantState previousState = EnumTypes.GiantState.SPAWNED;
+    private EnumTypes.GiantAttackType lastAttackType;
     public static final double BB_RANGE = 64.0;
     public static final float WIDTH = 1.2F;
     public static final float HEIGHT = 3.2F;
@@ -151,24 +152,6 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
         if(gEventLog == null){
             this.setEventLog(this.getId(),this.stringUUID);
         }
-
-       /* if(this.getLevel().isClientSide){
-            EnumTypes.GiantState currentState = this.getState();
-
-            // Check if the state has changed to ATTACKING_CHARGE
-            if (currentState == EnumTypes.GiantState.ATTACKING_CHARGE && previousState != EnumTypes.GiantState.ATTACKING_CHARGE) {
-                // Play the roar sound
-                playRoar();
-                TBBLogger.getInstance().debug("Client Side Tick","Playing Roar as State changed to CHARGE");
-                // Update the previous state
-                previousState = currentState;
-            } else if (currentState != previousState) {
-                // Update the previous state if it's different but not ATTACKING_CHARGE
-                previousState = currentState;
-            }
-        }*/
-
-
         //Update Boss Bar Progress.
         float healthPercentage = this.getHealth() / this.getMaxHealth();
         BossBarManager.getInstance().updateProgress(this.getUUID(), healthPercentage);
@@ -288,11 +271,23 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     }
 
     public void playRoar(){
-        TBBLogger.getInstance().debug("playRoar",String.format("Loc: [%d][%d][%d] - Sound ToString: %s",
-                this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ(),
-                ModSounds.GIANT_ROAR.get().getLocation().toString()));
-        this.getLevel().playSound(null, this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ()
-                , ModSounds.GIANT_ROAR.get(),SoundSource.HOSTILE, 20.0F, 1.0F);
+        this.getLevel().playSound(null, this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ(),
+                                  ModSounds.GIANT_ROAR.get(),SoundSource.HOSTILE, 20.0F, 1.0F);
+    }
+
+    public void playSmash(){
+        this.getLevel().playSound(null, this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ(),
+                                  ModSounds.GIANT_SMASH.get(),SoundSource.HOSTILE, 5.0F, 1.0F);
+    }
+
+    public void playThud(){
+        this.getLevel().playSound(null, this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ(),
+                                   SoundEvents.STONE_FALL,SoundSource.HOSTILE, 10.0F, 0.5F);
+    }
+
+    public void playHit(){
+        this.getLevel().playSound(null, this.blockPosition().getX(), this.blockPosition().getY(),this.blockPosition().getZ(),
+                SoundEvents.ZOMBIE_HURT,SoundSource.HOSTILE, 10.0F, 0.5F);
     }
 
     /********************************* GETTERS / /SETTERS ****************************************/
@@ -353,6 +348,10 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     public GiantDataLogger getEventLog(){
         return gEventLog;
     }
+    public void setLastAttackType(EnumTypes.GiantAttackType lastAttackType) {
+        this.lastAttackType = lastAttackType;
+    }
+
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

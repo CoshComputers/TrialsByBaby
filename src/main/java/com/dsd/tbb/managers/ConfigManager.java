@@ -223,6 +223,9 @@ public class ConfigManager {
             case SMASH_COOLDOWN:
                 config.setSmashCooldown(newValue);
                 break;
+            case AGRESSION_LEVEL:
+                config.setAggressionLevel(newValue);
+                break;
             default:
                 return null;
         }
