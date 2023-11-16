@@ -1,5 +1,6 @@
 package com.dsd.tbb.handlers;
 
+import com.dsd.tbb.customs.renderers.RisingBlockRenderer;
 import com.dsd.tbb.customs.renderers.TrialsByGiantZombieRenderer;
 import com.dsd.tbb.main.TrialsByBaby;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -22,6 +23,10 @@ public class ClientModEventSubscriber {
 
         event.enqueueWork(() -> {
             EntityRenderers.register(ModEventHandlers.TRIALS_BY_BABY_ZOMBIE.get(), ZombieRenderer::new);
+        });
+
+        event.enqueueWork(() -> {
+            EntityRenderers.register(ModEventHandlers.RISING_BLOCK_ENTITY.get(), RisingBlockRenderer::new);
         });
     }
 

@@ -1,16 +1,21 @@
 package com.dsd.tbb.customs.goals;
 
 import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
+import com.dsd.tbb.customs.entities.RisingBlockEntity;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.ModUtilities;
 import com.dsd.tbb.util.TBBLogger;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class GiantCombatControllerGoal extends MeleeAttackGoal {
@@ -202,6 +207,7 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
             if (animationTickTimer > 0) {
                 animationTickTimer--;
             } else {
+                performRisingBlockEffect();
                 inflictDamage();
                 attackType = EnumTypes.GiantAttackType.NONE;
                 resetAttacks();
@@ -312,4 +318,29 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
         giant.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(origDamageValue);
         giant.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.originalSpeed);
     }
+
+
+    /***************************** WAVE EFFECT CODE *******************************/
+    private void performRisingBlockEffect() {
+        ServerLevel level = (ServerLevel)giant.getLevel();
+        BlockPos giantPosition = giant.blockPosition();
+        BlockPos targetPosition = giantPosition.east().below(); // One block to the right
+
+        if (level.isEmptyBlock(targetPosition)) {
+            // Get the block state at targetPosition
+            BlockState targetBlockState = level.getBlockState(targetPosition);
+
+            // Create and configure the RisingBlockEntity
+            RisingBlockEntity risingBlock =  ModEventHandlers.RISING_BLOCK_ENTITY.get().create(level);
+            if(risingBlock != null) {
+                risingBlock.setMimickedBlockState(targetBlockState);
+                risingBlock.setPos(targetPosition.getX() + 0.5, targetPosition.getY(), targetPosition.getZ() + 0.5); // Center the entity on the block
+                // Add the entity to the world
+                level.addFreshEntity(risingBlock);
+            }else{
+                TBBLogger.getInstance().error("Perform Rising Block Effect","Failed to create Rising Block Entity");
+            }
+        }
+    }
+
 }

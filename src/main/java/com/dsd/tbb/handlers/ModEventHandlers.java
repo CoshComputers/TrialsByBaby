@@ -1,5 +1,6 @@
 package com.dsd.tbb.handlers;
 
+import com.dsd.tbb.customs.entities.RisingBlockEntity;
 import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
 import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
 import com.dsd.tbb.main.TrialsByBaby;
@@ -37,6 +38,13 @@ public class ModEventHandlers {
             () -> EntityType.Builder.of((EntityType<TrialsByGiantZombie> type, Level world) -> new TrialsByGiantZombie(type, world), MobCategory.MONSTER)
                     .sized(1.2F, 3.2F)
                     .build(new ResourceLocation(TrialsByBaby.MOD_ID, "trials_by_giant_zombie").toString())
+    );
+
+    public static final RegistryObject<EntityType<RisingBlockEntity>> RISING_BLOCK_ENTITY = ENTITIES.register(
+            "rising_block_entity",
+            () -> EntityType.Builder.<RisingBlockEntity>of(RisingBlockEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 1.0F) // Adjust the size according to your needs
+                    .build(new ResourceLocation("your_mod_id", "rising_block_entity").toString())
     );
 
     @SubscribeEvent
