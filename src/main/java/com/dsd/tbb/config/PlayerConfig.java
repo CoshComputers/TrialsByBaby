@@ -1,6 +1,6 @@
 package com.dsd.tbb.config;
 
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.managers.ConfigManager;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.authlib.GameProfile;

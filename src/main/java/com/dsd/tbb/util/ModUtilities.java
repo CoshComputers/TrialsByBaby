@@ -1,7 +1,7 @@
 package com.dsd.tbb.util;
 
-import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.main.TrialsByBaby;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;

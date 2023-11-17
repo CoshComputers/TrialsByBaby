@@ -1,7 +1,7 @@
 package com.dsd.tbb.util;
 
 import com.dsd.tbb.config.MobDropConfig;
-import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByBabyZombie;
 import com.dsd.tbb.managers.ConfigManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;

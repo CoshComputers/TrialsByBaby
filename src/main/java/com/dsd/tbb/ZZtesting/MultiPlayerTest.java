@@ -3,7 +3,7 @@ package com.dsd.tbb.ZZtesting;
 import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
 import com.dsd.tbb.ZZtesting.scenarios.ITestScenario;
 import com.dsd.tbb.ZZtesting.scenarios.RandomMovementScenario;
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.ConfigManager;

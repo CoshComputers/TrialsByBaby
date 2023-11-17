@@ -2,7 +2,7 @@ package com.dsd.tbb.managers;
 
 
 import com.dsd.tbb.config.PlayerConfig;
-import com.dsd.tbb.customs.entities.PlayerEntityHelper;
+import com.dsd.tbb.customs.entities.general.PlayerEntityHelper;
 import com.dsd.tbb.util.ModUtilities;
 import com.dsd.tbb.util.TBBLogger;
 import com.google.gson.Gson;

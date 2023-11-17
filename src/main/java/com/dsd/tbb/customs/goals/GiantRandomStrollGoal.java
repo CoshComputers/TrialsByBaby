@@ -1,6 +1,6 @@
 package com.dsd.tbb.customs.goals;
 
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.util.EnumTypes;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;

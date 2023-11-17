@@ -1,8 +1,8 @@
 package com.dsd.tbb.customs.goals;
 
 import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
-import com.dsd.tbb.customs.entities.RisingBlockEntity;
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.RisingBlockEntity;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.util.EnumTypes;

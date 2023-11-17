@@ -1,4 +1,4 @@
-package com.dsd.tbb.customs.entities;
+package com.dsd.tbb.customs.entities.general;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;

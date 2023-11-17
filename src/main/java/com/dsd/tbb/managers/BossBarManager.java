@@ -1,7 +1,6 @@
 package com.dsd.tbb.managers;
 
-import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;

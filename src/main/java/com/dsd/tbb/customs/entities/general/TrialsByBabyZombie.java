@@ -1,4 +1,4 @@
-package com.dsd.tbb.customs.entities;
+package com.dsd.tbb.customs.entities.general;
 
 import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.managers.PlayerManager;

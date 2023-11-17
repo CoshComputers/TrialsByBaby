@@ -1,4 +1,4 @@
-package com.dsd.tbb.customs.entities;
+package com.dsd.tbb.customs.entities.general;
 
 import com.dsd.tbb.config.InitialGearConfig;
 import com.dsd.tbb.managers.ConfigManager;

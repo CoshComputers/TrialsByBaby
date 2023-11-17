@@ -1,6 +1,6 @@
 package com.dsd.tbb.customs.renderers;
 
-import com.dsd.tbb.customs.entities.RisingBlockEntity;
+import com.dsd.tbb.customs.entities.general.RisingBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;

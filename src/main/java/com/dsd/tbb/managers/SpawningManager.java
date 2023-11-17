@@ -2,8 +2,8 @@ package com.dsd.tbb.managers;
 
 import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
 import com.dsd.tbb.config.PlayerConfig;
-import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.rulehandling.RuleCache;
 import com.dsd.tbb.util.EnumTypes;

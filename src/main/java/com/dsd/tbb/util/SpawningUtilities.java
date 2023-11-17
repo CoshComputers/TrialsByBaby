@@ -1,7 +1,7 @@
 package com.dsd.tbb.util;
 
 import com.dsd.tbb.config.PlayerConfig;
-import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByBabyZombie;
 import com.dsd.tbb.managers.ConfigManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;

@@ -1,8 +1,8 @@
 package com.dsd.tbb.handlers;
 
-import com.dsd.tbb.customs.entities.RisingBlockEntity;
-import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.RisingBlockEntity;
+import com.dsd.tbb.customs.entities.general.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.ConfigManager;
 import com.dsd.tbb.rulehandling.RuleManager;

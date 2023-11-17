@@ -1,6 +1,6 @@
 package com.dsd.tbb.handlers;
 
-import com.dsd.tbb.customs.entities.TrialsByBabyZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByBabyZombie;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.util.MobDropUtilities;
 import net.minecraft.world.entity.LivingEntity;

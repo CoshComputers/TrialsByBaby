@@ -1,6 +1,6 @@
 package com.dsd.tbb.customs.renderers;
 
-import com.dsd.tbb.customs.entities.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
 import com.dsd.tbb.customs.models.TrialsByGiantZombieModel;
 import com.dsd.tbb.main.TrialsByBaby;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
