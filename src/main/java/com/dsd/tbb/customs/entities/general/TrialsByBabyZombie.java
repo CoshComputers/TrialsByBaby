@@ -17,12 +17,6 @@ public class TrialsByBabyZombie extends Zombie {
     public static final EntityDataAccessor<String> APPEARANCE = SynchedEntityData.defineId(TrialsByBabyZombie.class, EntityDataSerializers.STRING);
     public static final int MY_DEFAULT_HEIGHT = 1;
 
-    /*public TrialsByBabyZombie(Level world){
-        super(world);
-        this.setBaby(true);
-        setAppearance(EnumTypes.ZombieAppearance.REGULAR);
-    }*/
-
     public TrialsByBabyZombie(EntityType type, Level world) {
         super(type,world);
         this.setBaby(true);

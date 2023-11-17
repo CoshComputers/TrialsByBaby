@@ -3,7 +3,6 @@ package com.dsd.tbb.main;
 
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.managers.ModSounds;
-import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -25,10 +24,7 @@ public class TrialsByBaby
     public static final String MOD_ID = "trialsbybaby";
     public static ScheduledExecutorService scheduler;
     public static MinecraftServer MOD_SERVER = null;
-    public static final boolean MOD_IS_IN_TESTING = false;
-
-    // Directly reference a slf4j logger
-    private static final TBBLogger LOGGER = TBBLogger.getInstance();
+    public static final boolean MOD_IS_IN_TESTING = true;
     // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace

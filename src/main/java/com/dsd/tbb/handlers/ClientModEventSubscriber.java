@@ -1,5 +1,6 @@
 package com.dsd.tbb.handlers;
 
+import com.dsd.tbb.customs.renderers.EndGiantRenderer;
 import com.dsd.tbb.customs.renderers.RisingBlockRenderer;
 import com.dsd.tbb.customs.renderers.TrialsByGiantZombieRenderer;
 import com.dsd.tbb.main.TrialsByBaby;
@@ -20,6 +21,9 @@ public class ClientModEventSubscriber {
         event.enqueueWork(() -> {
             EntityRenderers.register(ModEventHandlers.TRIALS_BY_GIANT_ZOMBIE.get(), TrialsByGiantZombieRenderer::new);
         });
+        event.enqueueWork(() -> {
+            EntityRenderers.register(ModEventHandlers.END_GIANT.get(), EndGiantRenderer::new);
+        });
 
         event.enqueueWork(() -> {
             EntityRenderers.register(ModEventHandlers.TRIALS_BY_BABY_ZOMBIE.get(), ZombieRenderer::new);
@@ -28,6 +32,9 @@ public class ClientModEventSubscriber {
         event.enqueueWork(() -> {
             EntityRenderers.register(ModEventHandlers.RISING_BLOCK_ENTITY.get(), RisingBlockRenderer::new);
         });
+
+
+
     }
 
     // ... other client-side event handlers ...

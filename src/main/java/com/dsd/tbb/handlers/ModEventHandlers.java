@@ -1,5 +1,6 @@
 package com.dsd.tbb.handlers;
 
+import com.dsd.tbb.customs.entities.endgiant.EndGiant;
 import com.dsd.tbb.customs.entities.general.RisingBlockEntity;
 import com.dsd.tbb.customs.entities.general.TrialsByBabyZombie;
 import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
@@ -35,17 +36,27 @@ public class ModEventHandlers {
 
     public static final RegistryObject<EntityType<TrialsByGiantZombie>> TRIALS_BY_GIANT_ZOMBIE = ENTITIES.register(
             "trials_by_giant_zombie",
-            () -> EntityType.Builder.of((EntityType<TrialsByGiantZombie> type, Level world) -> new TrialsByGiantZombie(type, world), MobCategory.MONSTER)
+            () -> EntityType.Builder.of((EntityType<TrialsByGiantZombie> type, Level world)
+                            -> new TrialsByGiantZombie(type, world), MobCategory.MONSTER)
                     .sized(1.2F, 3.2F)
                     .build(new ResourceLocation(TrialsByBaby.MOD_ID, "trials_by_giant_zombie").toString())
+    );
+
+    public static final RegistryObject<EntityType<EndGiant>> END_GIANT = ENTITIES.register(
+            "end_giant",
+            () -> EntityType.Builder.of((EntityType<EndGiant> type, Level world)
+                    -> new EndGiant(type, world), MobCategory.MONSTER)
+                    .sized(3.2F, 14.6F) // Adjust the size according to your needs
+                    .build(new ResourceLocation(TrialsByBaby.MOD_ID, "end_giant").toString())
     );
 
     public static final RegistryObject<EntityType<RisingBlockEntity>> RISING_BLOCK_ENTITY = ENTITIES.register(
             "rising_block_entity",
             () -> EntityType.Builder.<RisingBlockEntity>of(RisingBlockEntity::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F) // Adjust the size according to your needs
-                    .build(new ResourceLocation("your_mod_id", "rising_block_entity").toString())
+                    .build(new ResourceLocation(TrialsByBaby.MOD_ID, "rising_block_entity").toString())
     );
+
 
     @SubscribeEvent
     public static void commonSetup(final FMLCommonSetupEvent event) throws InstantiationException, IllegalAccessException {
@@ -57,12 +68,11 @@ public class ModEventHandlers {
         TBBLogger.getInstance().info("commonSetup","RuleManager initialized");
     }
 
-
-
     @SubscribeEvent
     public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
         event.put(TRIALS_BY_GIANT_ZOMBIE.get(), TrialsByGiantZombie.createAttributes().build());
         event.put(TRIALS_BY_BABY_ZOMBIE.get(), TrialsByBabyZombie.createAttributes().build());
+        event.put(END_GIANT.get(),EndGiant.createAttributes().build());
     }
 
 

@@ -98,7 +98,7 @@ public class TrialsByGiantZombie extends PathfinderMob implements GeoEntity {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes()
+         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, ConfigManager.getInstance().getGiantConfig().getHealth())
                 .add(Attributes.ATTACK_DAMAGE, ConfigManager.getInstance().getGiantConfig().getDamage())
                 .add(Attributes.MOVEMENT_SPEED, 0.15);

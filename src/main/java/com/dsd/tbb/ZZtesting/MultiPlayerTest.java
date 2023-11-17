@@ -3,7 +3,7 @@ package com.dsd.tbb.ZZtesting;
 import com.dsd.tbb.ZZtesting.loggers.TestEventLogger;
 import com.dsd.tbb.ZZtesting.scenarios.ITestScenario;
 import com.dsd.tbb.ZZtesting.scenarios.RandomMovementScenario;
-import com.dsd.tbb.customs.entities.general.TrialsByGiantZombie;
+import com.dsd.tbb.customs.entities.endgiant.EndGiant;
 import com.dsd.tbb.handlers.ModEventHandlers;
 import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.ConfigManager;
@@ -150,8 +150,9 @@ public class MultiPlayerTest {
         Direction playerFacing = player.getDirection();
         String newName = ConfigManager.getInstance().getRandomName();
         try {
-            TrialsByGiantZombie newGiant = ModEventHandlers.TRIALS_BY_GIANT_ZOMBIE.get().create(source.getLevel());
-            newGiant.setMyName(newName);
+            EndGiant newGiant = ModEventHandlers.END_GIANT.get().create(source.getLevel());
+
+            assert newGiant != null;
             newGiant.moveToPosition(playerPos, playerFacing);
             source.getLevel().addFreshEntity(newGiant);
         }catch(Exception e){
