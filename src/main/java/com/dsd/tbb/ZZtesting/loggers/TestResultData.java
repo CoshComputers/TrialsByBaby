@@ -1,5 +1,6 @@
 package com.dsd.tbb.ZZtesting.loggers;
 
+import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.TimeUtil;
@@ -24,6 +25,7 @@ public class TestResultData {
     }
 
     public synchronized static void recordData(String uuid, BlockPos pos,int babyCount,int giantCount,int bossBarCount) {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         String timestamp = TimeUtil.getCurrentTimestamp();
         String locString = String.format("X[%d] Y[%d] Z[%d]",pos.getX(),pos.getY(),pos.getZ());
         String dataLine = String.join(",",
@@ -38,6 +40,7 @@ public class TestResultData {
     }
 
     public static void writeToFile() {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
         String fileName = fileNameFormatter.format(LocalDateTime.now()) + "-TestData.csv";
         Path logDir = FileAndDirectoryManager.getLogDirectory();

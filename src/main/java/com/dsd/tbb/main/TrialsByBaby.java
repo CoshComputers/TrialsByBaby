@@ -25,6 +25,7 @@ public class TrialsByBaby
     public static final String MOD_ID = "trialsbybaby";
     public static ScheduledExecutorService scheduler;
     public static MinecraftServer MOD_SERVER = null;
+    public static final boolean MOD_IS_IN_TESTING = false;
 
     // Directly reference a slf4j logger
     private static final TBBLogger LOGGER = TBBLogger.getInstance();

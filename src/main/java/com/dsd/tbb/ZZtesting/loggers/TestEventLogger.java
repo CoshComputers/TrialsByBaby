@@ -1,5 +1,6 @@
 package com.dsd.tbb.ZZtesting.loggers;
 
+import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.TimeUtil;
@@ -32,6 +33,7 @@ public class TestEventLogger {
      * @param additionalInfo Additional information related to the event.
      */
     public static synchronized void logEvent(String uuid, String eventType,String entityID, String additionalInfo) {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         String dataLine = String.join(",",
                 TimeUtil.getCurrentTimestamp(),
                 uuid,
@@ -43,6 +45,7 @@ public class TestEventLogger {
     }
 
     public static void writeToFile() {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
         String fileName = fileNameFormatter.format(LocalDateTime.now())+"-TestEvents.csv";
         Path logDir = FileAndDirectoryManager.getLogDirectory(); // Make sure to define this method or variable

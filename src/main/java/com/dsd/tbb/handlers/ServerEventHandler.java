@@ -1,7 +1,5 @@
 package com.dsd.tbb.handlers;
 
-import com.dsd.tbb.ZZtesting.MultiPlayerTestScheduler;
-import com.dsd.tbb.ZZtesting.loggers.ServerPerformanceMonitor;
 import com.dsd.tbb.commands.GiantCommands;
 import com.dsd.tbb.commands.TrialsCommands;
 import com.dsd.tbb.config.BabyZombieRules;
@@ -77,18 +75,16 @@ public class ServerEventHandler {
         CommandDispatcher<CommandSourceStack> commandDispatcher = event.getServer().getCommands().getDispatcher();
         TrialsCommands.register(commandDispatcher);
         GiantCommands.register(commandDispatcher);
-        cls = new CentralizedLoggerScheduler();
-        event.getServer().getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, event.getServer());
 
-        //-------COMMENT OUT BEFORE PUBLISHING--------------------------
-        for (ServerLevel world : event.getServer().getAllLevels()) {
-            // Set the time to midnight (18000 ticks)
-            world.setDayTime(18000);
+
+        if(TrialsByBaby.MOD_IS_IN_TESTING) {
+            for (ServerLevel world : event.getServer().getAllLevels()) {
+                world.setDayTime(18000);
+            }
+            makePortals(event);
+            cls = new CentralizedLoggerScheduler();
+            event.getServer().getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, event.getServer());
         }
-        //-------------------------------------------------------------
-       // makePortals(event);
-
-
     }
 
     @SubscribeEvent
@@ -99,8 +95,9 @@ public class ServerEventHandler {
             for (ServerLevel level : server.getAllLevels()) {
                 BossBarManager.getInstance().updateBossBars(level);
             }
-            ServerPerformanceMonitor.onTick(event);
-            MultiPlayerTestScheduler.onTick();
+            //TODO: Testing Code
+            //ServerPerformanceMonitor.onTick(event);
+            //MultiPlayerTestScheduler.onTick();
 
 
 
@@ -125,7 +122,7 @@ public class ServerEventHandler {
 
 
         //SpawningManager.saveGiantZombies();
-        TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
+        //TBBLogger.getInstance().bulkLog("onServerStopping","********************************END OF FILE*************************");
 
         /*ServerPerformanceMonitor.writeToFile();
         TestEventLogger.writeToFile();

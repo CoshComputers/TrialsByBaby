@@ -271,7 +271,7 @@ public class GiantCombatControllerGoal extends MeleeAttackGoal {
                 if(isBlocking) damage *=0.5; //Blocking with a shield has a 50% reduction in damage from a charge.
                 break;
             case SMACKDOWN:
-                MobEffectInstance nauseaEffect = new MobEffectInstance(MobEffects.CONFUSION, 40,1);
+                MobEffectInstance nauseaEffect = new MobEffectInstance(MobEffects.CONFUSION, 100,9);
                 livingTarget.addEffect(nauseaEffect);
                 damage = (currentHealth <= maxHealth * 0.15F) ? currentHealth : maxHealth * 0.40F;
                 if(isBlocking) damage *=0.1f; //A shield only protects a tiny amount from smashing the ground.
