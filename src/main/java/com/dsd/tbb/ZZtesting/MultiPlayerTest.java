@@ -47,25 +47,28 @@ public class MultiPlayerTest {
     }
 
     public static void logTestStart(ServerPlayer player){
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         ConfigManager cfg = ConfigManager.getInstance();
        TBBLogger.getInstance().info("logTestStart","******************STARTING TEST RUN********************");
-       TBBLogger.getInstance().bulkLog("Mod Configuration",cfg.getTrialsConfig().toString());
-       TBBLogger.getInstance().bulkLog("Giant Zombie Configuration",cfg.getGiantConfig().toString());
+       //TBBLogger.getInstance().bulkLog("Mod Configuration",cfg.getTrialsConfig().toString());
+       //TBBLogger.getInstance().bulkLog("Giant Zombie Configuration",cfg.getGiantConfig().toString());
 
-       TBBLogger.getInstance().bulkLog("Random Movement Scenario Settings",RandomMovementScenario.setupOutput());
+       //TBBLogger.getInstance().bulkLog("Random Movement Scenario Settings",RandomMovementScenario.setupOutput());
 
-       TBBLogger.getInstance().bulkLog("Player Position",String.format("X [%f], Y [%f], Z [%f]",
-               player.position().x,player.position().y,player.position().z));
+       //TBBLogger.getInstance().bulkLog("Player Position",String.format("X [%f], Y [%f], Z [%f]",
+       //        player.position().x,player.position().y,player.position().z));
 
     }
 
     public static void logTestEnd(){
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         TBBLogger.getInstance().info("logTestEnd","TESTING CONCLUDED");
         TBBLogger.getInstance().info("logTestEnd","*********************************************************");
     }
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         event.getDispatcher().register(Commands.literal("spawnFakePlayer")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> spawnFakePlayer(context.getSource()))
@@ -89,6 +92,7 @@ public class MultiPlayerTest {
 
 
     public static void toggleSpawnRateIncrement(CommandSourceStack source) {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         Style style = Style.EMPTY.withColor(TextColor.parseColor("Green"));
         isSpawnRateIncrementEnabled = !isSpawnRateIncrementEnabled;
         Supplier<net.minecraft.network.chat.Component> componentSupplier = () -> Component.literal("Toggling Spawn Increasing Test: " +
@@ -99,6 +103,7 @@ public class MultiPlayerTest {
     }
 
     public static int spawnFakePlayer(CommandSourceStack source) {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return 0;
         Style style = Style.EMPTY.withColor(TextColor.parseColor("Green"));
         Player player;
         try {
@@ -133,6 +138,7 @@ public class MultiPlayerTest {
 
 
     private static int spawnGiant(CommandSourceStack source) {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return 0;
         Player player;
         try {
             player = source.getPlayerOrException();
@@ -158,6 +164,7 @@ public class MultiPlayerTest {
     /*************** INNER CLASSES TO MANAGE SCENARIOS ****************************************************/
 
     public static class ScenarioFactory {
+
         public static ITestScenario createScenario(MultiPlayerTest.ScenarioType type, FakePlayer player) {
             switch (type) {
                 case RANDOM_MOVEMENT:

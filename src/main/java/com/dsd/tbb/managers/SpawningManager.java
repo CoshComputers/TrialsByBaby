@@ -10,8 +10,6 @@ import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.SpawningUtilities;
 import com.dsd.tbb.util.TBBLogger;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -91,10 +89,7 @@ public class SpawningManager {
 
             world.addFreshEntity(newGiant);
             TestEventLogger.logEvent(newGiant.getUUID().toString(),"Giant Spawning",String.valueOf(newGiant.getId()),"New Giant has been spawned");
-            //addGiantZombie(newGiant);
-            // Apply the glowing effect for 1 or 2 minutes (1200 or 2400 ticks)
-            MobEffectInstance glowingEffect = new MobEffectInstance(MobEffects.GLOWING, GLOWING_TIMER);
-            newGiant.addEffect(glowingEffect);
+
             return newGiant.getUUID();
         } catch (NullPointerException e) {
             TBBLogger.getInstance().error("SpawnGiant", "Failed to spawn GIANT - null reference: " + e.getMessage());

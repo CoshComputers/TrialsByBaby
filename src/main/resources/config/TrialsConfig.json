@@ -1,7 +1,7 @@
 {
     "overrideMobs": true,
     "spawnpositionretry": 5,
-    "mobcountthreshold": 50,
+    "mobcountthreshold": 20,
     "spawnYsearchrange": 5,
     "spawnGiants": 1,
     "giveInitialGear": true,

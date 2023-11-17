@@ -1,5 +1,6 @@
 package com.dsd.tbb.ZZtesting.loggers;
 
+import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.dsd.tbb.util.EnumTypes;
 import com.dsd.tbb.util.TBBLogger;
@@ -33,6 +34,7 @@ public class GiantDataLogger {
     public synchronized void recordData(String name, String event,boolean isClient, EnumTypes.GiantState state,
                                         boolean hasTarget, BlockPos pos, Vec3 motion, String activeGoal,
                                         float healthPercentage,String activeAnim){ //add - animation stuff
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         String timestamp = TimeUtil.getCurrentTimestamp();
         String locString = String.format("X[%d] Y[%d] Z[%d]",pos.getX() ,pos.getY(),pos.getZ());
         String velString = String.format("X[%f] Y[%f] Z[%f]",motion.x,motion.y,motion.z);
@@ -55,6 +57,7 @@ public class GiantDataLogger {
     }
 
     public void writeToFile() {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         if(!isClientLog) {
             DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
             String fileName = fileNameFormatter.format(LocalDateTime.now()) + "-" + this.entityID +

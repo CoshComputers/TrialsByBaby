@@ -1,5 +1,6 @@
 package com.dsd.tbb.ZZtesting.loggers;
 
+import com.dsd.tbb.main.TrialsByBaby;
 import com.dsd.tbb.managers.FileAndDirectoryManager;
 import com.dsd.tbb.util.TBBLogger;
 import com.dsd.tbb.util.TimeUtil;
@@ -32,6 +33,7 @@ public class ServerPerformanceMonitor {
 
 
     public synchronized static void onTick(TickEvent.ServerTickEvent event) {
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         tickCount++;
         if (tickCount >= SAMPLE_INTERVAL) {
             long currentTime = System.currentTimeMillis();
@@ -76,6 +78,7 @@ public class ServerPerformanceMonitor {
     }
 
     private static long getGarbageCollectionCount() {
+
         long totalGarbageCollections = 0;
 
         List<GarbageCollectorMXBean> gcBeans = ManagementFactory.getGarbageCollectorMXBeans();
@@ -94,7 +97,7 @@ public class ServerPerformanceMonitor {
 
 
     public static void writeToFile() {
-
+        if(!TrialsByBaby.MOD_IS_IN_TESTING) return;
         DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
 
         String fileName = fileNameFormatter.format(LocalDateTime.now())+ "-ServerPerformance.csv";

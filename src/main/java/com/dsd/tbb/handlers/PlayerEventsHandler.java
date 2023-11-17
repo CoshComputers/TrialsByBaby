@@ -35,28 +35,28 @@ public class PlayerEventsHandler {
 
     @SubscribeEvent
     public static void onPlayerJoin(PlayerLoggedInEvent event) {
-        //TODO: Why is my gear being deleted when I join a server the second time
         Component message = Component.literal("Welcome to the Server");
         UUID pUuid = event.getEntity().getUUID();
         String pName = event.getEntity().getName().getString();
         ServerPlayer player = (ServerPlayer) event.getEntity();
         // Your code here
         playerManager.playerJoinedGame(event.getEntity(), pName);
-        //TBBLogger.getInstance().info("onPlayerJoin", String.format("Number of Players online is [%d]",
-        //         playerManager.getAllPlayerConfigs().size()));
+        TBBLogger.getInstance().info("onPlayerJoin", String.format("Number of Players online is [%d]",
+                 playerManager.getAllPlayerConfigs().size()));
         event.getEntity().sendSystemMessage(message);
-
-        //-------COMMENT OUT BEFORE PUBLISHING
-        MobEffectInstance pEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
-        event.getEntity().addEffect(pEffect);
-        pEffect = new MobEffectInstance(MobEffects.SATURATION,99999);
-        event.getEntity().addEffect(pEffect);
-        //-------------------------------------
         ServerLevel tLevel = ((ServerPlayer) event.getEntity()).getLevel();
-        //TBBLogger.getInstance().debug("Player Joined",String.format("Level - %s",
-        //            tLevel.dimension().location()));
-        player.setGameMode(GameType.SPECTATOR);
-        MultiPlayerTest.logTestStart(player);
+
+        if (TrialsByBaby.MOD_IS_IN_TESTING) {
+            MobEffectInstance pEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
+            event.getEntity().addEffect(pEffect);
+            pEffect = new MobEffectInstance(MobEffects.SATURATION,99999);
+            event.getEntity().addEffect(pEffect);
+            TBBLogger.getInstance().debug("Player Joined",String.format("Level - %s",
+                        tLevel.dimension().location()));
+            player.setGameMode(GameType.SPECTATOR);
+            MultiPlayerTest.logTestStart(player);
+
+        }
 
         BossBarManager bossBarManager = BossBarManager.getInstance();
         TrialsByBaby.scheduler.schedule(()-> {
@@ -82,15 +82,15 @@ public class PlayerEventsHandler {
             ServerLevel tLevel = ((ServerPlayer) event.getEntity()).getLevel();
 
             BossBarManager bossBarManager = BossBarManager.getInstance();
-            TBBLogger.getInstance().debug("onDimensionChange", String.format("Player changed to [%s] Dimension - scheduling Update", playerDimension));
+            //TBBLogger.getInstance().debug("onDimensionChange", String.format("Player changed to [%s] Dimension - scheduling Update", playerDimension));
             TrialsByBaby.scheduler.schedule(() -> {
                 bossBarManager.ensureBossBarsExist(tLevel);
                 bossBarManager.addPlayerToBossBar(player, event.getEntity().getUUID());
                 ConfigManager.getInstance().getPlayerConfig(player.getUUID()).updateNearbyGiants(tLevel, player);
             }, 4, TimeUnit.SECONDS);
 
-            TBBLogger.getInstance().debug("onDimensionChange", String.format("Scheduled = Nearby Giant Count [%d]",
-                    PlayerManager.getInstance().getPlayerConfig(player.getUUID()).numberOfNearbyGiants()));
+            //TBBLogger.getInstance().debug("onDimensionChange", String.format("Scheduled = Nearby Giant Count [%d]",
+            //        PlayerManager.getInstance().getPlayerConfig(player.getUUID()).numberOfNearbyGiants()));
         }
     }
 
