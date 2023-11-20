@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.PartEntity;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -22,11 +23,16 @@ public class EndGiant extends PathfinderMob implements GeoEntity {
     public AnimatableManager<EndGiant> animatableManager = new AnimatableManager<>(this);
 
     // Entity parts as separate entities
-    public final EndGiantPart leftArm;
-    public final EndGiantPart rightArm;
-    public final EndGiantPart leftLeg;
-    public final EndGiantPart rightLeg;
-    public final EndGiantPart torso;
+    private final EndGiantPart[] parts;
+    public final EndGiantPart leftUpperArm;
+    public final EndGiantPart leftLowerArm;
+    public final EndGiantPart rightUpperArm;
+    public final EndGiantPart rightLowerArm;
+    public final EndGiantPart leftLowerLeg;
+    public final EndGiantPart leftUpperLeg;
+    public final EndGiantPart rightLowerLeg;
+    public final EndGiantPart rightUpperLeg;
+    public final EndGiantPart body;
     public final EndGiantPart head;
 
     // Constructor
@@ -34,37 +40,59 @@ public class EndGiant extends PathfinderMob implements GeoEntity {
         super(type, world);
 
         // Initialize Entity Parts
-        this.leftArm = new EndGiantPart(this, "left_arm", 1.0F, 1.0F);
-        this.rightArm = new EndGiantPart(this, "right_arm", 1.0F, 1.0F);
-        this.leftLeg = new EndGiantPart(this,"left_leg",1.0F,1.0F);
-        this.rightLeg = new EndGiantPart(this,"right_leg",1.0F,1.0F);
-        this.torso = new EndGiantPart(this,"torso",1.0F,1.0F);
-        this.head = new EndGiantPart(this,"head",1.0F,1.0F);
+        this.leftUpperArm = new EndGiantPart(this, "left_upper_arm", 1.6F, 4.0F);
+        this.leftLowerArm = new EndGiantPart(this, "left_lower_arm", 1.6F, 4.0F);
+        this.rightUpperArm = new EndGiantPart(this, "right_upper_arm", 1.6F, 4.0F);
+        this.rightLowerArm = new EndGiantPart(this, "right_lower_arm", 1.6F, 4.0F);
+        this.leftUpperLeg = new EndGiantPart(this,"left_upper_leg",1.3F,3.0F);
+        this.leftLowerLeg = new EndGiantPart(this,"left_lower_leg",1.3F,3.0F);
+        this.rightUpperLeg = new EndGiantPart(this,"right_upper_leg",1.3F,3.0F);
+        this.rightLowerLeg = new EndGiantPart(this,"right_upper_leg",1.3F,3.0F);
+        this.body = new EndGiantPart(this,"body",3.0F,4.0F);
+        this.head = new EndGiantPart(this,"head",3.0F,3.0F);
 
-        // ... Initialize other parts similarly
+        // Store parts in an array
+        this.parts = new EndGiantPart[]{this.leftUpperArm,this.leftUpperArm,this.rightUpperArm,this.rightLowerArm,
+                                        this.leftUpperLeg,this.leftLowerLeg,this.rightUpperLeg,this.rightLowerLeg,this.body,this.head};
+        this.setId(ENTITY_COUNTER.getAndAdd(this.parts.length + 1) + 1); // Forge: Fix MC-158205: Make sure part ids are successors of parent mob id
+    }
 
-        // Add parts to parts list if necessary
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        for (int i = 0; i < this.parts.length; i++) // Forge: Fix MC-158205: Set part ids to successors of parent mob id
+            this.parts[i].setId(id + i + 1);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        TBBLogger.getInstance().debug("Regular Zombie CreateAttributes","Called");
-
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 1000)
                 .add(Attributes.ATTACK_DAMAGE, 20)
                 .add(Attributes.MOVEMENT_SPEED, 0.05);
     }
 
-    // Overridden Mob methods and unique EndGiant methods
-    // ...
+    @Override
+    public boolean hurt(DamageSource dSource,float dValue){
+        TBBLogger.getInstance().debug("End GIant Hurt","Hurt");
+        return super.hurt(dSource,dValue);
+    }
 
-    // Additional methods for AI, phase management, etc.
-    // ...
 
-    public boolean hurt(EndGiantPart p_31121_, DamageSource p_31122_, float p_31123_) {
+    public boolean hurt(EndGiantPart partHit, DamageSource dSource, float dValue) {
+        TBBLogger.getInstance().debug("End GIant Hurt","Hurt from part" + partHit.name);
+        this.hurt(dSource,dValue);
         return true;
     }
 
+    public EndGiantPart[] getEGPParts(){ return this.parts;}
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        return this.parts;
+    }
+    public EndGiantPart getPart(int index){
+        return this.parts[index];
+    }
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
 
@@ -88,4 +116,6 @@ public class EndGiant extends PathfinderMob implements GeoEntity {
         Vec3 newPos = playerPos.add(offset);
         this.setPos(newPos.x, newPos.y, newPos.z);
     }
+
+
 }

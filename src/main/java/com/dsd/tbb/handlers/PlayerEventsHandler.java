@@ -12,8 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.event.TickEvent;
@@ -47,13 +45,13 @@ public class PlayerEventsHandler {
         ServerLevel tLevel = ((ServerPlayer) event.getEntity()).getLevel();
 
         if (TrialsByBaby.MOD_IS_IN_TESTING) {
-            MobEffectInstance pEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
-            event.getEntity().addEffect(pEffect);
-            pEffect = new MobEffectInstance(MobEffects.SATURATION,99999);
-            event.getEntity().addEffect(pEffect);
+            //MobEffectInstance pEffect = new MobEffectInstance(MobEffects.NIGHT_VISION, 99999, 0, false, false);
+            //event.getEntity().addEffect(pEffect);
+            //pEffect = new MobEffectInstance(MobEffects.SATURATION,99999);
+            //event.getEntity().addEffect(pEffect);
             TBBLogger.getInstance().debug("Player Joined",String.format("Level - %s",
                         tLevel.dimension().location()));
-            player.setGameMode(GameType.SPECTATOR);
+            player.setGameMode(GameType.CREATIVE);
             MultiPlayerTest.logTestStart(player);
 
         }

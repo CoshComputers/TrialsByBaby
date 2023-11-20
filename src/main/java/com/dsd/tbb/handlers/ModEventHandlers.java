@@ -46,7 +46,7 @@ public class ModEventHandlers {
             "end_giant",
             () -> EntityType.Builder.of((EntityType<EndGiant> type, Level world)
                     -> new EndGiant(type, world), MobCategory.MONSTER)
-                    .sized(3.2F, 14.6F) // Adjust the size according to your needs
+                    .sized(1.0f,1.0f)//3.2F, 14.6F) // Adjust the size according to your needs 1.0f,1.0f)//
                     .build(new ResourceLocation(TrialsByBaby.MOD_ID, "end_giant").toString())
     );
 

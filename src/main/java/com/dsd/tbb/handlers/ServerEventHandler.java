@@ -78,9 +78,9 @@ public class ServerEventHandler {
 
 
         if(TrialsByBaby.MOD_IS_IN_TESTING) {
-            for (ServerLevel world : event.getServer().getAllLevels()) {
-                world.setDayTime(18000);
-            }
+           // for (ServerLevel world : event.getServer().getAllLevels()) {
+           //     world.setDayTime(18000);
+           // }
             makePortals(event);
             cls = new CentralizedLoggerScheduler();
             event.getServer().getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, event.getServer());
