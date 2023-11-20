@@ -34,6 +34,7 @@ public class EndGiant extends PathfinderMob implements GeoEntity {
     public final EndGiantPart rightUpperLeg;
     public final EndGiantPart body;
     public final EndGiantPart head;
+    public final EndGiantPart headwear;
 
     // Constructor
     public EndGiant(EntityType type, Level world) {
@@ -47,13 +48,15 @@ public class EndGiant extends PathfinderMob implements GeoEntity {
         this.leftUpperLeg = new EndGiantPart(this,"left_upper_leg",1.3F,3.0F);
         this.leftLowerLeg = new EndGiantPart(this,"left_lower_leg",1.3F,3.0F);
         this.rightUpperLeg = new EndGiantPart(this,"right_upper_leg",1.3F,3.0F);
-        this.rightLowerLeg = new EndGiantPart(this,"right_upper_leg",1.3F,3.0F);
-        this.body = new EndGiantPart(this,"body",3.0F,4.0F);
-        this.head = new EndGiantPart(this,"head",3.0F,3.0F);
+        this.rightLowerLeg = new EndGiantPart(this,"right_lower_leg",1.3F,3.0F);
+        this.body = new EndGiantPart(this,"torso",3.0F,4.0F);
+        this.head = new EndGiantPart(this,"skull",3.0F,3.0F);
+        this.headwear = new EndGiantPart(this,"headwear",3.0F,3.0F);
 
         // Store parts in an array
         this.parts = new EndGiantPart[]{this.leftUpperArm,this.leftUpperArm,this.rightUpperArm,this.rightLowerArm,
-                                        this.leftUpperLeg,this.leftLowerLeg,this.rightUpperLeg,this.rightLowerLeg,this.body,this.head};
+                                        this.leftUpperLeg,this.leftLowerLeg,this.rightUpperLeg,this.rightLowerLeg,
+                                        this.body,this.head,this.headwear};
         this.setId(ENTITY_COUNTER.getAndAdd(this.parts.length + 1) + 1); // Forge: Fix MC-158205: Make sure part ids are successors of parent mob id
     }
 

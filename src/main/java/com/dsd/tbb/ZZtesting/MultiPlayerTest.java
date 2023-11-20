@@ -153,6 +153,7 @@ public class MultiPlayerTest {
             EndGiant newGiant = ModEventHandlers.END_GIANT.get().create(source.getLevel());
 
             assert newGiant != null;
+            TBBLogger.getInstance().debug("*********Spawn Giant",String.format("Position [%s], Facing [%s]",playerPos,playerFacing));
             newGiant.moveToPosition(playerPos, playerFacing);
             source.getLevel().addFreshEntity(newGiant);
         }catch(Exception e){
