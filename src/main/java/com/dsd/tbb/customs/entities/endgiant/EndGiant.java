@@ -16,6 +16,8 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Objects;
+
 public class EndGiant extends PathfinderMob implements GeoEntity {
 
     //GEO ENTITY AND ANIMATION VARIABLES
@@ -95,6 +97,12 @@ public class EndGiant extends PathfinderMob implements GeoEntity {
     }
     public EndGiantPart getPart(int index){
         return this.parts[index];
+    }
+    public EndGiantPart getPart(String pName){
+        for(EndGiantPart p : getEGPParts()){
+            if(Objects.equals(p.getPartName(), pName)) return p;
+        }
+        return null;
     }
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
